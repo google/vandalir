@@ -6,15 +6,17 @@ A tool for analyzing LLVM-IR with Datalog with the goal to find vulnerabilities.
 
 ## Set up
 
-Install python3
+Install python3 (version >= 3.6)
 
-install [llvmlite](https://github.com/numba/llvmlite): 
+Install [clang](https://clang.llvm.org) (version >= 6.0.0)
+
+install [llvmlite](https://github.com/numba/llvmlite) (version >= 0.34.0): 
 
 ```
 pip3 install llvmlite
 ```
 
-Install [souffle](https://souffle-lang.github.io/):
+Install [souffle](https://souffle-lang.github.io/) (version >=2.0.2):
 
 ```
 echo "deb https://dl.bintray.com/souffle-lang/deb-unstable bionic main" | sudo tee -a /etc/apt/sources.list
