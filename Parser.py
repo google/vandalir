@@ -1,9 +1,15 @@
-from llvmlite.binding import parse_assembly#, parse_bitcode, ModuleRef
+from llvmlite.binding import parse_assembly, parse_bitcode#, ModuleRef
 import re
+import argparse
+import os
+import sys
+
+FACTS_DIR = "facts"
 
 class Parser:
 
-	def __init__(self):
+	def __init__(self, input):
+		self.inputFile = input
 		self.outputList = {
 			"function": list(),
 			"argument": list(),
@@ -13,10 +19,9 @@ class Parser:
 		}
 
 	def parse(self):
-		with open('bo.ll', 'r') as file:
-			code = file.read()
+		
+		module = self.getInputFile()
 
-		module = parse_assembly(code)
 		functionid = 0
 		argumentid = 0
 		blockid = 0
@@ -137,11 +142,32 @@ class Parser:
 	def printOutput(self):
 		for outputType in self.outputList.keys():
 			output = "\n".join(self.outputList[outputType])
-			outputFile = open(outputType+".facts", "w")
+			outputFile = open(FACTS_DIR+"/"+outputType+".facts", "w")
 			outputFile.writelines(output)
 			outputFile.close()
 
+	def getInputFile(self):
+		path, inputFileExtension = os.path.splitext(self.inputFile)
+		if(inputFileExtension == '.ll'):
+			with open(self.inputFile, 'r') as file:
+				code = file.read()
+				module = parse_assembly(code)
+		elif(inputFileExtension == '.bc'):
+			with open(self.inputFile, 'rb') as file:
+				code = file.read()
+				module = parse_bitcode(code)
+		else:
+			print("wrong file type given. Only LLVM-IR .ll and .bc files are allowed.")
+			print(inputFileExtension)
+			sys.exit(1)
+		
+		return module
+
 if __name__ == "__main__":
-	parser = Parser()
+	argparser = argparse.ArgumentParser(description='Generate datalog facts from LLVM-IR files.')
+	argparser.add_argument('input', help='path to the LLVM-IR .ll file')
+	args = argparser.parse_args()
+
+	parser = Parser(args.input)
 	parser.parse()
 	parser.printOutput()

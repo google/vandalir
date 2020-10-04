@@ -15,10 +15,12 @@
 
 //rules & analysis 
 
+/*
 //next instruction test
 .decl next_instruction(start: number, startop: symbol, end: number, endop: symbol)
 next_instruction(I1, X, I2, Y) :- instruction(B1, I1, _, X), instruction(B2, I2, _, Y), B2=B1, I2=I1+1, block(F1, B1), block(F2, B2), F1=F2.
 next_instruction(I1, X, I2, Y) :- instruction(B1, I1, _, X), instruction(B2, I2, _, Y), B2=B1, I2=I1+1.
+*/
 
 //get only call instruction
 .decl is_call_instruction(instructionid: number, blockid: number)
@@ -67,7 +69,7 @@ operand(IID, OID1, OV1), operand(IID, OID2, OV2),
 OID2 = OID1+1, VAL=TMP-to_number(OV2), get_size_by_vreg(TMP, BID, OV1).
 //case trunc
 get_size_by_vreg(VAL, BID, VREG) :- instruction(BID, IID, VREG, OPC), contains("trunc", OPC),
-operand(IID, OID1, OV1),
+operand(IID, _, OV1),
 get_size_by_vreg(VAL, BID, OV1).
 
 //if call instruction give called function name
@@ -115,7 +117,7 @@ DEST_SIZE < to_number(N).
 
 //output
 .decl print_vulnerable(functionname: symbol, virtualregister: symbol, opcode: symbol)
-.output print_vulnerable
+.output print_vulnerable(delimiter=",")
 print_vulnerable(NAME, VREG, OUT) :- instruction(BID, IID, VREG, _), 
 get_function_for_call_instruction(OUT, IID, BID),
 is_vulnerable_strncpy_call_instruction(IID, BID), block(FID, BID), function(FID, NAME, _, _).
