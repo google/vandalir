@@ -1,17 +1,19 @@
-//types
+//includes
+#include "points-to.dl"
 
+//types
 
 //inputs
 .decl function(functionid: number, functionname: symbol, functiontype: symbol, returntype: symbol)
-.input function(delimiter=",")
+.input function(delimiter=";")
 .decl argument(functionid: number, argumentid: number, argumenttype: symbol)
-.input argument(delimiter=",")
-.decl block(functionid: number, blockid: number)
-.input block(delimiter=",")
+.input argument(delimiter=";")
+.decl block(functionid: number, blockid: number, label: symbol, predecessors: symbol)
+.input block(delimiter=";")
 .decl instruction(blockid: number, instructionid: number, virtualregister: symbol, opcode: symbol)
-.input instruction(delimiter=",")
+.input instruction(delimiter=";")
 .decl operand(instructionid: number, operandid: number, operandvalue: symbol)
-.input operand(delimiter=",")
+.input operand(delimiter=";")
 
 //rules & analysis 
 
@@ -24,60 +26,73 @@ next_instruction(I1, X, I2, Y) :- instruction(B1, I1, _, X), instruction(B2, I2,
 
 //get only call instruction
 .decl is_call_instruction(instructionid: number, blockid: number)
-is_call_instruction(IID, BID) :- instruction(BID, IID, _, OPC), contains("call", OPC).
+is_call_instruction(IID, BID) :- instruction(BID, IID, _, OPC), OPC = "call".
 
 //get only call strncpy instructions
 .decl is_strncpy_call_instruction(instructionid: number, blockid: number)
-is_strncpy_call_instruction(IID, BID) :- is_call_instruction(IID, BID), operand(IID, _, OV), contains("strncpy", OV).
+is_strncpy_call_instruction(IID, BID) :- is_call_instruction(IID, BID), operand(IID, _, OV), OV = "strncpy".
 
 //get only call strlen instructions
 .decl is_strlen_call_instruction(instructionid: number, blockid: number)
-is_strlen_call_instruction(IID, BID) :- is_call_instruction(IID, BID), operand(IID, _, OV), contains("strlen", OV).
+is_strlen_call_instruction(IID, BID) :- is_call_instruction(IID, BID), operand(IID, _, OV), OV = "strlen".
 
 //get only call fgets instructions
 .decl is_fgets_call_instruction(instructionid: number, blockid: number)
-is_fgets_call_instruction(IID, BID) :- is_call_instruction(IID, BID), operand(IID, _, OV), contains("fgets", OV).
+is_fgets_call_instruction(IID, BID) :- is_call_instruction(IID, BID), operand(IID, _, OV), OV = "fgets".
+
+//get only call strlen instructions
+.decl is_malloc_call_instruction(instructionid: number, blockid: number)
+is_malloc_call_instruction(IID, BID) :- is_call_instruction(IID, BID), operand(IID, _, OV), OV = "malloc".
 
 //get size of alloca
 .decl get_size_of_alloca(size: number, instructionid: number)
-get_size_of_alloca(SIZE, IID) :- instruction(_, IID, _, OPC), contains("alloca", OPC),
-operand(IID, OID1, OV1), operand(IID, OID2, _),
-OID2 = OID1+1,
+get_size_of_alloca(SIZE, IID) :- instruction(_, IID, _, OPC), OPC = "alloca",
+operand(IID, OID1, OV1), operand(IID, OID2, _), operand(IID, OID3, _),
+OID2 = OID1+1, OID3 = OID2+1,
 SIZE = to_number(OV1).
 
 //get size of buffer by virtual register
 .decl get_size_by_vreg(size: number, blockid: number, virtualregister: symbol)
 //case alloca (end recursion)
-get_size_by_vreg(VAL, BID, VREG) :- instruction(BID, IID, VREG, OPC), contains("alloca", OPC),
+get_size_by_vreg(VAL, BID, VREG) :- instruction(BID, IID, VREG, OPC), OPC = "alloca",
 get_size_of_alloca(VAL, IID).
 //case call strlen
-get_size_by_vreg(VAL, BID, VREG) :- instruction(BID, IID, VREG, OPC), contains("call", OPC),
+get_size_by_vreg(VAL, BID, VREG) :- instruction(BID, IID, VREG, OPC), OPC = "call",
 operand(IID, OID1, OV1), operand(IID, OID2, _), 
 OID2 = OID1+1, is_strlen_call_instruction(IID, BID),
 get_size_by_vreg(VAL, BID, OV1).
 //case getelementptr
-get_size_by_vreg(VAL, BID, VREG) :- instruction(BID, IID, VREG, OPC), contains("getelementptr", OPC), 
+get_size_by_vreg(VAL, BID, VREG) :- instruction(BID, IID, VREG, OPC), OPC = "getelementptr", 
 operand(IID, OID1, OV1), operand(IID, OID2, _), operand(IID, OID3, _),
 OID2 = OID1+1, OID3 = OID2+1, get_size_by_vreg(VAL, BID, OV1).
 //case add
-get_size_by_vreg(VAL, BID, VREG) :- instruction(BID, IID, VREG, OPC), contains("add", OPC),
+get_size_by_vreg(VAL, BID, VREG) :- instruction(BID, IID, VREG, OPC), OPC = "add",
 operand(IID, OID1, OV1), operand(IID, OID2, OV2),
 OID2 = OID1+1, VAL=TMP+to_number(OV2), get_size_by_vreg(TMP, BID, OV1).
 //case sub
-get_size_by_vreg(VAL, BID, VREG) :- instruction(BID, IID, VREG, OPC), contains("sub", OPC),
+get_size_by_vreg(VAL, BID, VREG) :- instruction(BID, IID, VREG, OPC), OPC = "sub",
 operand(IID, OID1, OV1), operand(IID, OID2, OV2),
 OID2 = OID1+1, VAL=TMP-to_number(OV2), get_size_by_vreg(TMP, BID, OV1).
 //case trunc
-get_size_by_vreg(VAL, BID, VREG) :- instruction(BID, IID, VREG, OPC), contains("trunc", OPC),
+get_size_by_vreg(VAL, BID, VREG) :- instruction(BID, IID, VREG, OPC), OPC = "trunc",
 operand(IID, _, OV1),
 get_size_by_vreg(VAL, BID, OV1).
+//case malloc
+/*
+get_size_by_vreg(VAL, BID, VREG) :- instruction(BID, IID, VREG, OPC), contains("call", OPC),
+operand(IID, OID1, OV1), operand(IID, OID2, _), 
+OID2 = OID1+1, is_malloc_call_instruction(IID, BID),
+VAL = to_number(OV1).
+*/
+//case load
+//points-to analysis
 
 //if call instruction give called function name
 .decl get_function_for_call_instruction(function: symbol, instructionid: number, blockid: number)
 //case not a call instruction
-get_function_for_call_instruction(OPC, IID, BID) :- instruction(BID, IID, _, OPC), !contains("call", OPC).
+get_function_for_call_instruction(OPC, IID, BID) :- instruction(BID, IID, _, OPC), OPC != "call".
 //a call instruction
-get_function_for_call_instruction(NAME, IID, BID) :- instruction(BID, IID, _, OPC), contains("call", OPC),
+get_function_for_call_instruction(NAME, IID, BID) :- instruction(BID, IID, _, OPC), OPC = "call",
 MAXID = max OID : {operand(IID, OID, _) }, operand(IID, MAXID, NAME).
 
 
@@ -116,12 +131,12 @@ get_size_by_vreg(DEST_SIZE, BID, OV1),
 DEST_SIZE < to_number(N).
 
 //output
-.decl print_vulnerable(functionname: symbol, virtualregister: symbol, opcode: symbol)
+.decl print_vulnerable(functionname: symbol, label: symbol, virtualregister: symbol, opcode: symbol)
 .output print_vulnerable(delimiter=",")
-print_vulnerable(NAME, VREG, OUT) :- instruction(BID, IID, VREG, _), 
+print_vulnerable(NAME, LAB, VREG, OUT) :- instruction(BID, IID, VREG, _), 
 get_function_for_call_instruction(OUT, IID, BID),
-is_vulnerable_strncpy_call_instruction(IID, BID), block(FID, BID), function(FID, NAME, _, _).
+is_vulnerable_strncpy_call_instruction(IID, BID), block(FID, BID, LAB, _), function(FID, NAME, _, _).
 
-print_vulnerable(NAME, VREG, OUT) :- instruction(BID, IID, VREG, _),
+print_vulnerable(NAME, LAB, VREG, OUT) :- instruction(BID, IID, VREG, _),
 get_function_for_call_instruction(OUT, IID, BID), 
-is_vulnerable_fgets_call_instruction(IID, BID), block(FID, BID), function(FID, NAME, _, _).
+is_vulnerable_fgets_call_instruction(IID, BID), block(FID, BID, LAB, _), function(FID, NAME, _, _).
