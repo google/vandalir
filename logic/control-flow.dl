@@ -1,6 +1,25 @@
+#define SEARCHDEPTH 100
+
 .decl previous_block(functionid: number, start: number, previous: number)
 previous_block(FID, START, PRED) :- block(FID, START, LABEL), block(FID, PRED, LABEL2),
 predecessor(FID, LABEL, LABEL2).
 
 .decl next_block(functionid: number, start: number, next: number)
 next_block(FID, START, NEXT) :- previous_block(FID, NEXT, START).
+
+.decl is_before_within_function(functionid: number, start: number, before: number)
+//direct before
+is_before_within_function(FID, START, BEFORE) :- previous_block(FID, START, BEFORE).
+//non direct before
+is_before_within_function(FID, START, BEFORE) :- block(FID, START, _), block(FID, PRED, _),
+previous_block(FID, START, PRED), 
+is_before_within_function(FID, PRED, BEFORE).
+
+.decl is_behind_within_function(functionid: number, start: number, behind: number)
+.output is_behind_within_function(delimiter=",")
+//direct before
+is_behind_within_function(FID, START, BEHIND) :- next_block(FID, START, BEHIND).
+//non direct before
+is_behind_within_function(FID, START, BEHIND) :- block(FID, START, _), block(FID, NEXT, _),
+next_block(FID, START, NEXT), 
+is_behind_within_function(FID, NEXT, BEHIND).
