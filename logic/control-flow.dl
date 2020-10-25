@@ -1,0 +1,6 @@
+.decl previous_block(functionid: number, start: number, previous: number)
+previous_block(FID, START, PRED) :- block(FID, START, LABEL), block(FID, PRED, LABEL2),
+predecessor(FID, LABEL, LABEL2).
+
+.decl next_block(functionid: number, start: number, next: number)
+next_block(FID, START, NEXT) :- previous_block(FID, NEXT, START).

@@ -1,0 +1,20 @@
+//types
+
+//inputs
+.decl function(functionid: number, functionname: symbol, functiontype: symbol, returntype: symbol)
+.input function(delimiter=";")
+
+.decl argument(functionid: number, argumentid: number, argumenttype: symbol)
+.input argument(delimiter=";")
+
+.decl block(functionid: number, blockid: number, label: symbol)
+.input block(delimiter=";")
+
+.decl predecessor(functionid: number, label: symbol, predecessor: symbol)
+.input predecessor(delimiter=";")
+
+.decl instruction(blockid: number, instructionid: number, virtualregister: symbol, opcode: symbol)
+.input instruction(delimiter=";")
+
+.decl operand(instructionid: number, operandid: number, operandvalue: symbol)
+.input operand(delimiter=";")

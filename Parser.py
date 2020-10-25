@@ -15,7 +15,8 @@ class Parser:
 			"argument": list(),
 			"block": list(),
 			"instruction": list(),
-			"operand": list()
+			"operand": list(),
+			"predecessor": list()
 		}
 
 	def parse(self):
@@ -46,10 +47,13 @@ class Parser:
 			for block in function.blocks:
 				(label, preds) = self.getControlFlowInfoFromBlock(block)
 				if(len(preds)>0):
-					preds_str = " ".join(preds)
+					for predecessor in preds:
+						pred_str = "predecessor("+str(functionid)+";"+str(label)+";"+str(predecessor)+")"
+						self.output(pred_str)
 				else:
-					preds_str = "none"
-				block_str = "block("+str(functionid)+";"+str(blockid)+";\""+str(label)+"\";\""+str(preds_str)+"\")"
+					predecessors = "none"
+				block_str = "block("+str(functionid)+";"+str(blockid)+";\""+str(label)+"\")"
+				
 				self.output(block_str)
 				for instruction in block.instructions:
 					fullInstruction = str(instruction).strip()
