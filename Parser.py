@@ -119,7 +119,9 @@ class Parser:
 
 		if(instruction == "call"):#call operand
 			if("declare" in operand):#function call operand
-				operand = operand[operand.find("@")+1:operand.rfind("(")].strip()
+				operand = operand[operand.find("@")+1:operand.find("(")].strip()
+			if("define" in operand):#function call operand
+				operand = operand[operand.find("@")+1:operand.find("(")].strip()
 		else:
 			if("; " in operand):
 				operand = operand.split("; ")[0]
