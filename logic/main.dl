@@ -1,5 +1,6 @@
 //includes
 #include "types.dl"
+#include "instructions.dl"
 #include "buffer-overflow.dl"
 #include "control-flow.dl"
 #include "points-to.dl"
