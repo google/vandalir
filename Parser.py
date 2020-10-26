@@ -87,7 +87,7 @@ class Parser:
                             self.output(operand_str)
                             operandid += 1
 
-                    if(str(instruction.opcode) == "br"):  # br instruction
+                    elif(str(instruction.opcode) == "br"):  # br instruction
                         for operand in instruction.operands:
                             processedOperand = self.preprocessOperand(str(instruction.opcode), operand)
                             if not processedOperand:  # skip empty operands
