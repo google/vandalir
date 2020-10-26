@@ -1,30 +1,3 @@
-//get only call instruction
-.decl is_call_instruction(instructionid: number, blockid: number)
-is_call_instruction(IID, BID) :- instruction(BID, IID, _, OPC), OPC = "call".
-
-//get only call strncpy instructions
-.decl is_strncpy_call_instruction(instructionid: number, blockid: number)
-is_strncpy_call_instruction(IID, BID) :- is_call_instruction(IID, BID), operand(IID, _, OV), OV = "strncpy".
-
-//get only call strlen instructions
-.decl is_strlen_call_instruction(instructionid: number, blockid: number)
-is_strlen_call_instruction(IID, BID) :- is_call_instruction(IID, BID), operand(IID, _, OV), OV = "strlen".
-
-//get only call fgets instructions
-.decl is_fgets_call_instruction(instructionid: number, blockid: number)
-is_fgets_call_instruction(IID, BID) :- is_call_instruction(IID, BID), operand(IID, _, OV), OV = "fgets".
-
-//get only call strlen instructions
-.decl is_malloc_call_instruction(instructionid: number, blockid: number)
-is_malloc_call_instruction(IID, BID) :- is_call_instruction(IID, BID), operand(IID, _, OV), OV = "malloc".
-
-//get size of alloca
-.decl get_size_of_alloca(size: number, instructionid: number)
-get_size_of_alloca(SIZE, IID) :- instruction(_, IID, _, OPC), OPC = "alloca",
-operand(IID, OID1, OV1), operand(IID, OID2, _), operand(IID, OID3, _),
-OID2 = OID1+1, OID3 = OID2+1,
-SIZE = to_number(OV1).
-
 //get size of buffer by virtual register
 .decl get_size_by_vreg(size: number, blockid: number, virtualregister: symbol)
 //case alloca (end recursion)
