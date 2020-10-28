@@ -86,7 +86,13 @@ class Parser:
                             operand_str = "operand("+str(instructionid)+";"+str(operandid)+";\""+str(operand).strip()+"\")"
                             self.output(operand_str)
                             operandid += 1
-
+                    
+                    elif(str(instruction.opcode) == "store"):  # store instruction
+                        self.parseStoreInstruction(instruction, instructionid, operandid)
+                        operandid += 4
+                    elif(str(instruction.opcode) == "load"):  # load instruction
+                        self.parseLoadInstruction(instruction, instructionid, operandid)
+                        operandid += 3
                     elif(str(instruction.opcode) == "br"):  # br instruction
                         for operand in instruction.operands:
                             processedOperand = self.preprocessOperand(str(instruction.opcode), operand)
@@ -108,6 +114,39 @@ class Parser:
 
             functionid += 1
 
+    def parseLoadInstruction(self, instruction, instructionid, operandid):
+        operands = [None]*3
+        ops = str(instruction).strip().replace("load ", "").split(", ")
+        operands[0] = ops[0].strip()
+        if(" = " in operands[0]):
+            operands[0] = operands[0].split(" = ")[1].strip()
+        operand2_split = ops[1].strip().split(" ")
+        operands[1] = operand2_split[0]
+        operands[2] = operand2_split[1]
+
+        for op in operands:
+            op = str(op).strip()
+            operand_str = "operand("+str(instructionid)+";"+str(operandid)+";\""+op+"\")"
+            self.output(operand_str)
+            operandid += 1
+    
+    def parseStoreInstruction(self, instruction, instructionid, operandid):
+        operands = [None]*4
+        ops = str(instruction).strip().replace("store ", "").split(", ")
+        operand1_split = ops[0].strip().split(" ")
+        operands[0] = operand1_split[0]
+        operands[1] = operand1_split[1]
+        operand2_split = ops[1].strip().split(" ")
+        operands[2] = operand2_split[0]
+        operands[3] = operand2_split[1]
+
+        for op in operands:
+            op = str(op).strip()
+            operand_str = "operand("+str(instructionid)+";"+str(operandid)+";\""+op+"\")"
+            self.output(operand_str)
+            operandid += 1
+    
+    
     @staticmethod
     def preprocessOperand(instruction, operand):
         operand = str(operand).strip()
