@@ -1,20 +1,47 @@
 
-//.type stackalloc <: symbol
-//.type heapalloc <: symbol
-//.type globalalloc <: symbol
-//.type memlocation = stackalloc | heapalloc | globalalloc
+.type _memtype <: symbol
 
-.decl memlocation(functionid: number, location: symbol, type: symbol)
-.output memlocation(delimiter=",")
+.type _memlocation = [
+	functiond: number, 
+	location: symbol, 
+	type: _memtype
+]
+
+.decl memlocation(location: _memlocation)
 //stack allocations
-memlocation(FID, LOC, TYP) :- instruction(BID, _, LOC, OPC), block(FID, BID, _),
-OPC = "alloca", TYP = "stack".
+.output pointsto(delimiter=",")
+memlocation(MEM) :- instruction(BID, _, LOC, OPC), block(FID, BID, _),
+OPC = "alloca", TYP = "stack", memtype(TYP),
+MEM = [FID, LOC, TYP].
 //heap allocations
-memlocation(FID, LOC, TYP) :- instruction(BID, IID, LOC, _), block(FID, BID, _),
-is_malloc_call_instruction(IID, BID), TYP = "heap".
+memlocation(MEM) :- instruction(BID, IID, LOC, _), block(FID, BID, _),
+is_malloc_call_instruction(IID), TYP = "heap", memtype(TYP),
+MEM = [FID, LOC, TYP].
 //globals
-memlocation(FID, LOC, TYP) :- global(LOC),
-FID = -1, TYP = "global".
+memlocation(MEM) :- global(LOC),
+FID = -1, TYP = "global", memtype(TYP),
+MEM = [FID, LOC, TYP].
 
-//.decl pointsto(functionid_start: number, start: symbol, functionid_end: number, end: symbol)
+.decl memtype(memtype: _memtype)
+memtype(MEM) :- MEM = "stack".
+memtype(MEM) :- MEM = "heap".
+memtype(MEM) :- MEM = "global".
 
+.decl pointsto(start: _memlocation, end: _memlocation)
+.output pointsto(delimiter=",")
+//case store pointer
+pointsto(START, END) :- 
+memlocation(START), memlocation(END),
+//START = [SFID, SLOC, STYP], END = [EFID, ELOC, ETYP], 
+block(FID, BID, _),
+instruction(BID, IID, _, OPC), OPC = "store",
+get_first_operand(IID, VALTYP), 
+get_second_operand(IID, DEST), 
+get_fourth_operand(IID, ORIGIN),
+contains("*", VALTYP),
+START = [FID, ORIGIN, X], END = [FID, DEST, Y],
+memtype(X), memtype(Y).
+
+//instruction(SBID, SIID, SLOC, SOPC),  instruction(EBID, EIID, ELOC, EOPC),
+//memtype(STYP), memtype(ETYP),
+//block(SFID, SBID, _), block(EFID, EBID, _).

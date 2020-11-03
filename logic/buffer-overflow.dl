@@ -1,5 +1,5 @@
 //get size of buffer by virtual register
-.decl get_size_by_vreg(size: number, blockid: _blockid, virtualregister: symbol)
+.decl get_size_by_vreg(size: number, blockid: _blockid, _vreg: symbol)
 //case alloca (end recursion)
 get_size_by_vreg(VAL, BID, VREG) :- instruction(BID, IID, VREG, OPC), OPC = "alloca",
 get_size_of_alloca(VAL, IID).
@@ -24,7 +24,7 @@ OID2 = OID1+1, VAL=TMP-to_number(OV2), get_size_by_vreg(TMP, BID, OV1).
 get_size_by_vreg(VAL, BID, VREG) :- instruction(BID, IID, VREG, OPC), OPC = "trunc",
 operand(IID, _, OV1),
 get_size_by_vreg(VAL, BID, OV1).
-//case malloc
+//case load
 /*
 get_size_by_vreg(VAL, BID, VREG) :- instruction(BID, IID, VREG, OPC), OPC = "call",
 operand(IID, OID1, OV1), operand(IID, OID2, _), 

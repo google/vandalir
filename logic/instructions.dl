@@ -102,6 +102,3 @@ get_size_of_alloca(SIZE, IID) :- instruction(_, IID, _, OPC), OPC = "alloca",
 operand(IID, OID1, OV1), operand(IID, OID2, _), operand(IID, OID3, _),
 OID2 = OID1+1, OID3 = OID2+1,
 SIZE = to_number(OV1).
-
-
-//.decl get_four_operands(instructionid: number, )
