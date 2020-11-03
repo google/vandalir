@@ -6,6 +6,7 @@
 .type _instructionid <: number
 .type _operandid <: number
 .type _label <: symbol
+.type _vreg <: symbol
 
 
 //inputs
@@ -21,7 +22,7 @@
 .decl predecessor(functionid: _functionid, label: _label, predecessor: symbol)
 .input predecessor(delimiter=";")
 
-.decl instruction(blockid: _blockid, instructionid: _instructionid, virtualregister: symbol, opcode: symbol)
+.decl instruction(blockid: _blockid, instructionid: _instructionid, virtualregister: _vreg, opcode: symbol)
 .input instruction(delimiter=";")
 
 .decl operand(instructionid: _instructionid, operandid: _operandid, operandvalue: symbol)

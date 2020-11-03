@@ -1,3 +1,47 @@
+.type _instruction = [
+	blockid: _blockid, 
+	instructionid: _instructionid, 
+	virtualregister: _vreg,
+	opcode: symbol,
+	operandlist: _operandNode
+]
+
+.type _operandNode = [
+	instructionid: _instructionid,
+	operandid: _operandid,
+	operandvalue: symbol,
+	next: _operandNode
+]
+
+//init data structures
+.decl init_instruction(instruction: _instruction)
+.output init_instruction(delimiter=",")
+//case more than one operand
+init_instruction(INS) :- 
+INS = [BID, IID, VREG, OPC, OL],
+instruction(BID, IID, VREG, OPC),
+init_operandList(OL),
+OL = [IID, OID, OV, NEXT], OID2 = OID-1, !operand(IID, OID2, _), operand(IID, OID, OV), init_operandList(NEXT).
+//case just one operand
+init_instruction(INS) :- 
+INS = [BID, IID, VREG, OPC, OL],
+instruction(BID, IID, VREG, OPC),
+init_operandList(OL),
+OL = [IID, OID, OV, nil], OID2 = OID-1, !operand(IID, OID2, _), operand(IID, OID, OV).
+
+.decl init_operandList(operandNode: _operandNode)
+.output init_operandList(delimiter=",")
+//case last operand
+init_operandList(OPN) :- operand(IID, OID, OV),
+OPN = [IID, OID, OV, nil], !operand(IID, OID+1, _).
+//case not last operand, !nil
+init_operandList(OPN) :- operand(IID, OID, OV), OID2 = OID+1, operand(IID, OID2, OV2),
+OPN = [IID, OID, OV, NEXT], init_operandList(NEXT), NEXT = [IID, OID2, OV2, NEXTNEXT], init_operandList(NEXTNEXT).
+//case not last operand, nil
+init_operandList(OPN) :- operand(IID, OID, OV), OID2 = OID+1, operand(IID, OID2, OV2),
+OPN = [IID, OID, OV, NEXT], init_operandList(NEXT), NEXT = [IID, OID2, OV2, nil].
+
+
 //get only call instruction
 .decl is_call_instruction(instructionid: _instructionid, blockid: _blockid)
 is_call_instruction(IID, BID) :- instruction(BID, IID, _, OPC), OPC = "call".
