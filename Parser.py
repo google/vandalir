@@ -16,7 +16,8 @@ class Parser:
             "block": list(),
             "instruction": list(),
             "operand": list(),
-            "predecessor": list()
+            "predecessor": list(),
+            "global": list()
         }
 
     def parse(self):
@@ -28,6 +29,8 @@ class Parser:
         blockid = 0
         instructionid = 0
         operandid = 0
+
+        self.parseGlobals(module)
 
         for function in module.functions:
 
@@ -86,7 +89,6 @@ class Parser:
                             operand_str = "operand("+str(instructionid)+";"+str(operandid)+";\""+str(operand).strip()+"\")"
                             self.output(operand_str)
                             operandid += 1
-                    
                     elif(str(instruction.opcode) == "store"):  # store instruction
                         self.parseStoreInstruction(instruction, instructionid, operandid)
                         operandid += 4
@@ -129,7 +131,7 @@ class Parser:
             operand_str = "operand("+str(instructionid)+";"+str(operandid)+";\""+op+"\")"
             self.output(operand_str)
             operandid += 1
-    
+
     def parseStoreInstruction(self, instruction, instructionid, operandid):
         operands = [None]*4
         ops = str(instruction).strip().replace("store ", "").split(", ")
@@ -145,8 +147,15 @@ class Parser:
             operand_str = "operand("+str(instructionid)+";"+str(operandid)+";\""+op+"\")"
             self.output(operand_str)
             operandid += 1
-    
-    
+
+    def parseGlobals(self, module):
+        globals = list(module.global_variables)
+        globals.extend(list(module.functions))
+        for glob in globals:
+            globalName = "@"+str(glob.name)
+            glob_str = "global(" + globalName + ")"
+            self.output(glob_str)
+
     @staticmethod
     def preprocessOperand(instruction, operand):
         operand = str(operand).strip()
