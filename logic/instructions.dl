@@ -13,9 +13,10 @@
 	next: _operandNode
 ]
 
+
 //init data structures
+
 .decl init_instruction(instruction: _instruction)
-.output init_instruction(delimiter=",")
 //case more than one operand
 init_instruction(INS) :- 
 INS = [BID, IID, VREG, OPC, OL],
@@ -30,7 +31,6 @@ init_operandList(OL),
 OL = [IID, OID, OV, nil], OID2 = OID-1, !operand(IID, OID2, _), operand(IID, OID, OV).
 
 .decl init_operandList(operandNode: _operandNode)
-.output init_operandList(delimiter=",")
 //case last operand
 init_operandList(OPN) :- operand(IID, OID, OV),
 OPN = [IID, OID, OV, nil], !operand(IID, OID+1, _).
@@ -42,25 +42,58 @@ init_operandList(OPN) :- operand(IID, OID, OV), OID2 = OID+1, operand(IID, OID2,
 OPN = [IID, OID, OV, NEXT], init_operandList(NEXT), NEXT = [IID, OID2, OV2, nil].
 
 
+//operands access
+
+.decl get_first_operand(instructionid: _instructionid, operandvalue: symbol)
+get_first_operand(IID, OV) :- init_instruction(INS), 
+INS = [_, IID, _, _, OL],
+OL = [_, _, OV, _].
+
+.decl get_second_operand(instructionid: _instructionid, operandvalue: symbol)
+get_second_operand(IID, OV) :- init_instruction(INS), 
+INS = [_, IID, _, _, OL],
+OL = [_, _, _, SECOND],
+SECOND = [_, _, OV, _].
+
+.decl get_third_operand(instructionid: _instructionid, operandvalue: symbol)
+get_third_operand(IID, OV) :- init_instruction(INS), 
+INS = [_, IID, _, _, OL],
+OL = [_, _, _, SECOND],
+SECOND = [_, _, _, THIRD],
+THIRD = [_, _, OV, _].
+
+.decl get_fourth_operand(instructionid: _instructionid, operandvalue: symbol)
+get_fourth_operand(IID, OV) :- init_instruction(INS), 
+INS = [_, IID, _, _, OL],
+OL = [_, _, _, SECOND],
+SECOND = [_, _, _, THIRD],
+THIRD = [_, _, _, FOURTH],
+FOURTH = [_, _, OV, _].
+
+.decl get_last_operand(instructionid: _instructionid, operandvalue: symbol)
+get_last_operand(IID, OV) :- init_operandList(OL),
+OL = [IID, OID, OV, NEXT], NEXT = nil, operand(IID, OID, OV).
+
+
 //get only call instruction
-.decl is_call_instruction(instructionid: _instructionid, blockid: _blockid)
-is_call_instruction(IID, BID) :- instruction(BID, IID, _, OPC), OPC = "call".
+.decl is_call_instruction(instructionid: _instructionid)
+is_call_instruction(IID) :- instruction(_, IID, _, OPC), OPC = "call".
 
 //get only call strncpy instructions
-.decl is_strncpy_call_instruction(instructionid: _instructionid, blockid: _blockid)
-is_strncpy_call_instruction(IID, BID) :- is_call_instruction(IID, BID), operand(IID, _, OV), OV = "strncpy".
+.decl is_strncpy_call_instruction(instructionid: _instructionid)
+is_strncpy_call_instruction(IID) :- is_call_instruction(IID), get_last_operand(IID, OV), OV = "strncpy".
 
 //get only call strlen instructions
-.decl is_strlen_call_instruction(instructionid: _instructionid, blockid: _blockid)
-is_strlen_call_instruction(IID, BID) :- is_call_instruction(IID, BID), operand(IID, _, OV), OV = "strlen".
+.decl is_strlen_call_instruction(instructionid: _instructionid)
+is_strlen_call_instruction(IID) :- is_call_instruction(IID), get_last_operand(IID, OV), OV = "strlen".
 
 //get only call fgets instructions
-.decl is_fgets_call_instruction(instructionid: _instructionid, blockid: _blockid)
-is_fgets_call_instruction(IID, BID) :- is_call_instruction(IID, BID), operand(IID, _, OV), OV = "fgets".
+.decl is_fgets_call_instruction(instructionid: _instructionid)
+is_fgets_call_instruction(IID) :- is_call_instruction(IID), get_last_operand(IID, OV), OV = "fgets".
 
 //get only call strlen instructions
-.decl is_malloc_call_instruction(instructionid: _instructionid, blockid: _blockid)
-is_malloc_call_instruction(IID, BID) :- is_call_instruction(IID, BID), operand(IID, _, OV), OV = "malloc".
+.decl is_malloc_call_instruction(instructionid: _instructionid)
+is_malloc_call_instruction(IID) :- is_call_instruction(IID), get_last_operand(IID, OV), OV = "malloc".
 
 
 //get size of alloca

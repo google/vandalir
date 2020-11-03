@@ -6,7 +6,7 @@ get_size_of_alloca(VAL, IID).
 //case call strlen
 get_size_by_vreg(VAL, BID, VREG) :- instruction(BID, IID, VREG, OPC), OPC = "call",
 operand(IID, OID1, OV1), operand(IID, OID2, _), 
-OID2 = OID1+1, is_strlen_call_instruction(IID, BID),
+OID2 = OID1+1, is_strlen_call_instruction(IID),
 get_size_by_vreg(VAL, BID, OV1).
 //case getelementptr
 get_size_by_vreg(VAL, BID, VREG) :- instruction(BID, IID, VREG, OPC), OPC = "getelementptr", 
@@ -28,7 +28,7 @@ get_size_by_vreg(VAL, BID, OV1).
 /*
 get_size_by_vreg(VAL, BID, VREG) :- instruction(BID, IID, VREG, OPC), OPC = "call",
 operand(IID, OID1, OV1), operand(IID, OID2, _), 
-OID2 = OID1+1, is_malloc_call_instruction(IID, BID),
+OID2 = OID1+1, is_malloc_call_instruction(IID),
 VAL = to_number(OV1).
 */
 //case load
@@ -46,14 +46,14 @@ MAXID = max OID : {operand(IID, OID, _) }, operand(IID, MAXID, NAME).
 //strncpy vulnerable to bo
 .decl is_vulnerable_strncpy_call_instruction(instructionid: _instructionid, blockid: _blockid)
 //computed n
-is_vulnerable_strncpy_call_instruction(IID, BID) :- is_strncpy_call_instruction(IID, BID), 
+is_vulnerable_strncpy_call_instruction(IID, BID) :- is_strncpy_call_instruction(IID), 
 operand(IID, OID1, OV1), operand(IID, OID2, _), operand(IID, OID3, N), operand(IID, OID4, _), 
 OID2 = OID1+1, OID3 = OID2+1, OID4 = OID3+1, 
 get_size_by_vreg(DEST_SIZE, BID, OV1), contains("%", N), 
 get_size_by_vreg(COPY_SIZE, BID, N),
 DEST_SIZE < COPY_SIZE.
 //hardcoded n
-is_vulnerable_strncpy_call_instruction(IID, BID) :- is_strncpy_call_instruction(IID, BID), 
+is_vulnerable_strncpy_call_instruction(IID, BID) :- is_strncpy_call_instruction(IID), 
 operand(IID, OID1, OV1), operand(IID, OID2, _), operand(IID, OID3, N), operand(IID, OID4, _), 
 OID2 = OID1+1, OID3 = OID2+1, OID4 = OID3+1, 
 get_size_by_vreg(DEST_SIZE, BID, OV1), 
@@ -63,14 +63,14 @@ DEST_SIZE < to_number(N).
 //fgets vulnerable to bo
 .decl is_vulnerable_fgets_call_instruction(instructionid: _instructionid, blockid: _blockid)
 //computed n
-is_vulnerable_fgets_call_instruction(IID, BID) :- is_fgets_call_instruction(IID, BID), 
+is_vulnerable_fgets_call_instruction(IID, BID) :- is_fgets_call_instruction(IID), 
 operand(IID, OID1, OV1), operand(IID, OID2, N), operand(IID, OID3, _), operand(IID, OID4, _), 
 OID2 = OID1+1, OID3 = OID2+1, OID4 = OID3+1, 
 get_size_by_vreg(DEST_SIZE, BID, OV1), contains("%", N), 
 get_size_by_vreg(COPY_SIZE, BID, N),
 DEST_SIZE < COPY_SIZE.
 //hardcoded n
-is_vulnerable_fgets_call_instruction(IID, BID) :- is_fgets_call_instruction(IID, BID), 
+is_vulnerable_fgets_call_instruction(IID, BID) :- is_fgets_call_instruction(IID), 
 operand(IID, OID1, OV1), operand(IID, OID2, N), operand(IID, OID3, _), operand(IID, OID4, _), 
 OID2 = OID1+1, OID3 = OID2+1, OID4 = OID3+1, 
 get_size_by_vreg(DEST_SIZE, BID, OV1), 

@@ -33,14 +33,14 @@ is_behind_within_function(FID, NEXT, BEHIND).
 //get all possible blocks from where the current basic block (which is a function start) is called
 .decl get_caller_block(functionid: _functionid, blockid: _blockid, caller_functionid: _functionid, caller_blockid: _blockid)
 get_caller_block(FID, BID, CFID, CBID) :- block(FID, BID, _), first_block(FID, BID),
-block(CFID, CBID, _), instruction(CBID, CIID, _, _), is_call_instruction(CIID, CBID),
+block(CFID, CBID, _), instruction(CBID, CIID, _, _), is_call_instruction(CIID),
 operand(CIID, _, OV), OV = FNAME,
 function(FID, FNAME, _, _).
 
 //get the first basic block of the function, which is called in the current basic block
 .decl get_callee_block(functionid: _functionid, blockid: _blockid, callee_functionid: _functionid, callee_blockid: _blockid)
 get_callee_block(FID, BID, CFID, CBID) :- block(FID, BID, _), block(CFID, CBID, _),
-instruction(BID, IID, _, _), is_call_instruction(IID, BID), operand(IID, _, OV), OV = FNAME,
+instruction(BID, IID, _, _), is_call_instruction(IID), operand(IID, _, OV), OV = FNAME,
 function(CFID, FNAME, _, _),
 first_block(CFID, CBID).
 
