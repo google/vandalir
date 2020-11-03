@@ -1,0 +1,20 @@
+
+//.type stackalloc <: symbol
+//.type heapalloc <: symbol
+//.type globalalloc <: symbol
+//.type memlocation = stackalloc | heapalloc | globalalloc
+
+.decl memlocation(functionid: number, location: symbol, type: symbol)
+.output memlocation(delimiter=",")
+//stack allocations
+memlocation(FID, LOC, TYP) :- instruction(BID, _, LOC, OPC), block(FID, BID, _),
+OPC = "alloca", TYP = "stack".
+//heap allocations
+memlocation(FID, LOC, TYP) :- instruction(BID, IID, LOC, _), block(FID, BID, _),
+is_malloc_call_instruction(IID, BID), TYP = "heap".
+//globals
+memlocation(FID, LOC, TYP) :- global(LOC),
+FID = -1, TYP = "global".
+
+//.decl pointsto(functionid_start: number, start: symbol, functionid_end: number, end: symbol)
+
