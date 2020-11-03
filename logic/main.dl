@@ -1,23 +1,14 @@
-//includes
+//types
 #include "types.dl"
+
+//framework
 #include "instructions.dl"
-#include "buffer-overflow.dl"
 #include "control-flow.dl"
 #include "points-to.dl"
 
 
-
 //rules & analysis 
-
+#include "buffer-overflow.dl"
 //output
 
 //vulnerable detection
-.decl print_vulnerable(functionname: symbol, label: symbol, virtualregister: symbol, opcode: symbol)
-.output print_vulnerable(delimiter=",")
-print_vulnerable(NAME, LAB, VREG, OUT) :- instruction(BID, IID, VREG, _), 
-get_function_for_call_instruction(OUT, IID, BID),
-is_vulnerable_strncpy_call_instruction(IID, BID), block(FID, BID, LAB), function(FID, NAME, _, _).
-
-print_vulnerable(NAME, LAB, VREG, OUT) :- instruction(BID, IID, VREG, _),
-get_function_for_call_instruction(OUT, IID, BID), 
-is_vulnerable_fgets_call_instruction(IID, BID), block(FID, BID, LAB), function(FID, NAME, _, _).

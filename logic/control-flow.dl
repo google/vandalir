@@ -1,19 +1,19 @@
 //get previous basic block within function
-.decl previous_block(functionid: number, start: number, previous: number)
+.decl previous_block(functionid: _functionid, start: _blockid, previous: _blockid)
 previous_block(FID, START, PRED) :- block(FID, START, LABEL), block(FID, PRED, LABEL2),
 predecessor(FID, LABEL, LABEL2).
 
 //get next basic block within function
-.decl next_block(functionid: number, start: number, next: number)
+.decl next_block(functionid: _functionid, start: _blockid, next: _blockid)
 next_block(FID, START, NEXT) :- previous_block(FID, NEXT, START).
 
 //get first block of function
-.decl first_block(functionid: number, blockid: number)
+.decl first_block(functionid: _functionid, blockid: _blockid)
 first_block(FID, BID) :- !previous_block(FID, BID, _), 
 block(FID, BID2, _), block(FID, BID, _), !BID2<BID.
 
 //get all possible blocks before current basic block within function
-.decl is_before_within_function(functionid: number, start: number, before: number)
+.decl is_before_within_function(functionid: _functionid, start: _blockid, before: _blockid)
 //direct before
 is_before_within_function(FID, START, BEFORE) :- previous_block(FID, START, BEFORE).
 //non direct before
@@ -22,7 +22,7 @@ previous_block(FID, START, PRED),
 is_before_within_function(FID, PRED, BEFORE).
 
 //get all possible blocks behind current basic block within function
-.decl is_behind_within_function(functionid: number, start: number, behind: number)
+.decl is_behind_within_function(functionid: _functionid, start: _blockid, behind: _blockid)
 //direct before
 is_behind_within_function(FID, START, BEHIND) :- next_block(FID, START, BEHIND).
 //non direct before
@@ -31,35 +31,35 @@ next_block(FID, START, NEXT),
 is_behind_within_function(FID, NEXT, BEHIND).
 
 //get all possible blocks from where the current basic block (which is a function start) is called
-.decl get_caller_block(functionid: number, blockid: number, caller_functionid: number, caller_blockid: number)
+.decl get_caller_block(functionid: _functionid, blockid: _blockid, caller_functionid: _functionid, caller_blockid: _blockid)
 get_caller_block(FID, BID, CFID, CBID) :- block(FID, BID, _), first_block(FID, BID),
 block(CFID, CBID, _), instruction(CBID, CIID, _, _), is_call_instruction(CIID, CBID),
 operand(CIID, _, OV), OV = FNAME,
 function(FID, FNAME, _, _).
 
 //get the first basic block of the function, which is called in the current basic block
-.decl get_callee_block(functionid: number, blockid: number, callee_functionid: number, callee_blockid: number)
+.decl get_callee_block(functionid: _functionid, blockid: _blockid, callee_functionid: _functionid, callee_blockid: _blockid)
 get_callee_block(FID, BID, CFID, CBID) :- block(FID, BID, _), block(CFID, CBID, _),
 instruction(BID, IID, _, _), is_call_instruction(IID, BID), operand(IID, _, OV), OV = FNAME,
 function(CFID, FNAME, _, _),
 first_block(CFID, CBID).
 
 //get previous basic block even if it is a function call
-.decl get_previous_or_caller_block(functionid: number, start_blockid: number, previous_functionid: number, previous_blockid: number)
+.decl get_previous_or_caller_block(functionid: _functionid, start_blockid: _blockid, previous_functionid: _functionid, previous_blockid: _blockid)
 //case previous block within function
 get_previous_or_caller_block(FID, BID, PFID, PBID) :- block(FID, BID, _), block(PFID, PBID, _), previous_block(FID, BID, PBID), FID = PFID.
 //case previous block might be caller
 get_previous_or_caller_block(FID, BID, PFID, PBID) :- block(FID, BID, _), block(PFID, PBID, _), get_caller_block(FID, BID, PFID, PBID).
 
 //get next basic block, even if it is in another function
-.decl get_next_or_called_block(functionid: number, start_blockid: number, next_functionid: number, next_blockid: number)
+.decl get_next_or_called_block(functionid: _functionid, start_blockid: _blockid, next_functionid: _functionid, next_blockid: _blockid)
 //case next block within function
 get_next_or_called_block(FID, BID, NFID, NBID) :- block(FID, BID, _), block(NFID, NBID, _), next_block(FID, BID, NBID), FID = NFID.
 //case next block following function call
 get_next_or_called_block(FID, BID, NFID, NBID) :- block(FID, BID, _), block(NFID, NBID, _), get_callee_block(FID, BID, NFID, NBID).
 
 //get all possible previous block transisting function calls
-.decl is_before(functionid: number, blockid: number, before_functionid: number, before_blockid: number)
+.decl is_before(functionid: _functionid, blockid: _blockid, before_functionid: _functionid, before_blockid: _blockid)
 //direct before
 is_before(FID, BID, BFID, BBID) :- get_previous_or_caller_block(FID, BID, BFID, BBID).
 //non direct before
@@ -68,7 +68,7 @@ get_previous_or_caller_block(FID, BID, PFID, PBID),
 is_before(PFID, PBID, BFID, BBID).
 
 //get all possible following block transisting function calls
-.decl is_behind(functionid: number, blockid: number, behind_functionid: number, behind_blockid: number)
+.decl is_behind(functionid: _functionid, blockid: _blockid, behind_functionid: _functionid, behind_blockid: _blockid)
 //direct before
 is_behind(FID, BID, BFID, BBID) :- get_next_or_called_block(FID, BID, BFID, BBID).
 //non direct before

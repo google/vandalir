@@ -1,5 +1,5 @@
 //get size of buffer by virtual register
-.decl get_size_by_vreg(size: number, blockid: number, virtualregister: symbol)
+.decl get_size_by_vreg(size: number, blockid: _blockid, virtualregister: symbol)
 //case alloca (end recursion)
 get_size_by_vreg(VAL, BID, VREG) :- instruction(BID, IID, VREG, OPC), OPC = "alloca",
 get_size_of_alloca(VAL, IID).
@@ -35,7 +35,7 @@ VAL = to_number(OV1).
 //points-to analysis
 
 //if call instruction give called function name
-.decl get_function_for_call_instruction(function: symbol, instructionid: number, blockid: number)
+.decl get_function_for_call_instruction(function: symbol, instructionid: _instructionid, blockid: _blockid)
 //case not a call instruction
 get_function_for_call_instruction(OPC, IID, BID) :- instruction(BID, IID, _, OPC), OPC != "call".
 //a call instruction
@@ -44,7 +44,7 @@ MAXID = max OID : {operand(IID, OID, _) }, operand(IID, MAXID, NAME).
 
 
 //strncpy vulnerable to bo
-.decl is_vulnerable_strncpy_call_instruction(instructionid: number, blockid: number)
+.decl is_vulnerable_strncpy_call_instruction(instructionid: _instructionid, blockid: _blockid)
 //computed n
 is_vulnerable_strncpy_call_instruction(IID, BID) :- is_strncpy_call_instruction(IID, BID), 
 operand(IID, OID1, OV1), operand(IID, OID2, _), operand(IID, OID3, N), operand(IID, OID4, _), 
@@ -61,7 +61,7 @@ get_size_by_vreg(DEST_SIZE, BID, OV1),
 DEST_SIZE < to_number(N).
 
 //fgets vulnerable to bo
-.decl is_vulnerable_fgets_call_instruction(instructionid: number, blockid: number)
+.decl is_vulnerable_fgets_call_instruction(instructionid: _instructionid, blockid: _blockid)
 //computed n
 is_vulnerable_fgets_call_instruction(IID, BID) :- is_fgets_call_instruction(IID, BID), 
 operand(IID, OID1, OV1), operand(IID, OID2, N), operand(IID, OID3, _), operand(IID, OID4, _), 
@@ -76,3 +76,14 @@ OID2 = OID1+1, OID3 = OID2+1, OID4 = OID3+1,
 get_size_by_vreg(DEST_SIZE, BID, OV1), 
 !contains("%", N),
 DEST_SIZE < to_number(N).
+
+//print results
+.decl print_vulnerable(functionname: symbol, label: symbol, virtualregister: symbol, opcode: symbol)
+.output print_vulnerable(delimiter=",")
+print_vulnerable(NAME, LAB, VREG, OUT) :- instruction(BID, IID, VREG, _), 
+get_function_for_call_instruction(OUT, IID, BID),
+is_vulnerable_strncpy_call_instruction(IID, BID), block(FID, BID, LAB), function(FID, NAME, _, _).
+
+print_vulnerable(NAME, LAB, VREG, OUT) :- instruction(BID, IID, VREG, _),
+get_function_for_call_instruction(OUT, IID, BID), 
+is_vulnerable_fgets_call_instruction(IID, BID), block(FID, BID, LAB), function(FID, NAME, _, _).
