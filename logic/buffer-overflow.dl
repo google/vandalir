@@ -1,5 +1,6 @@
 //get size of buffer by virtual register
 .decl get_size_by_vreg(size: number, blockid: _blockid, _vreg: symbol)
+//.output get_size_by_vreg(delimiter=",")
 //case alloca (end recursion)
 get_size_by_vreg(VAL, BID, VREG) :- instruction(BID, IID, VREG, OPC), OPC = "alloca",
 get_size_of_alloca(VAL, IID).
