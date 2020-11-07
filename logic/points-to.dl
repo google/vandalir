@@ -1,46 +1,115 @@
 
-.type _memtype <: symbol
+.type _memcategory <: symbol
 
 .type _memlocation = [
 	functiond: number, 
-	location: symbol, 
-	type: _memtype
+	location: symbol,
+	type: symbol, 
+	memcategory: _memcategory
 ]
 
 .decl memlocation(location: _memlocation)
+.output memlocation(delimiter=",")
 //stack allocations
-memlocation(MEM) :- instruction(BID, _, LOC, OPC), block(FID, BID, _),
-OPC = "alloca", TYP = "stack", memtype(TYP),
-MEM = [FID, LOC, TYP].
+memlocation(MEM) :- instruction(BID, IID, LOC, OPC), block(FID, BID, _),
+OPC = "alloca", CAT = "stack", memcategory(CAT), 
+get_first_operand(IID, TYP),
+MEM = [FID, LOC, TYP, CAT].
 //heap allocations
 memlocation(MEM) :- instruction(BID, IID, LOC, _), block(FID, BID, _),
-is_malloc_call_instruction(IID), TYP = "heap", memtype(TYP),
-MEM = [FID, LOC, TYP].
+is_malloc_call_instruction(IID), CAT = "heap", memcategory(CAT),
+TYP = "unknown",
+MEM = [FID, LOC, TYP, CAT].
 //globals
 memlocation(MEM) :- global(LOC),
-FID = -1, TYP = "global", memtype(TYP),
-MEM = [FID, LOC, TYP].
+FID = -1, CAT = "global", memcategory(CAT),
+TYP = "unknown", //TODO: add parsing for globals
+MEM = [FID, LOC, TYP, CAT].
+//vreg no load
+memlocation(MEM) :- instruction(BID, IID, VREG, OPC), block(FID, BID, _),
+OPC != "load", OPC != "alloca", !is_malloc_call_instruction(IID),
+VREG != "%-1",
+LOC = VREG,
+CAT = "vreg", memcategory(CAT),
+TYP = "unknown",
+MEM = [FID, LOC, TYP, CAT].
+//vreg load
+memlocation(MEM) :- instruction(BID, IID, VREG, OPC), block(FID, BID, _),
+OPC = "load",
+VREG != "%-1",
+LOC = VREG,
+CAT = "vreg", memcategory(CAT),
+get_first_operand(IID, TYP),
+MEM = [FID, LOC, TYP, CAT].
 
-.decl memtype(memtype: _memtype)
-memtype(MEM) :- MEM = "stack".
-memtype(MEM) :- MEM = "heap".
-memtype(MEM) :- MEM = "global".
 
-.decl points_to(start: _memlocation, end: _memlocation)
-.output points_to(delimiter=",")
-//case store pointer
-points_to(START, END) :- 
-memlocation(START), memlocation(END),
-//START = [SFID, SLOC, STYP], END = [EFID, ELOC, ETYP], 
+.decl type(type: symbol)
+type(T) :- T = OV, operand(_,_,OV). 
+
+.decl memtype(memtype: symbol)
+memtype(MEM) :- MEM = "unknown".
+memtype(MEM) :- type(MEM).
+
+.decl is_pointer(type: symbol)
+is_pointer(T) :- type(T), contains("*", T).
+
+.decl memcategory(memcategory: _memcategory)
+memcategory(MEM) :- MEM = "stack".
+memcategory(MEM) :- MEM = "heap".
+memcategory(MEM) :- MEM = "global".
+memcategory(MEM) :- MEM = "vreg".
+
+.decl memequals(first: _memlocation, second: _memlocation)
+.output memequals(delimiter=",")
+//case switch first and second
+memequals(FIRST, SECOND) :- memlocation(FIRST), memlocation(SECOND), memequals(SECOND, FIRST).
+//case load pointer
+memequals(FIRST, SECOND) :-
+memlocation(FIRST), memlocation(SECOND),
+FIRST = [FID, FIRSTLOC, FIRSTTYP, X], SECOND = [FID, SECONDLOC, SECONDTYP, Y],
+memtype(FIRSTTYP), memtype(SECONDTYP), memcategory(X), memcategory(Y),
+instruction(BID, IID, VREG, OPC), block(FID, BID, _), OPC = "load",
+get_first_operand(IID, LOADTYPE), is_pointer(LOADTYPE),
+VREG = FIRSTLOC, 
+get_third_operand(IID, LOADADDR), 
+LOADADDR = SECONDLOC.
+//case store pointer to pointer
+memequals(FIRST, SECOND) :- 
 block(FID, BID, _),
 instruction(BID, IID, _, OPC), OPC = "store",
 get_first_operand(IID, VALTYP), 
 get_second_operand(IID, DEST), 
 get_fourth_operand(IID, ORIGIN),
-contains("*", VALTYP),
-START = [FID, ORIGIN, X], END = [FID, DEST, Y],
-memtype(X), memtype(Y).
+is_pointer(VALTYP),
+ORIGINMEM = [FID, ORIGIN, ORIGINTYP, ORIGINCAT], DESTMEM = [FID, DEST, DESTTYP, DESTCAT],
+memlocation(ORIGINMEM), memlocation(DESTMEM),
+memtype(ORIGINTYP), memtype(DESTTYP), memcategory(ORIGINCAT), memcategory(DESTCAT),
+is_pointer(DESTTYP),
+FIRST = ORIGINMEM, SECOND = DESTMEM.
 
-//instruction(SBID, SIID, SLOC, SOPC),  instruction(EBID, EIID, ELOC, EOPC),
-//memtype(STYP), memtype(ETYP),
-//block(SFID, SBID, _), block(EFID, EBID, _).
+
+
+.decl points_to(start: _memlocation, end: _memlocation)
+.output points_to(delimiter=",")
+//cases memequals
+points_to(START, END) :- memlocation(START), memlocation(END), 
+memequals(START, ALTSTART), points_to(ALTSTART, END).
+points_to(START, END) :- memlocation(START), memlocation(END), 
+memequals(END, ALTEND), points_to(START, ALTEND).
+points_to(START, END) :- memlocation(START), memlocation(END), 
+memequals(START, ALTSTART), memequals(END, ALTEND), points_to(ALTSTART, ALTEND).
+
+//case store address to integer
+points_to(START, END) :- 
+block(FID, BID, _),
+instruction(BID, IID, _, OPC), OPC = "store",
+get_first_operand(IID, VALTYP), 
+get_second_operand(IID, DEST), 
+get_fourth_operand(IID, ORIGIN),
+is_pointer(VALTYP),
+ORIGINMEM = [FID, ORIGIN, ORIGINTYP, ORIGINCAT], DESTMEM = [FID, DEST, DESTTYP, DESTCAT],
+memlocation(ORIGINMEM), memlocation(DESTMEM),
+memtype(ORIGINTYP), memtype(DESTTYP), memcategory(ORIGINCAT), memcategory(DESTCAT),
+!is_pointer(DESTTYP),
+DESTTYP != "unknown",
+START = ORIGINMEM, END = DESTMEM.

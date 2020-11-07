@@ -1,6 +1,6 @@
 //get size of buffer by virtual register
 .decl get_buffsize_by_vreg(size: number, functionid: _functionid, _vreg: symbol)
-//.output get_buffsize_by_vreg(delimiter=",")
+.output get_buffsize_by_vreg(delimiter=",")
 
 //case alloca (end recursion)
 get_buffsize_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, IID, VREG, OPC), OPC = "alloca",
@@ -30,13 +30,11 @@ get_buffsize_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, IID
 get_first_operand(IID, OV1),
 get_buffsize_by_vreg(VAL, FID, OV1).
 
-//case load
-get_buffsize_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, IID, VREG, OPC), OPC = "load",
-get_first_operand(IID, TYPE), get_third_operand(IID, LOADREG),
-contains("*", TYPE), //load pointer
-points_to(START, END), START = [FID, START_LOC, _], 
-END = [FID, END_LOC, _], 
-START_LOC = LOADREG,
+//case memequals
+get_buffsize_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, _, VREG, _),
+memequals(START, END), START = [FID, START_LOC, _, _], 
+END = [FID, END_LOC, _, _], 
+START_LOC = VREG,
 get_buffsize_by_vreg(VAL, FID, END_LOC).
 
 //case malloc
