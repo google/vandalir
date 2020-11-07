@@ -1,40 +1,46 @@
 //get size of buffer by virtual register
-.decl get_size_by_vreg(size: number, blockid: _blockid, _vreg: symbol)
-.output get_size_by_vreg(delimiter=",")
+.decl get_buffsize_by_vreg(size: number, functionid: _functionid, _vreg: symbol)
+//.output get_buffsize_by_vreg(delimiter=",")
+
 //case alloca (end recursion)
-get_size_by_vreg(VAL, BID, VREG) :- instruction(BID, IID, VREG, OPC), OPC = "alloca",
+get_buffsize_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, IID, VREG, OPC), OPC = "alloca",
 get_size_of_alloca(IID, VAL).
+
 //case call strlen
-get_size_by_vreg(VAL, BID, VREG) :- instruction(BID, IID, VREG, OPC), OPC = "call",
-operand(IID, OID1, OV1), operand(IID, OID2, _), 
-OID2 = OID1+1, is_strlen_call_instruction(IID),
-get_size_by_vreg(VAL, BID, OV1).
+get_buffsize_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, IID, VREG, OPC), OPC = "call",
+get_first_operand(IID, OV1), is_strlen_call_instruction(IID),
+get_buffsize_by_vreg(VAL, FID, OV1).
+
 //case getelementptr
-get_size_by_vreg(VAL, BID, VREG) :- instruction(BID, IID, VREG, OPC), OPC = "getelementptr", 
-operand(IID, OID1, OV1), operand(IID, OID2, _), operand(IID, OID3, _),
-OID2 = OID1+1, OID3 = OID2+1, get_size_by_vreg(VAL, BID, OV1).
+get_buffsize_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, IID, VREG, OPC), OPC = "getelementptr", 
+get_first_operand(IID, OV1), get_buffsize_by_vreg(VAL, FID, OV1).
+
 //case add
-get_size_by_vreg(VAL, BID, VREG) :- instruction(BID, IID, VREG, OPC), OPC = "add",
-operand(IID, OID1, OV1), operand(IID, OID2, OV2),
-OID2 = OID1+1, VAL=TMP+to_number(OV2), get_size_by_vreg(TMP, BID, OV1).
+get_buffsize_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, IID, VREG, OPC), OPC = "add",
+get_first_operand(IID, OV1), get_second_operand(IID, OV2), 
+VAL=TMP+to_number(OV2), get_buffsize_by_vreg(TMP, FID, OV1).
+
 //case sub
-get_size_by_vreg(VAL, BID, VREG) :- instruction(BID, IID, VREG, OPC), OPC = "sub",
-operand(IID, OID1, OV1), operand(IID, OID2, OV2),
-OID2 = OID1+1, VAL=TMP-to_number(OV2), get_size_by_vreg(TMP, BID, OV1).
+get_buffsize_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, IID, VREG, OPC), OPC = "sub",
+get_first_operand(IID, OV1), get_second_operand(IID, OV2), 
+VAL=TMP-to_number(OV2), get_buffsize_by_vreg(TMP, FID, OV1).
+
 //case trunc
-get_size_by_vreg(VAL, BID, VREG) :- instruction(BID, IID, VREG, OPC), OPC = "trunc",
-operand(IID, _, OV1),
-get_size_by_vreg(VAL, BID, OV1).
+get_buffsize_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, IID, VREG, OPC), OPC = "trunc",
+get_first_operand(IID, OV1),
+get_buffsize_by_vreg(VAL, FID, OV1).
+
 //case load
-get_size_by_vreg(VAL, BID, VREG) :- instruction(BID, IID, VREG, OPC), OPC = "load",
+get_buffsize_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, IID, VREG, OPC), OPC = "load",
 get_first_operand(IID, TYPE), get_third_operand(IID, LOADREG),
 contains("*", TYPE), //load pointer
 points_to(START, END), START = [FID, START_LOC, _], 
 END = [FID, END_LOC, _], 
 START_LOC = LOADREG,
-get_size_by_vreg(VAL, BID, END_LOC).
+get_buffsize_by_vreg(VAL, FID, END_LOC).
+
 //case malloc
-get_size_by_vreg(VAL, BID, VREG) :- instruction(BID, IID, VREG, OPC), 
+get_buffsize_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, IID, VREG, _), 
 is_malloc_call_instruction(IID), get_size_of_malloc(IID, SIZE),
 VAL = SIZE.
 
@@ -48,36 +54,35 @@ MAXID = max OID : {operand(IID, OID, _) }, operand(IID, MAXID, NAME).
 
 
 //strncpy vulnerable to bo
-.decl is_vulnerable_strncpy_call_instruction(instructionid: _instructionid, blockid: _blockid)
+.decl is_vulnerable_strncpy_call_instruction(instructionid: _instructionid)
 //computed n
-is_vulnerable_strncpy_call_instruction(IID, BID) :- is_strncpy_call_instruction(IID), 
-operand(IID, OID1, OV1), operand(IID, OID2, _), operand(IID, OID3, N), operand(IID, OID4, _), 
-OID2 = OID1+1, OID3 = OID2+1, OID4 = OID3+1, 
-get_size_by_vreg(DEST_SIZE, BID, OV1), contains("%", N), 
-get_size_by_vreg(COPY_SIZE, BID, N),
+is_vulnerable_strncpy_call_instruction(IID) :- is_strncpy_call_instruction(IID), 
+block(FID, BID, _), instruction(BID, IID, _, _),
+get_first_operand(IID, OV1), get_third_operand(IID, N), 
+get_buffsize_by_vreg(DEST_SIZE, FID, OV1), contains("%", N), 
+get_buffsize_by_vreg(COPY_SIZE, FID, N),
 DEST_SIZE < COPY_SIZE.
 //hardcoded n
-is_vulnerable_strncpy_call_instruction(IID, BID) :- is_strncpy_call_instruction(IID), 
-operand(IID, OID1, OV1), operand(IID, OID2, _), operand(IID, OID3, N), operand(IID, OID4, _), 
-OID2 = OID1+1, OID3 = OID2+1, OID4 = OID3+1, 
-get_size_by_vreg(DEST_SIZE, BID, OV1), 
+is_vulnerable_strncpy_call_instruction(IID) :- is_strncpy_call_instruction(IID), 
+block(FID, BID, _), instruction(BID, IID, _, _),
+get_first_operand(IID, OV1), get_third_operand(IID, N),  
+get_buffsize_by_vreg(DEST_SIZE, FID, OV1), 
 !contains("%", N),
 DEST_SIZE < to_number(N).
 
 //fgets vulnerable to bo
-.decl is_vulnerable_fgets_call_instruction(instructionid: _instructionid, blockid: _blockid)
+.decl is_vulnerable_fgets_call_instruction(instructionid: _instructionid)
 //computed n
-is_vulnerable_fgets_call_instruction(IID, BID) :- is_fgets_call_instruction(IID), 
-operand(IID, OID1, OV1), operand(IID, OID2, N), operand(IID, OID3, _), operand(IID, OID4, _), 
-OID2 = OID1+1, OID3 = OID2+1, OID4 = OID3+1, 
-get_size_by_vreg(DEST_SIZE, BID, OV1), contains("%", N), 
-get_size_by_vreg(COPY_SIZE, BID, N),
+is_vulnerable_fgets_call_instruction(IID) :- is_fgets_call_instruction(IID), 
+block(FID, BID, _), instruction(BID, IID, _, _),
+get_first_operand(IID, OV1), get_second_operand(IID, N), 
+get_buffsize_by_vreg(DEST_SIZE, FID, OV1), contains("%", N), 
+get_buffsize_by_vreg(COPY_SIZE, FID, N),
 DEST_SIZE < COPY_SIZE.
 //hardcoded n
-is_vulnerable_fgets_call_instruction(IID, BID) :- is_fgets_call_instruction(IID), 
-operand(IID, OID1, OV1), operand(IID, OID2, N), operand(IID, OID3, _), operand(IID, OID4, _), 
-OID2 = OID1+1, OID3 = OID2+1, OID4 = OID3+1, 
-get_size_by_vreg(DEST_SIZE, BID, OV1), 
+is_vulnerable_fgets_call_instruction(IID) :- is_fgets_call_instruction(IID), 
+get_first_operand(IID, OV1), get_second_operand(IID, N),
+get_buffsize_by_vreg(DEST_SIZE, FID, OV1), 
 !contains("%", N),
 DEST_SIZE < to_number(N).
 
@@ -86,8 +91,8 @@ DEST_SIZE < to_number(N).
 .output print_vulnerable(delimiter=",")
 print_vulnerable(NAME, LAB, VREG, OUT) :- instruction(BID, IID, VREG, _), 
 get_function_for_call_instruction(OUT, IID, BID),
-is_vulnerable_strncpy_call_instruction(IID, BID), block(FID, BID, LAB), function(FID, NAME, _, _).
+is_vulnerable_strncpy_call_instruction(IID), block(FID, BID, LAB), function(FID, NAME, _, _).
 
 print_vulnerable(NAME, LAB, VREG, OUT) :- instruction(BID, IID, VREG, _),
 get_function_for_call_instruction(OUT, IID, BID), 
-is_vulnerable_fgets_call_instruction(IID, BID), block(FID, BID, LAB), function(FID, NAME, _, _).
+is_vulnerable_fgets_call_instruction(IID), block(FID, BID, LAB), function(FID, NAME, _, _).
