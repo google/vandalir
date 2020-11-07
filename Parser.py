@@ -61,7 +61,7 @@ class Parser:
                     # print(fullInstruction)
 
                     # get virtual Register number
-                    virtualRegister = "%0"
+                    virtualRegister = "%-1"
                     splitFuillInstruction = fullInstruction.split(" ")
                     if(splitFuillInstruction[0][0] == "%" and splitFuillInstruction[0][1:].isnumeric()):
                         virtualRegister = "%"+str(splitFuillInstruction[0][1:])
