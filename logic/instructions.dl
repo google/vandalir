@@ -97,7 +97,13 @@ is_malloc_call_instruction(IID) :- is_call_instruction(IID), get_last_operand(II
 
 
 //get size of alloca
-.decl get_size_of_alloca(size: number, instructionid: _instructionid)
-get_size_of_alloca(SIZE, IID) :- instruction(_, IID, _, OPC), OPC = "alloca",
+.decl get_size_of_alloca(instructionid: _instructionid, size: number)
+get_size_of_alloca(IID, SIZE) :- instruction(_, IID, _, OPC), OPC = "alloca",
+get_first_operand(IID, OV1),
+SIZE = to_number(OV1).
+
+//get size of malloc
+.decl get_size_of_malloc(instructionid: _instructionid, size: number)
+get_size_of_malloc(IID, SIZE) :- is_malloc_call_instruction(IID),
 get_first_operand(IID, OV1),
 SIZE = to_number(OV1).

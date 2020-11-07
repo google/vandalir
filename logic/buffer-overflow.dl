@@ -1,9 +1,9 @@
 //get size of buffer by virtual register
 .decl get_size_by_vreg(size: number, blockid: _blockid, _vreg: symbol)
-//.output get_size_by_vreg(delimiter=",")
+.output get_size_by_vreg(delimiter=",")
 //case alloca (end recursion)
 get_size_by_vreg(VAL, BID, VREG) :- instruction(BID, IID, VREG, OPC), OPC = "alloca",
-get_size_of_alloca(VAL, IID).
+get_size_of_alloca(IID, VAL).
 //case call strlen
 get_size_by_vreg(VAL, BID, VREG) :- instruction(BID, IID, VREG, OPC), OPC = "call",
 operand(IID, OID1, OV1), operand(IID, OID2, _), 
@@ -26,14 +26,17 @@ get_size_by_vreg(VAL, BID, VREG) :- instruction(BID, IID, VREG, OPC), OPC = "tru
 operand(IID, _, OV1),
 get_size_by_vreg(VAL, BID, OV1).
 //case load
-/*
-get_size_by_vreg(VAL, BID, VREG) :- instruction(BID, IID, VREG, OPC), OPC = "call",
-operand(IID, OID1, OV1), operand(IID, OID2, _), 
-OID2 = OID1+1, is_malloc_call_instruction(IID),
-VAL = to_number(OV1).
-*/
-//case load
-//points-to analysis
+get_size_by_vreg(VAL, BID, VREG) :- instruction(BID, IID, VREG, OPC), OPC = "load",
+get_first_operand(IID, TYPE), get_third_operand(IID, LOADREG),
+contains("*", TYPE), //load pointer
+points_to(START, END), START = [FID, START_LOC, _], 
+END = [FID, END_LOC, _], 
+START_LOC = LOADREG,
+get_size_by_vreg(VAL, BID, END_LOC).
+//case malloc
+get_size_by_vreg(VAL, BID, VREG) :- instruction(BID, IID, VREG, OPC), 
+is_malloc_call_instruction(IID), get_size_of_malloc(IID, SIZE),
+VAL = SIZE.
 
 //if call instruction give called function name
 .decl get_function_for_call_instruction(function: symbol, instructionid: _instructionid, blockid: _blockid)

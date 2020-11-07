@@ -9,7 +9,6 @@
 
 .decl memlocation(location: _memlocation)
 //stack allocations
-.output pointsto(delimiter=",")
 memlocation(MEM) :- instruction(BID, _, LOC, OPC), block(FID, BID, _),
 OPC = "alloca", TYP = "stack", memtype(TYP),
 MEM = [FID, LOC, TYP].
@@ -27,10 +26,10 @@ memtype(MEM) :- MEM = "stack".
 memtype(MEM) :- MEM = "heap".
 memtype(MEM) :- MEM = "global".
 
-.decl pointsto(start: _memlocation, end: _memlocation)
-.output pointsto(delimiter=",")
+.decl points_to(start: _memlocation, end: _memlocation)
+.output points_to(delimiter=",")
 //case store pointer
-pointsto(START, END) :- 
+points_to(START, END) :- 
 memlocation(START), memlocation(END),
 //START = [SFID, SLOC, STYP], END = [EFID, ELOC, ETYP], 
 block(FID, BID, _),
