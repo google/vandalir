@@ -95,6 +95,13 @@ is_fgets_call_instruction(IID) :- is_call_instruction(IID), get_last_operand(IID
 .decl is_malloc_call_instruction(instructionid: _instructionid)
 is_malloc_call_instruction(IID) :- is_call_instruction(IID), get_last_operand(IID, OV), OV = "malloc".
 
+//if call instruction give called function name
+.decl get_function_for_call_instruction(functionname: symbol, instructionid: _instructionid)
+//case not a call instruction
+get_function_for_call_instruction(OPC, IID) :- instruction(_, IID, _, OPC), OPC != "call".
+//a call instruction
+get_function_for_call_instruction(NAME, IID) :- instruction(_, IID, _, OPC), OPC = "call",
+MAXID = max OID : {operand(IID, OID, _) }, operand(IID, MAXID, NAME).
 
 //get size of alloca
 .decl get_size_of_alloca(instructionid: _instructionid, size: number)
@@ -107,3 +114,17 @@ SIZE = to_number(OV1).
 get_size_of_malloc(IID, SIZE) :- is_malloc_call_instruction(IID),
 get_first_operand(IID, OV1),
 SIZE = to_number(OV1).
+
+//is given operand a pointer
+
+.decl is_pointer(type: symbol)
+is_pointer(T) :- pointer_level(T, LVL), LVL > 0.
+
+
+//get level of pointer (or pointer to pointer, etc.)
+.decl pointer_level(type: symbol, level: number)
+.output pointer_level(delimiter=",")
+pointer_level(TYPE, LVL) :- type(TYPE), !contains("*", TYPE), LVL = 0.
+pointer_level(TYPE, LVL) :- type(TYPE), contains("*", TYPE), LVL=OLDLVL+1, 
+SUBSTR = substr(TYPE, 0, strlen(TYPE)-1),
+pointer_level(SUBSTR, OLDLVL).
