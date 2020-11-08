@@ -41,14 +41,11 @@ get_buffsize_by_vreg(VAL, FID, END_LOC).
 get_buffsize_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, IID, VREG, _), 
 is_malloc_call_instruction(IID), get_size_of_malloc(IID, SIZE),
 VAL = SIZE.
-
-//if call instruction give called function name
-.decl get_function_for_call_instruction(function: symbol, instructionid: _instructionid, blockid: _blockid)
-//case not a call instruction
-get_function_for_call_instruction(OPC, IID, BID) :- instruction(BID, IID, _, OPC), OPC != "call".
-//a call instruction
-get_function_for_call_instruction(NAME, IID, BID) :- instruction(BID, IID, _, OPC), OPC = "call",
-MAXID = max OID : {operand(IID, OID, _) }, operand(IID, MAXID, NAME).
+//case load (dereference pointer)
+get_buffsize_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, IID, VREG, OPC), 
+OPC = "load", get_first_operand(IID, LOADTYPE), !is_pointer(LOADTYPE), 
+get_val_of_load(IID, NEWVREG),
+get_buffsize_by_vreg(VAL, FID, NEWVREG).
 
 
 //strncpy vulnerable to bo
@@ -88,10 +85,10 @@ DEST_SIZE < to_number(N).
 //print results
 .decl print_vulnerable(functionname: symbol, label: symbol, virtualregister: symbol, opcode: symbol)
 .output print_vulnerable(delimiter=",")
-print_vulnerable(NAME, LAB, VREG, OUT) :- instruction(BID, IID, VREG, _), 
-get_function_for_call_instruction(OUT, IID, BID),
+print_vulnerable(NAME, LAB, VREG, FNAME) :- instruction(BID, IID, VREG, _), 
+get_function_for_call_instruction(FNAME, IID),
 is_vulnerable_strncpy_call_instruction(IID), block(FID, BID, LAB), function(FID, NAME, _, _).
 
-print_vulnerable(NAME, LAB, VREG, OUT) :- instruction(BID, IID, VREG, _),
-get_function_for_call_instruction(OUT, IID, BID), 
+print_vulnerable(NAME, LAB, VREG, FNAME) :- instruction(BID, IID, VREG, _),
+get_function_for_call_instruction(FNAME, IID), 
 is_vulnerable_fgets_call_instruction(IID), block(FID, BID, LAB), function(FID, NAME, _, _).
