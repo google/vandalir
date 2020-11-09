@@ -74,6 +74,17 @@ FOURTH = [_, _, OV, _].
 get_last_operand(IID, OV) :- init_operandList(OL),
 OL = [IID, OID, OV, NEXT], NEXT = nil, operand(IID, OID, OV).
 
+//number of operands
+.decl get_num_operands(instructionid: _instructionid, operandscount: number)
+get_num_operands(IID, COUNT) :- operand(IID, OID, _), !operand(IID, OID2, _), OID2 = OID-1, 
+get_num_operands_recursive(IID, OID, COUNT).
+
+//recursive
+.decl get_num_operands_recursive(instructionid: _instructionid, operandid: _operandid, operandscount: number)
+get_num_operands_recursive(IID, OID, COUNT) :- operand(IID, OID, _), !operand(IID, OID2, _), 
+OID2 = OID+1, COUNT=1.
+get_num_operands_recursive(IID, OID, COUNT) :- operand(IID, OID, _), operand(IID, OID2, _), 
+OID2 = OID+1, get_num_operands_recursive(IID, OID2, OLDCOUNT), COUNT = OLDCOUNT+1.
 
 //get only call instruction
 .decl is_call_instruction(instructionid: _instructionid)
@@ -112,7 +123,7 @@ SIZE = to_number(OV1).
 //get size of malloc
 .decl get_size_of_malloc(instructionid: _instructionid, size: number)
 get_size_of_malloc(IID, SIZE) :- is_malloc_call_instruction(IID),
-get_first_operand(IID, OV1),
+get_second_operand(IID, OV1),
 SIZE = to_number(OV1).
 
 //is given operand a pointer
