@@ -87,8 +87,8 @@ get_num_operands_recursive(IID, OID, COUNT) :- operand(IID, OID, _), operand(IID
 OID2 = OID+1, get_num_operands_recursive(IID, OID2, OLDCOUNT), COUNT = OLDCOUNT+1.
 
 //get only conversion instruction
-.decl is_conv_instruction(instructionid: _instructionid)
-is_conv_instruction(IID) :- instruction(_, IID, _, OPC), conversion_instruction(OPC).
+.decl is_conversion_instruction(instructionid: _instructionid)
+is_conversion_instruction(IID) :- instruction(_, IID, _, OPC), conversion_instruction(OPC).
 
 .decl conversion_instruction(opcode: symbol)
 conversion_instruction(OPC) :- OPC = "trunc".

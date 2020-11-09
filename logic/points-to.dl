@@ -90,7 +90,16 @@ memtype(ORIGINTYP), memtype(DESTTYP), memcategory(ORIGINCAT), memcategory(DESTCA
 pointer_level(DESTTYP, DESTTYP_PLVL),
 VALTYP_PLVL = DESTTYP_PLVL,
 FIRST = ORIGINMEM, SECOND = DESTMEM.
-
+//case conversion instruction
+memequals(FIRST, SECOND) :-
+memlocation(FIRST), memlocation(SECOND),
+FIRST = [FID, FIRSTLOC, FIRSTTYP, X], SECOND = [FID, SECONDLOC, SECONDTYP, Y],
+memtype(FIRSTTYP), memtype(SECONDTYP), memcategory(X), memcategory(Y),
+instruction(BID, IID, VREG, _), block(FID, BID, _), 
+is_conversion_instruction(IID),
+get_first_operand(IID, VREG_ORIG),
+FIRSTLOC = VREG,
+SECONDLOC = VREG_ORIG.
 
 
 .decl points_to(start: _memlocation, end: _memlocation)
