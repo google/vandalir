@@ -4,7 +4,8 @@
 
 //case alloca (end recursion)
 get_buffsize_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, IID, VREG, OPC), OPC = "alloca",
-get_size_of_alloca(IID, VAL).
+get_size_of_alloca(IID, VAL), get_second_operand(IID, ALLOCATYPE),
+!is_pointer(ALLOCATYPE).
 
 //case call strlen
 get_buffsize_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, IID, VREG, OPC), OPC = "call",
@@ -36,6 +37,7 @@ get_buffsize_by_vreg(VAL, FID, END_LOC).
 get_buffsize_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, IID, VREG, _), 
 is_malloc_call_instruction(IID), get_size_of_malloc(IID, SIZE),
 VAL = SIZE.
+
 //case load (dereference pointer)
 get_buffsize_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, IID, VREG, OPC), 
 OPC = "load", get_first_operand(IID, LOADTYPE), !is_pointer(LOADTYPE), 

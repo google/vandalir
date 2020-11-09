@@ -10,7 +10,7 @@
 
 
 .decl memtype(memtype: symbol)
-memtype(MEM) :- MEM = "unknown".
+memtype(MEM) :- MEM = "unknown". //unkown type
 memtype(MEM) :- type(MEM).
 
 
@@ -31,7 +31,7 @@ MEM = [FID, LOC, TYP, CAT].
 //heap allocations
 memlocation(MEM) :- instruction(BID, IID, LOC, _), block(FID, BID, _),
 is_malloc_call_instruction(IID), CAT = "heap", memcategory(CAT),
-TYP = "unknown",
+TYP = "i8*",
 MEM = [FID, LOC, TYP, CAT].
 //globals
 memlocation(MEM) :- global(LOC),
@@ -76,19 +76,18 @@ FIRSTTYP_PLVL > 0,
 VREG = FIRSTLOC, 
 get_third_operand(IID, LOADADDR), 
 LOADADDR = SECONDLOC.
-//case store pointer to pointer
+//case store a pointer
 memequals(FIRST, SECOND) :- 
 block(FID, BID, _),
 instruction(BID, IID, _, OPC), OPC = "store",
-get_first_operand(IID, VALTYP), 
-get_second_operand(IID, DEST), 
+get_second_operand(IID, DEST),//ORIGIN points to DEST (in this case ORIGIN == DEST)!
 get_fourth_operand(IID, ORIGIN),
-pointer_level(VALTYP, VALTYP_PLVL),
 ORIGINMEM = [FID, ORIGIN, ORIGINTYP, ORIGINCAT], DESTMEM = [FID, DEST, DESTTYP, DESTCAT],
 memlocation(ORIGINMEM), memlocation(DESTMEM),
 memtype(ORIGINTYP), memtype(DESTTYP), memcategory(ORIGINCAT), memcategory(DESTCAT),
+pointer_level(ORIGINTYP, ORIGINTYP_PLVL),
 pointer_level(DESTTYP, DESTTYP_PLVL),
-VALTYP_PLVL = DESTTYP_PLVL,
+ORIGINTYP_PLVL = DESTTYP_PLVL,
 FIRST = ORIGINMEM, SECOND = DESTMEM.
 //case conversion instruction
 memequals(FIRST, SECOND) :-
@@ -115,15 +114,14 @@ memequals(START, ALTSTART), memequals(END, ALTEND), points_to(ALTSTART, ALTEND).
 points_to(START, END) :- 
 block(FID, BID, _),
 instruction(BID, IID, _, OPC), OPC = "store",
-get_first_operand(IID, VALTYP), 
-get_second_operand(IID, DEST), 
+get_second_operand(IID, DEST),//ORIGIN points to DEST 
 get_fourth_operand(IID, ORIGIN),
-pointer_level(VALTYP, VALTYP_PLVL),
+pointer_level(ORIGINTYP, ORIGINTYP_PLVL),
 ORIGINMEM = [FID, ORIGIN, ORIGINTYP, ORIGINCAT], DESTMEM = [FID, DEST, DESTTYP, DESTCAT],
 memlocation(ORIGINMEM), memlocation(DESTMEM),
 memtype(ORIGINTYP), memtype(DESTTYP), memcategory(ORIGINCAT), memcategory(DESTCAT),
 pointer_level(DESTTYP, DESTTYP_PLVL),
-DESTTYP_PLVL < VALTYP_PLVL,
+DESTTYP_PLVL < ORIGINTYP_PLVL,
 DESTTYP != "unknown", //TODO: fix parser to include types
 START = ORIGINMEM, END = DESTMEM.
 //case load 
