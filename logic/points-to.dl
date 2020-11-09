@@ -22,7 +22,7 @@ memcategory(MEM) :- MEM = "vreg".
 
 
 .decl memlocation(location: _memlocation)
-.output memlocation(delimiter=",")
+//.output memlocation(delimiter=",")
 //stack allocations
 memlocation(MEM) :- instruction(BID, IID, LOC, OPC), block(FID, BID, _),
 OPC = "alloca", CAT = "stack", memcategory(CAT), 
@@ -30,7 +30,7 @@ get_second_operand(IID, TYP),
 MEM = [FID, LOC, TYP, CAT].
 //heap allocations
 memlocation(MEM) :- instruction(BID, IID, LOC, _), block(FID, BID, _),
-is_malloc_call_instruction(IID), CAT = "heap", memcategory(CAT),
+is_heap_allocation_call(IID), CAT = "heap", memcategory(CAT),
 TYP = "i8*",
 MEM = [FID, LOC, TYP, CAT].
 //globals
@@ -40,7 +40,7 @@ TYP = "unknown", //TODO: add parsing for globals
 MEM = [FID, LOC, TYP, CAT].
 //vreg no load
 memlocation(MEM) :- instruction(BID, IID, VREG, OPC), block(FID, BID, _),
-OPC != "load", OPC != "alloca", !is_malloc_call_instruction(IID),
+OPC != "load", OPC != "alloca", !is_heap_allocation_call(IID),
 VREG != "%-1",
 LOC = VREG,
 CAT = "vreg", memcategory(CAT),
@@ -57,7 +57,7 @@ MEM = [FID, LOC, TYP, CAT].
 
 
 .decl memequals(first: _memlocation, second: _memlocation)
-.output memequals(delimiter=",")
+//.output memequals(delimiter=",")
 //case switch first and second
 memequals(FIRST, SECOND) :- memlocation(FIRST), memlocation(SECOND), memequals(SECOND, FIRST).
 //case points-to
@@ -102,7 +102,7 @@ SECONDLOC = VREG_ORIG.
 
 
 .decl points_to(start: _memlocation, end: _memlocation)
-.output points_to(delimiter=",")
+//.output points_to(delimiter=",")
 //cases memequals
 points_to(START, END) :- memlocation(START), memlocation(END), 
 memequals(START, ALTSTART), points_to(ALTSTART, END).

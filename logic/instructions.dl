@@ -121,9 +121,17 @@ is_strlen_call_instruction(IID) :- is_call_instruction(IID), get_last_operand(II
 .decl is_fgets_call_instruction(instructionid: _instructionid)
 is_fgets_call_instruction(IID) :- is_call_instruction(IID), get_last_operand(IID, OV), OV = "fgets".
 
-//get only call strlen instructions
+//get only call malloc instructions
 .decl is_malloc_call_instruction(instructionid: _instructionid)
 is_malloc_call_instruction(IID) :- is_call_instruction(IID), get_last_operand(IID, OV), OV = "malloc".
+
+//get only call calloc instructions
+.decl is_calloc_call_instruction(instructionid: _instructionid)
+is_calloc_call_instruction(IID) :- is_call_instruction(IID), get_last_operand(IID, OV), OV = "calloc".
+
+//get only call realloc instructions
+.decl is_realloc_call_instruction(instructionid: _instructionid)
+is_realloc_call_instruction(IID) :- is_call_instruction(IID), get_last_operand(IID, OV), OV = "realloc".
 
 //if call instruction give called function name
 .decl get_function_for_call_instruction(functionname: symbol, instructionid: _instructionid)
@@ -139,14 +147,46 @@ get_size_of_alloca(IID, SIZE) :- instruction(_, IID, _, OPC), OPC = "alloca",
 get_first_operand(IID, OV1),
 SIZE = to_number(OV1).
 
+
+//heap
+
+//get only heap allocation calls
+.decl is_heap_allocation_call(instructionid: _instructionid)
+is_heap_allocation_call(IID) :- 
+is_call_instruction(IID), get_function_for_call_instruction(FNAME, IID),
+heap_allocation_instruction(FNAME).
+
+.decl heap_allocation_instruction(instruction: symbol)
+heap_allocation_instruction(INS) :- INS = "malloc".
+heap_allocation_instruction(INS) :- INS = "calloc".
+heap_allocation_instruction(INS) :- INS = "realloc".
+
+//get size of heap allocation
+.decl get_size_of_heap_alloc(instructionid: _instructionid, size: number)
+get_size_of_heap_alloc(IID, SIZE) :- is_heap_allocation_call(IID), is_malloc_call_instruction(IID), get_size_of_malloc(IID, SIZE).
+get_size_of_heap_alloc(IID, SIZE) :- is_heap_allocation_call(IID), is_calloc_call_instruction(IID), get_size_of_calloc(IID, SIZE).
+get_size_of_heap_alloc(IID, SIZE) :- is_heap_allocation_call(IID), is_realloc_call_instruction(IID), get_size_of_realloc(IID, SIZE).
+
 //get size of malloc
 .decl get_size_of_malloc(instructionid: _instructionid, size: number)
 get_size_of_malloc(IID, SIZE) :- is_malloc_call_instruction(IID),
 get_first_operand(IID, OV1),
 SIZE = to_number(OV1).
 
-//operand instructions
+//get size of calloc
+.decl get_size_of_calloc(instructionid: _instructionid, size: number)
+get_size_of_calloc(IID, SIZE) :- is_calloc_call_instruction(IID),
+get_first_operand(IID, OV1), get_second_operand(IID, OV2),
+SIZE = to_number(OV1)*to_number(OV2).
 
+//get size of realloc
+.decl get_size_of_realloc(instructionid: _instructionid, size: number)
+get_size_of_realloc(IID, SIZE) :- is_realloc_call_instruction(IID),
+get_second_operand(IID, OV2),
+SIZE = to_number(OV2).
+
+
+//operand instructions
 
 //is given operand a pointer
 .decl is_pointer(type: symbol)
@@ -155,7 +195,7 @@ is_pointer(T) :- pointer_level(T, LVL), LVL > 0.
 
 //get level of pointer (or pointer to pointer, etc.)
 .decl pointer_level(type: symbol, level: number)
-.output pointer_level(delimiter=",")
+//.output pointer_level(delimiter=",")
 pointer_level(TYPE, LVL) :- type(TYPE), !contains("*", TYPE), LVL = 0.
 pointer_level(TYPE, LVL) :- type(TYPE), contains("*", TYPE), LVL=OLDLVL+1, 
 SUBSTR = substr(TYPE, 0, strlen(TYPE)-1),
