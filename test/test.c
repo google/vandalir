@@ -55,15 +55,17 @@ int main() {
     char* revname;
     char** inputpointer;
 
-	input = calloc(BUFFSIZE+1, sizeof(char));
+	input = calloc(BUFFSIZE, sizeof(char));
 
-    input = realloc(input, BUFFSIZE*sizeof(char));
+    //without the following line ==> only overflow in strncpy detected
+    input = realloc(input, (BUFFSIZE-1)*sizeof(char));
 
     inputpointer = &input;
 
 	printf("Enter your name:\n");
-    //of by one
-	fgets(*inputpointer, sizeof(char)*(BUFFSIZE+1), stdin);
+
+    //off by one
+	fgets(*inputpointer, sizeof(char)*BUFFSIZE, stdin);
 
     strncpy(name, input, strlen(input)-1+2);
 

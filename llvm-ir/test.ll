@@ -172,17 +172,17 @@ define i32 @main() #0 {
   %4 = alloca i8*, align 8
   %5 = alloca i8**, align 8
   store i32 0, i32* %1, align 4
-  %6 = call noalias i8* @calloc(i64 9, i64 1) #5
+  %6 = call noalias i8* @calloc(i64 8, i64 1) #5
   store i8* %6, i8** %3, align 8
   %7 = load i8*, i8** %3, align 8
-  %8 = call i8* @realloc(i8* %7, i64 8) #5
+  %8 = call i8* @realloc(i8* %7, i64 7) #5
   store i8* %8, i8** %3, align 8
   store i8** %3, i8*** %5, align 8
   %9 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([18 x i8], [18 x i8]* @.str.9, i32 0, i32 0))
   %10 = load i8**, i8*** %5, align 8
   %11 = load i8*, i8** %10, align 8
   %12 = load %struct._IO_FILE*, %struct._IO_FILE** @stdin, align 8
-  %13 = call i8* @fgets(i8* %11, i32 9, %struct._IO_FILE* %12)
+  %13 = call i8* @fgets(i8* %11, i32 8, %struct._IO_FILE* %12)
   %14 = getelementptr inbounds [8 x i8], [8 x i8]* %2, i32 0, i32 0
   %15 = load i8*, i8** %3, align 8
   %16 = load i8*, i8** %3, align 8
