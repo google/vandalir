@@ -86,6 +86,25 @@ OID2 = OID+1, COUNT=1.
 get_num_operands_recursive(IID, OID, COUNT) :- operand(IID, OID, _), operand(IID, OID2, _), 
 OID2 = OID+1, get_num_operands_recursive(IID, OID2, OLDCOUNT), COUNT = OLDCOUNT+1.
 
+//get only conversion instruction
+.decl is_conv_instruction(instructionid: _instructionid)
+is_conv_instruction(IID) :- instruction(_, IID, _, OPC), conversion_instruction(OPC).
+
+.decl conversion_instruction(opcode: symbol)
+conversion_instruction(OPC) :- OPC = "trunc".
+conversion_instruction(OPC) :- OPC = "zext".
+conversion_instruction(OPC) :- OPC = "sext".
+conversion_instruction(OPC) :- OPC = "fptrunc".
+conversion_instruction(OPC) :- OPC = "fpext".
+conversion_instruction(OPC) :- OPC = "fptoui".
+conversion_instruction(OPC) :- OPC = "fptosi".
+conversion_instruction(OPC) :- OPC = "uitofp".
+conversion_instruction(OPC) :- OPC = "sitofp".
+conversion_instruction(OPC) :- OPC = "ptrtoint".
+conversion_instruction(OPC) :- OPC = "inttoptr".
+conversion_instruction(OPC) :- OPC = "bitcast".
+conversion_instruction(OPC) :- OPC = "addrspacecast".
+
 //get only call instruction
 .decl is_call_instruction(instructionid: _instructionid)
 is_call_instruction(IID) :- instruction(_, IID, _, OPC), OPC = "call".
@@ -123,11 +142,13 @@ SIZE = to_number(OV1).
 //get size of malloc
 .decl get_size_of_malloc(instructionid: _instructionid, size: number)
 get_size_of_malloc(IID, SIZE) :- is_malloc_call_instruction(IID),
-get_second_operand(IID, OV1),
+get_first_operand(IID, OV1),
 SIZE = to_number(OV1).
 
-//is given operand a pointer
+//operand instructions
 
+
+//is given operand a pointer
 .decl is_pointer(type: symbol)
 is_pointer(T) :- pointer_level(T, LVL), LVL > 0.
 

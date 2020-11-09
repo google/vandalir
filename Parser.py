@@ -5,8 +5,9 @@ import sys
 
 FACTS_DIR = "facts"
 
-CONV_INSTRUCTIONS = ["trunc", "zext", "sext", "fptrunc", "fpext", "fptoi", "fptosi",
+CONV_INSTRUCTIONS = ["trunc", "zext", "sext", "fptrunc", "fpext", "fptoui", "fptosi",
                      "uitofp", "sitofp", "ptrtoint", "inttoptr", "bitcast", "addrspacecast"]
+
 
 class Parser:
 
@@ -205,7 +206,10 @@ class Parser:
             # print(splitInstructions[0])
             # print(splitInstructions[1])
             if(splitInstructions[0][0] == "i" and splitInstructions[1]):  # remove integer type
-                operand = [splitInstructions[0].strip(), splitInstructions[1].strip()]
+                if(opcode == "call"):  # do not parse types for call instructions (as they are given by function def)
+                    operand = [splitInstructions[1].strip()]
+                else:
+                    operand = [splitInstructions[0].strip(), splitInstructions[1].strip()]
                 # print("list created at "+opcode)
                 # print(operand)
             elif(splitInstructions[0][0] == "%" and splitInstructions[0][1:].isnumeric()):  # return virtual register

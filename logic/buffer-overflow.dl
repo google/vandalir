@@ -65,7 +65,6 @@ DEST_SIZE < to_number(N).
 //computed n
 is_vulnerable_fgets_call_instruction(IID) :- is_fgets_call_instruction(IID), 
 block(FID, BID, _), instruction(BID, IID, _, _),
-get_num_operands(IID, OPCOUNT), OPCOUNT = 4,
 get_first_operand(IID, OV1), get_second_operand(IID, N), 
 get_buffsize_by_vreg(DEST_SIZE, FID, OV1), contains("%", N), 
 get_buffsize_by_vreg(COPY_SIZE, FID, N),
@@ -73,7 +72,7 @@ DEST_SIZE < COPY_SIZE.
 //hardcoded n
 is_vulnerable_fgets_call_instruction(IID) :- is_fgets_call_instruction(IID),
 block(FID, BID, _), instruction(BID, IID, _, _), 
-get_first_operand(IID, OV1), get_third_operand(IID, N),
+get_first_operand(IID, OV1), get_second_operand(IID, N),
 get_buffsize_by_vreg(DEST_SIZE, FID, OV1), 
 !contains("%", N),
 DEST_SIZE < to_number(N).
