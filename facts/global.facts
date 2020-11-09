@@ -16,5 +16,7 @@
 @printf
 @strlen
 @main
-@malloc
+@calloc
+@realloc
 @fgets
+@strncpy

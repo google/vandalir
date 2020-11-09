@@ -1,1 +1,4 @@
 /.project
+*.o
+/test/test
+/llvm-ir/test_annotated.ll
