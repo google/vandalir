@@ -5,6 +5,8 @@ import sys
 
 FACTS_DIR = "facts"
 
+LLVM_VER = "10"
+
 CONV_INSTRUCTIONS = ["trunc", "zext", "sext", "fptrunc", "fpext", "fptoui", "fptosi",
                      "uitofp", "sitofp", "ptrtoint", "inttoptr", "bitcast", "addrspacecast"]
 
@@ -135,8 +137,8 @@ class Parser:
         instr = instr.split(" ")
         #print("phi:"+str(fullInstruction))
 
-        if(len(instr) != 9):
-            print("ERROR: phi instruction could not be parsed. Num of parts != 9.")
+        if(len(instr) < 7):
+            print("ERROR: phi instruction could not be parsed. Num of parts < 7.")
             print(instr)
             sys.exit()
 
@@ -238,7 +240,7 @@ class Parser:
                     operand = [splitInstructions[0].strip(), splitInstructions[1].strip()]
                 # print("list created at "+opcode)
                 # print(operand)
-            elif(splitInstructions[0][0] == "%" and splitInstructions[0][1:].isnumeric()):  # return virtual register
+            elif(splitInstructions[0][0] == "%"):  # return virtual register
                 operand = splitInstructions[0]
             elif(splitInstructions[0][0] == "@"):  # return global variable
                 operand = splitInstructions[0]
@@ -284,9 +286,13 @@ class Parser:
                 code = file.read()
                 module = parse_assembly(code)
         elif(inputFileExtension == '.bc'):
-            with open(self.inputFile, 'rb') as file:
+            os.system("llvm-dis-"+LLVM_VER+" "+self.inputFile)
+            print("LLVM bitecode file was disassembled to .ll file.")
+            self.inputFile = self.inputFile[:-3]+".ll"
+
+            with open(self.inputFile, 'r') as file:
                 code = file.read()
-                module = parse_bitcode(code)
+                module = parse_assembly(code)
         else:
             print("wrong file type given. Only LLVM-IR .ll and .bc files are allowed.")
             print(inputFileExtension)
