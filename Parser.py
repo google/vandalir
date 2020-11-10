@@ -82,6 +82,9 @@ class Parser:
                     elif(str(instruction.opcode) == "load"):  # load instruction
                         self.parseLoadInstruction(instruction, instructionid, operandid)
                         operandid += 3
+                    elif(str(instruction.opcode) == "phi"):  # load instruction
+                        self.parsePhiInstruction(fullInstruction, instructionid, operandid)
+                        operandid += 5
                     elif(str(instruction.opcode) in CONV_INSTRUCTIONS):  # conversion instruction
                         operandid = self.parseConversionInstructions(instruction, instructionid, operandid)
                     elif(str(instruction.opcode) == "br"):  # br instruction
@@ -126,6 +129,29 @@ class Parser:
         self.output(operand_str)
         operandid += 1
         return operandid
+
+    def parsePhiInstruction(self, fullInstruction, instructionid, operandid):
+        instr = fullInstruction.split("phi ")[1]
+        instr = instr.split(" ")
+        #print("phi:"+str(fullInstruction))
+
+        if(len(instr) != 9):
+            print("ERROR: phi instruction could not be parsed. Num of parts != 9.")
+            print(instr)
+            sys.exit()
+
+        datatype = instr[0].strip()
+
+        firstVal = instr[2].strip()
+        firstCondBlock = instr[3].strip()[1:]+":"
+        secondVal = instr[6].strip()
+        secondCondBlock = instr[7].strip()[1:]+":"
+
+        operands = [datatype, firstVal, firstCondBlock, secondVal, secondCondBlock]
+        for operand in operands:
+            operand_str = "operand("+str(instructionid)+";"+str(operandid)+";\""+operand+"\")"
+            self.output(operand_str)
+            operandid += 1
 
     def parseAllocaInstruction(self, fullInstruction, instructionid, operandid):
         if("[" in fullInstruction and "]" in fullInstruction):  # allocate arrays
