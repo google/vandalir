@@ -1,7 +1,9 @@
 from llvmlite.binding import parse_assembly, parse_bitcode
+from itertools import chain
 import argparse
 import os
 import sys
+import re
 
 FACTS_DIR = "facts"
 
@@ -112,6 +114,8 @@ class Parser:
 
             functionid += 1
 
+        print("Parsing successful.")
+
     def parseConversionInstructions(self, instruction, instructionid, operandid):
         for operand in instruction.operands:
             processedOperands = self.preprocessOperand(str(instruction.opcode), operand)
@@ -125,7 +129,7 @@ class Parser:
         splitInstruction = fullInstruction.split(" to ")
         if(len(splitInstruction) != 2):
             print("ERROR: conversion instruction has != 1 'to'!")
-            sys.exit()
+            sys.exit(1)
         operand = splitInstruction[1].strip()
         operand_str = "operand("+str(instructionid)+";"+str(operandid)+";\""+operand+"\")"
         self.output(operand_str)
@@ -140,7 +144,7 @@ class Parser:
         if(len(instr) < 7):
             print("ERROR: phi instruction could not be parsed. Num of parts < 7.")
             print(instr)
-            sys.exit()
+            sys.exit(1)
 
         datatype = instr[0].strip()
 
@@ -176,11 +180,31 @@ class Parser:
 
     def parseLoadInstruction(self, instruction, instructionid, operandid):
         operands = [None]*3
-        ops = str(instruction).strip().replace("load ", "").split(", ")
+        ops = str(instruction).strip()
+        ops = ops.replace("load ", "")
+
+        # remove (i8, i8)* kind of datatypes
+        while("(" in ops and ")" in ops):
+            LocOpenBracket = ops.find("(")
+            LocCloseBracket = ops.find(")")
+            before = ops[:LocOpenBracket]
+            after = ops[LocCloseBracket+1:]
+            while(after[0] == "*" or after[0] == " "):
+                after = after[1:]
+            #print("b:"+before)
+            #print("a:"+after)
+            #sys.exit(1)
+            ops = before+after
+
+
+        ops = ops.split(", ")
         operands[0] = ops[0].strip()
         if(" = " in operands[0]):
             operands[0] = operands[0].split(" = ")[1].strip()
         operand2_split = ops[1].strip().split(" ")
+        #print(ops)
+        #print(operand2_split)
+
         operands[1] = operand2_split[0]
         operands[2] = operand2_split[1]
 
