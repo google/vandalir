@@ -1,81 +1,43 @@
-.type _instruction = [
-	blockid: _blockid, 
-	instructionid: _instructionid, 
-	virtualregister: _vreg,
-	opcode: symbol,
-	operandlist: _operandNode
-]
-
-.type _operandNode = [
-	instructionid: _instructionid,
-	operandid: _operandid,
-	operandvalue: symbol,
-	next: _operandNode
-]
-
-
-//init data structures
-
-.decl init_instruction(instruction: _instruction)
-//case more than one operand
-init_instruction(INS) :- 
-INS = [BID, IID, VREG, OPC, OL],
-instruction(BID, IID, VREG, OPC),
-init_operandList(OL),
-OL = [IID, OID, OV, NEXT], OID2 = OID-1, !operand(IID, OID2, _), operand(IID, OID, OV), init_operandList(NEXT).
-//case just one operand
-init_instruction(INS) :- 
-INS = [BID, IID, VREG, OPC, OL],
-instruction(BID, IID, VREG, OPC),
-init_operandList(OL),
-OL = [IID, OID, OV, nil], OID2 = OID-1, !operand(IID, OID2, _), operand(IID, OID, OV).
-
-.decl init_operandList(operandNode: _operandNode)
-//case last operand
-init_operandList(OPN) :- operand(IID, OID, OV),
-OPN = [IID, OID, OV, nil], !operand(IID, OID+1, _).
-//case not last operand, !nil
-init_operandList(OPN) :- operand(IID, OID, OV), OID2 = OID+1, operand(IID, OID2, OV2),
-OPN = [IID, OID, OV, NEXT], init_operandList(NEXT), NEXT = [IID, OID2, OV2, NEXTNEXT], init_operandList(NEXTNEXT).
-//case not last operand, nil
-init_operandList(OPN) :- operand(IID, OID, OV), OID2 = OID+1, operand(IID, OID2, OV2),
-OPN = [IID, OID, OV, NEXT], init_operandList(NEXT), NEXT = [IID, OID2, OV2, nil].
-
-
 //operands access
 
 .decl get_first_operand(instructionid: _instructionid, operandvalue: symbol)
-get_first_operand(IID, OV) :- init_instruction(INS), 
-INS = [_, IID, _, _, OL],
-OL = [_, _, OV, _].
+//.output get_first_operand(delimeter=",")
+get_first_operand(IID, VAL) :- 
+operand(IID, OID1, OV1), 
+!operand(IID, OID1-1, _), VAL = OV1.
 
 .decl get_second_operand(instructionid: _instructionid, operandvalue: symbol)
-get_second_operand(IID, OV) :- init_instruction(INS), 
-INS = [_, IID, _, _, OL],
-OL = [_, _, _, SECOND],
-SECOND = [_, _, OV, _].
+//.output get_second_operand(delimeter=",")
+get_second_operand(IID, VAL) :- 
+operand(IID, OID1, _), operand(IID, OID2, OV2),
+!operand(IID, OID1-1, _), OID2=OID1+1, VAL = OV2.
 
 .decl get_third_operand(instructionid: _instructionid, operandvalue: symbol)
-get_third_operand(IID, OV) :- init_instruction(INS), 
-INS = [_, IID, _, _, OL],
-OL = [_, _, _, SECOND],
-SECOND = [_, _, _, THIRD],
-THIRD = [_, _, OV, _].
+//.output get_third_operand(delimeter=",")
+get_third_operand(IID, VAL) :- 
+operand(IID, OID1, _), operand(IID, OID2, _), operand(IID, OID3, OV3),
+!operand(IID, OID1-1, _), OID2=OID1+1, OID3=OID2+1, VAL = OV3.
 
 .decl get_fourth_operand(instructionid: _instructionid, operandvalue: symbol)
-get_fourth_operand(IID, OV) :- init_instruction(INS), 
-INS = [_, IID, _, _, OL],
-OL = [_, _, _, SECOND],
-SECOND = [_, _, _, THIRD],
-THIRD = [_, _, _, FOURTH],
-FOURTH = [_, _, OV, _].
+//.output get_fourth_operand(delimeter=",")
+get_fourth_operand(IID, VAL) :- 
+operand(IID, OID1, _), operand(IID, OID2, _), operand(IID, OID3, _), operand(IID, OID4, OV4),
+!operand(IID, OID1-1, _), OID2=OID1+1, OID3=OID2+1, OID4=OID3+1, VAL = OV4.
+
+.decl get_fifth_operand(instructionid: _instructionid, operandvalue: symbol)
+//.output get_fifth_operand(delimeter=",")
+get_fifth_operand(IID, VAL) :- 
+operand(IID, OID1, _), operand(IID, OID2, _), operand(IID, OID3, _), operand(IID, OID4, _), operand(IID, OID5, OV5),
+!operand(IID, OID1-1, _), OID2=OID1+1, OID3=OID2+1, OID4=OID3+1, OID5=OID4+1, VAL = OV5.
+
 
 .decl get_last_operand(instructionid: _instructionid, operandvalue: symbol)
-get_last_operand(IID, OV) :- init_operandList(OL),
-OL = [IID, OID, OV, NEXT], NEXT = nil, operand(IID, OID, OV).
+get_last_operand(IID, OV) :- 
+operand(IID, OID, OV), !operand(IID, OID+1, _).
 
 //number of operands
 .decl get_num_operands(instructionid: _instructionid, operandscount: number)
+//.output get_num_operands(delimeter=",")
 get_num_operands(IID, COUNT) :- operand(IID, OID, _), !operand(IID, OID2, _), OID2 = OID-1, 
 get_num_operands_recursive(IID, OID, COUNT).
 
@@ -167,31 +129,97 @@ get_size_of_heap_alloc(IID, SIZE) :- is_heap_allocation_call(IID), is_malloc_cal
 get_size_of_heap_alloc(IID, SIZE) :- is_heap_allocation_call(IID), is_calloc_call_instruction(IID), get_size_of_calloc(IID, SIZE).
 get_size_of_heap_alloc(IID, SIZE) :- is_heap_allocation_call(IID), is_realloc_call_instruction(IID), get_size_of_realloc(IID, SIZE).
 
+
 //get size of malloc
 .decl get_size_of_malloc(instructionid: _instructionid, size: number)
+//case hard coded size
 get_size_of_malloc(IID, SIZE) :- is_malloc_call_instruction(IID),
 get_first_operand(IID, OV1),
+is_numeric(OV1),
 SIZE = to_number(OV1).
+//case get size by vreg
+get_size_of_malloc(IID, SIZE) :- is_malloc_call_instruction(IID),
+get_first_operand(IID, OV1),
+block(FID, BID, _), instruction(BID, IID, _, _),
+is_vreg(OV1),
+get_int_by_vreg(SIZE, FID, OV1).
 
 //get size of calloc
+//case both hardcoaded
 .decl get_size_of_calloc(instructionid: _instructionid, size: number)
 get_size_of_calloc(IID, SIZE) :- is_calloc_call_instruction(IID),
 get_first_operand(IID, OV1), get_second_operand(IID, OV2),
+is_numeric(OV1), is_numeric(OV2),
 SIZE = to_number(OV1)*to_number(OV2).
+//case vreg, hardcoded
+get_size_of_calloc(IID, SIZE) :- is_calloc_call_instruction(IID),
+get_first_operand(IID, OV1), get_second_operand(IID, OV2),
+block(FID, BID, _), instruction(BID, IID, _, _),
+get_int_by_vreg(SIZE1, FID, OV1),
+is_vreg(OV1), is_numeric(OV2),
+SIZE2 = to_number(OV2), 
+SIZE = SIZE1*SIZE2.
+//case hardcoded, vreg
+get_size_of_calloc(IID, SIZE) :- is_calloc_call_instruction(IID),
+get_first_operand(IID, OV1), get_second_operand(IID, OV2),
+block(FID, BID, _), instruction(BID, IID, _, _),
+get_int_by_vreg(SIZE2, FID, OV2),
+is_numeric(OV1), is_vreg(OV2),
+SIZE1 = to_number(OV1),
+SIZE = SIZE1*SIZE2.
+//case both hardcoded
+get_size_of_calloc(IID, SIZE) :- is_calloc_call_instruction(IID),
+get_first_operand(IID, OV1), get_second_operand(IID, OV2),
+block(FID, BID, _), instruction(BID, IID, _, _),
+get_int_by_vreg(SIZE1, FID, OV1),
+get_int_by_vreg(SIZE2, FID, OV2),
+is_vreg(OV1), is_vreg(OV2),
+SIZE = SIZE1*SIZE2.
 
 //get size of realloc
+//case hard coded size
 .decl get_size_of_realloc(instructionid: _instructionid, size: number)
 get_size_of_realloc(IID, SIZE) :- is_realloc_call_instruction(IID),
-get_second_operand(IID, OV2),
+get_second_operand(IID, OV2), 
+is_numeric(OV2),
 SIZE = to_number(OV2).
+//case get size by vreg
+get_size_of_realloc(IID, SIZE) :- is_realloc_call_instruction(IID),
+get_second_operand(IID, OV2), 
+is_vreg(OV2),
+block(FID, BID, _), instruction(BID, IID, _, _),
+get_int_by_vreg(SIZE, FID, OV2).
+
 
 
 //operand instructions
+
+//is given operand a vreg
+.decl is_vreg(type: symbol)
+is_vreg(T) :- contains("%", T), opval(T),
+SUBSTR = substr(T, 1, strlen(T)), !contains("%", SUBSTR).
 
 //is given operand a pointer
 .decl is_pointer(type: symbol)
 is_pointer(T) :- pointer_level(T, LVL), LVL > 0.
 
+.decl is_numeric(type: symbol)
+is_numeric(VAL) :- opval(VAL), 
+!contains(":", VAL), !contains("%", VAL), !contains("[", VAL), !contains("]", VAL),
+!contains("(", VAL), !contains(")", VAL), !contains("'", VAL), !contains(" ", VAL),
+!contains("a", VAL), !contains("b", VAL), !contains("c", VAL), !contains("d", VAL), 
+!contains("e", VAL), !contains("f", VAL), !contains("g", VAL), !contains("h", VAL), 
+!contains("i", VAL), !contains("j", VAL), !contains("k", VAL), !contains("l", VAL), 
+!contains("m", VAL), !contains("n", VAL), !contains("o", VAL), !contains("p", VAL), 
+!contains("q", VAL), !contains("r", VAL), !contains("s", VAL), !contains("t", VAL), 
+!contains("u", VAL), !contains("v", VAL), !contains("w", VAL), !contains("x", VAL), 
+!contains("y", VAL), !contains("z", VAL), !contains("A", VAL), !contains("B", VAL), 
+!contains("C", VAL), !contains("D", VAL), !contains("E", VAL), !contains("F", VAL), 
+!contains("G", VAL), !contains("H", VAL), !contains("I", VAL), !contains("J", VAL), 
+!contains("K", VAL), !contains("L", VAL), !contains("M", VAL), !contains("N", VAL), 
+!contains("O", VAL), !contains("P", VAL), !contains("Q", VAL), !contains("R", VAL), 
+!contains("S", VAL), !contains("T", VAL), !contains("U", VAL), !contains("V", VAL), 
+!contains("W", VAL), !contains("X", VAL), !contains("Y", VAL), !contains("Z", VAL). 
 
 //get level of pointer (or pointer to pointer, etc.)
 .decl pointer_level(type: symbol, level: number)

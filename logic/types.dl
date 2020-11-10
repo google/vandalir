@@ -11,6 +11,9 @@
 .decl type(type: symbol)
 type(T) :- T = OV, operand(_,_,OV).
 
+.decl opval(type: symbol)
+opval(T) :- T = OV, operand(_,_,OV).
+
 //inputs
 .decl function(functionid: _functionid, functionname: symbol, functiontype: symbol, returntype: symbol)
 .input function(delimiter=";")

@@ -1,48 +1,56 @@
 //get size of buffer by virtual register
 .decl get_buffsize_by_vreg(size: number, functionid: _functionid, _vreg: symbol)
 //.output get_buffsize_by_vreg(delimiter=",")
-
 //case alloca (end recursion)
 get_buffsize_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, IID, VREG, OPC), OPC = "alloca",
 get_size_of_alloca(IID, VAL), get_second_operand(IID, ALLOCATYPE),
 !is_pointer(ALLOCATYPE).
 
-//case call strlen
-get_buffsize_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, IID, VREG, OPC), OPC = "call",
-get_first_operand(IID, OV1), is_strlen_call_instruction(IID),
-get_buffsize_by_vreg(VAL, FID, OV1).
-
 //case getelementptr
 get_buffsize_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, IID, VREG, OPC), OPC = "getelementptr", 
 get_first_operand(IID, OV1), get_buffsize_by_vreg(VAL, FID, OV1).
 
-//case add
-get_buffsize_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, IID, VREG, OPC), OPC = "add",
-get_first_operand(IID, OV1), get_third_operand(IID, OV2), 
-VAL=TMP+to_number(OV2), get_buffsize_by_vreg(TMP, FID, OV1).
-
-//case sub
-get_buffsize_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, IID, VREG, OPC), OPC = "sub",
-get_first_operand(IID, OV1), get_third_operand(IID, OV2), 
-VAL=TMP-to_number(OV2), get_buffsize_by_vreg(TMP, FID, OV1).
-
 //case memequals
 get_buffsize_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, _, VREG, _),
 memequals(START, END), START = [FID, START_LOC, _, _], 
-END = [FID, END_LOC, _, _], 
+END = [END_FID, END_LOC, _, _], 
 START_LOC = VREG,
-get_buffsize_by_vreg(VAL, FID, END_LOC).
+get_buffsize_by_vreg(VAL, END_FID, END_LOC).
 
 //case heap allocation
 get_buffsize_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, IID, VREG, _), 
 is_heap_allocation_call(IID), get_size_of_heap_alloc(IID, SIZE),
 VAL = SIZE.
 
-//case load (dereference pointer)
-get_buffsize_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, IID, VREG, OPC), 
-OPC = "load", get_first_operand(IID, LOADTYPE), !is_pointer(LOADTYPE), 
-get_val_of_load(IID, NEWVREG),
-get_buffsize_by_vreg(VAL, FID, NEWVREG).
+
+//actual implementation of get possible integer values
+.decl get_int_by_vreg(value: number, functionid: _functionid, _vreg: symbol)
+//.output get_int_by_vreg(delimiter=",")
+//case add
+get_int_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, IID, VREG, OPC), OPC = "add",
+get_first_operand(IID, OV1), get_third_operand(IID, OV2), 
+VAL=TMP+to_number(OV2), get_int_by_vreg(TMP, FID, OV1).
+
+//case sub
+get_int_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, IID, VREG, OPC), OPC = "sub",
+get_first_operand(IID, OV1), get_third_operand(IID, OV2), 
+VAL=TMP-to_number(OV2), get_int_by_vreg(TMP, FID, OV1).
+
+//case call strlen
+get_int_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, IID, VREG, OPC), OPC = "call",
+get_first_operand(IID, OV1), is_strlen_call_instruction(IID),
+get_buffsize_by_vreg(VAL, FID, OV1).
+
+//case memequals
+get_int_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, _, VREG, _),
+memequals(START, END), START = [FID, START_LOC, _, _], 
+END = [FID, END_LOC, _, _], 
+START_LOC = VREG,
+get_int_by_vreg(VAL, FID, END_LOC).
+
+
+//case load integer
+//case store integer
 
 
 //strncpy vulnerable to bo
@@ -51,15 +59,15 @@ get_buffsize_by_vreg(VAL, FID, NEWVREG).
 is_vulnerable_strncpy_call_instruction(IID) :- is_strncpy_call_instruction(IID), 
 block(FID, BID, _), instruction(BID, IID, _, _),
 get_first_operand(IID, OV1), get_third_operand(IID, N), 
-get_buffsize_by_vreg(DEST_SIZE, FID, OV1), contains("%", N), 
-get_buffsize_by_vreg(COPY_SIZE, FID, N),
+get_buffsize_by_vreg(DEST_SIZE, FID, OV1), is_vreg(N), 
+get_int_by_vreg(COPY_SIZE, FID, N),
 DEST_SIZE < COPY_SIZE.
 //hardcoded n
 is_vulnerable_strncpy_call_instruction(IID) :- is_strncpy_call_instruction(IID), 
 block(FID, BID, _), instruction(BID, IID, _, _),
 get_first_operand(IID, OV1), get_third_operand(IID, N),  
 get_buffsize_by_vreg(DEST_SIZE, FID, OV1), 
-!contains("%", N),
+is_numeric(N),
 DEST_SIZE < to_number(N).
 
 //fgets vulnerable to bo
@@ -68,7 +76,7 @@ DEST_SIZE < to_number(N).
 is_vulnerable_fgets_call_instruction(IID) :- is_fgets_call_instruction(IID), 
 block(FID, BID, _), instruction(BID, IID, _, _),
 get_first_operand(IID, OV1), get_second_operand(IID, N), 
-get_buffsize_by_vreg(DEST_SIZE, FID, OV1), contains("%", N), 
+get_int_by_vreg(DEST_SIZE, FID, OV1), is_vreg(N), 
 get_buffsize_by_vreg(COPY_SIZE, FID, N),
 DEST_SIZE < COPY_SIZE.
 //hardcoded n
@@ -76,7 +84,7 @@ is_vulnerable_fgets_call_instruction(IID) :- is_fgets_call_instruction(IID),
 block(FID, BID, _), instruction(BID, IID, _, _), 
 get_first_operand(IID, OV1), get_second_operand(IID, N),
 get_buffsize_by_vreg(DEST_SIZE, FID, OV1), 
-!contains("%", N),
+is_numeric(N),
 DEST_SIZE < to_number(N).
 
 //print results
