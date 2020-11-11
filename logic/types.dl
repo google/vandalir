@@ -18,7 +18,7 @@ opval(T) :- T = OV, operand(_,_,OV).
 .decl function(functionid: _functionid, functionname: symbol, functiontype: symbol, returntype: symbol)
 .input function(delimiter=";")
 
-.decl argument(functionid: _functionid, argumentid: _argumentid, argumenttype: symbol)
+.decl argument(functionid: _functionid, argumentid: _argumentid, vreg: _vreg, argumenttype: symbol)
 .input argument(delimiter=";")
 
 .decl block(functionid: _functionid, blockid: _blockid, label: _label)

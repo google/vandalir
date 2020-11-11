@@ -15,7 +15,7 @@ memcategory(MEM) :- MEM = "vreg".
 
 
 .decl memlocation(functionid: _functionid, memlocation: symbol, memtyp: symbol, memcategory: _memcategory)
-//.output memlocation(delimiter=",")
+.output memlocation(delimiter=",")
 //stack allocations
 memlocation(FID, LOC, TYP, CAT) :- instruction(BID, IID, LOC, OPC), block(FID, BID, _),
 OPC = "alloca", CAT = "stack", memcategory(CAT), 
@@ -42,6 +42,8 @@ VREG != "%-1",
 LOC = VREG,
 CAT = "vreg", memcategory(CAT),
 get_first_operand(IID, TYP).
+//function arguments
+memlocation(FID, LOC, TYPE, CAT) :- argument(FID, _, LOC, TYPE), CAT = "stack".
 
 
 //find equal memory location (alias analysis)

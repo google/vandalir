@@ -40,6 +40,7 @@ class Parser:
         self.parseGlobals(module)
 
         for function in module.functions:
+            argumentRegister = 0
 
             functiontype = "define"
 
@@ -50,9 +51,11 @@ class Parser:
             self.output(function_str)
 
             for argument in function.arguments:
-                arguments_str = "argument("+str(functionid)+";"+str(argumentid)+";\""+str(argument.type)+"\")"
+                argumentRegisterStr = "%"+str(argumentRegister)
+                arguments_str = "argument("+str(functionid)+";"+str(argumentid)+";"+argumentRegisterStr+";\""+str(argument.type)+"\")"
                 self.output(arguments_str)
                 argumentid += 1
+                argumentRegister += 1
 
             for block in function.blocks:
                 (label, preds) = self.getControlFlowInfoFromBlock(block)
