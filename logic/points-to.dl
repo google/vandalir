@@ -1,13 +1,6 @@
 
 .type _memcategory <: symbol
 
-.type _memlocation = [
-	functiond: number, 
-	location: symbol,
-	type: symbol, 
-	memcategory: _memcategory
-]
-
 
 .decl memtype(memtype: symbol)
 memtype(MEM) :- MEM = "unknown". //unkown type
@@ -21,127 +14,153 @@ memcategory(MEM) :- MEM = "global".
 memcategory(MEM) :- MEM = "vreg".
 
 
-.decl memlocation(location: _memlocation)
-//.output memlocation(delimiter=",")
+.decl memlocation(functionid: _functionid, memlocation: symbol, memtyp: symbol, memcategory: _memcategory)
+.output memlocation(delimiter=",")
 //stack allocations
-memlocation(MEM) :- instruction(BID, IID, LOC, OPC), block(FID, BID, _),
+memlocation(FID, LOC, TYP, CAT) :- instruction(BID, IID, LOC, OPC), block(FID, BID, _),
 OPC = "alloca", CAT = "stack", memcategory(CAT), 
-get_second_operand(IID, TYP),
-MEM = [FID, LOC, TYP, CAT].
+get_second_operand(IID, TYP).
 //heap allocations
-memlocation(MEM) :- instruction(BID, IID, LOC, _), block(FID, BID, _),
+memlocation(FID, LOC, TYP, CAT) :- instruction(BID, IID, LOC, _), block(FID, BID, _),
 is_heap_allocation_call(IID), CAT = "heap", memcategory(CAT),
-TYP = "i8*",
-MEM = [FID, LOC, TYP, CAT].
+TYP = "i8*".
 //globals
-memlocation(MEM) :- global(LOC),
+memlocation(FID, LOC, TYP, CAT) :- global(LOC),
 FID = -1, CAT = "global", memcategory(CAT),
-TYP = "unknown", //TODO: add parsing for globals
-MEM = [FID, LOC, TYP, CAT].
+TYP = "unknown". //TODO: add parsing for globals
 //vreg no load
-memlocation(MEM) :- instruction(BID, IID, VREG, OPC), block(FID, BID, _),
+memlocation(FID, LOC, TYP, CAT) :- instruction(BID, IID, VREG, OPC), block(FID, BID, _),
 OPC != "load", OPC != "alloca", !is_heap_allocation_call(IID),
 VREG != "%-1",
 LOC = VREG,
 CAT = "vreg", memcategory(CAT),
-TYP = "unknown",  //TODO: add type info for call instructions via function return value
-MEM = [FID, LOC, TYP, CAT].
+TYP = "unknown".  //TODO: add type info for call instructions via function return value
 //vreg load
-memlocation(MEM) :- instruction(BID, IID, VREG, OPC), block(FID, BID, _),
+memlocation(FID, LOC, TYP, CAT) :- instruction(BID, IID, VREG, OPC), block(FID, BID, _),
 OPC = "load",
 VREG != "%-1",
 LOC = VREG,
 CAT = "vreg", memcategory(CAT),
-get_first_operand(IID, TYP),
-MEM = [FID, LOC, TYP, CAT].
+get_first_operand(IID, TYP).
 
 
-.decl memequals(first: _memlocation, second: _memlocation)
-//.output memequals(delimiter=",")
-//case switch first and second
-memequals(FIRST, SECOND) :- memlocation(FIRST), memlocation(SECOND), memequals(SECOND, FIRST).
-//case points-to
-memequals(FIRST, SECOND) :- memlocation(FIRST), memlocation(SECOND), 
-memlocation(PARENT), points_to(PARENT, FIRST), points_to(PARENT, SECOND).
+//find equal memory location (alias analysis)
+.decl memequals(functionid1: _functionid, memlocation1: symbol, memtyp1: symbol, memcategory1: _memcategory, 
+functionid2: _functionid, memlocation2: symbol, memtyp2: symbol, memcategory2: _memcategory)
+.output memequals(delimiter=",")
+
+//case: (a <==> b) ==> (b <==> a)
+memequals(FID1, LOC1, TYPE1, CAT1, FID2, LOC2, TYPE2, CAT2) :- 
+memlocation(FID1, LOC1, TYPE1, CAT1), 
+memlocation(FID2, LOC2, TYPE2, CAT2), 
+memequals(FID2, LOC2, TYPE2, CAT2, FID1, LOC1, TYPE1, CAT1).
+
+//case points-to: (x -> a && x -> b) ==> (a <==> b)
+memequals(FID1, LOC1, TYPE1, CAT1, FID2, LOC2, TYPE2, CAT2) :- 
+memlocation(FID1, LOC1, TYPE1, CAT1), 
+memlocation(FID2, LOC2, TYPE2, CAT2), 
+memlocation(PFID, PLOC, PTYPE, PCAT), 
+points_to(PFID, PLOC, PTYPE, PCAT, FID1, LOC1, TYPE1, CAT1), 
+points_to(PFID, PLOC, PTYPE, PCAT, FID2, LOC2, TYPE2, CAT2).
+
 //case load pointer
-memequals(FIRST, SECOND) :-
-memlocation(FIRST), memlocation(SECOND),
-FIRST = [FID, FIRSTLOC, FIRSTTYP, X], SECOND = [FID, SECONDLOC, SECONDTYP, Y],
-memtype(FIRSTTYP), memtype(SECONDTYP), memcategory(X), memcategory(Y),
+memequals(FID1, LOC1, TYPE1, CAT1, FID2, LOC2, TYPE2, CAT2) :-
+memlocation(FID1, LOC1, TYPE1, CAT1), 
+memlocation(FID2, LOC2, TYPE2, CAT2),
 instruction(BID, IID, VREG, OPC), block(FID, BID, _), OPC = "load",
-pointer_level(FIRSTTYP, FIRSTTYP_PLVL),
-pointer_level(SECONDTYP, SECOND_PLVL),
-FIRSTTYP_PLVL = SECOND_PLVL,
-FIRSTTYP_PLVL > 0,
-VREG = FIRSTLOC, 
+pointer_level(TYPE1, TYPE1_PLVL),
+pointer_level(TYPE2, TYPE2_PLVL),
+TYPE1_PLVL = TYPE2_PLVL,
+TYPE1_PLVL > 0,
+VREG = LOC1,
+FID1 = FID,
+FID2 = FID, 
 get_third_operand(IID, LOADADDR), 
-LOADADDR = SECONDLOC.
+LOADADDR = LOC2.
+
 //case store a pointer
-memequals(FIRST, SECOND) :- 
+memequals(FID1, LOC1, TYPE1, CAT1, FID2, LOC2, TYPE2, CAT2) :- 
 block(FID, BID, _),
 instruction(BID, IID, _, OPC), OPC = "store",
-get_second_operand(IID, DEST),//ORIGIN points to DEST (in this case ORIGIN == DEST)!
-get_fourth_operand(IID, ORIGIN),
-ORIGINMEM = [FID, ORIGIN, ORIGINTYP, ORIGINCAT], DESTMEM = [FID, DEST, DESTTYP, DESTCAT],
-memlocation(ORIGINMEM), memlocation(DESTMEM),
-memtype(ORIGINTYP), memtype(DESTTYP), memcategory(ORIGINCAT), memcategory(DESTCAT),
-pointer_level(ORIGINTYP, ORIGINTYP_PLVL),
-pointer_level(DESTTYP, DESTTYP_PLVL),
-ORIGINTYP_PLVL = DESTTYP_PLVL,
-FIRST = ORIGINMEM, SECOND = DESTMEM.
+get_second_operand(IID, LOC2),
+get_fourth_operand(IID, LOC1),
+memlocation(FID1, LOC1, TYPE1, CAT1), memlocation(FID2, LOC2, TYPE2, CAT2),
+pointer_level(TYPE1, TYPE1_PLVL),
+pointer_level(TYPE2, TYPE2_PLVL),
+TYPE1_PLVL = TYPE2_PLVL,
+FID1 = FID,
+FID2 = FID.
+
+
 //case conversion instruction
-memequals(FIRST, SECOND) :-
-memlocation(FIRST), memlocation(SECOND),
-FIRST = [FID, FIRSTLOC, FIRSTTYP, X], SECOND = [FID, SECONDLOC, SECONDTYP, Y],
-memtype(FIRSTTYP), memtype(SECONDTYP), memcategory(X), memcategory(Y),
+memequals(FID1, LOC1, TYPE1, CAT1, FID2, LOC2, TYPE2, CAT2) :-
+memlocation(FID1, LOC1, TYPE1, CAT1), 
+memlocation(FID2, LOC2, TYPE2, CAT2),
 instruction(BID, IID, VREG, _), block(FID, BID, _), 
 is_conversion_instruction(IID),
 get_first_operand(IID, VREG_ORIG),
-FIRSTLOC = VREG,
-SECONDLOC = VREG_ORIG.
+LOC1 = VREG,
+LOC2 = VREG_ORIG,
+FID1 = FID,
+FID2 = FID.
+
+//points-to analysis
+.decl points_to(functionid1: _functionid, memlocation1: symbol, memtyp1: symbol, memcategory1: _memcategory, 
+functionid2: _functionid, memlocation2: symbol, memtyp2: symbol, memcategory2: _memcategory)
+.output points_to(delimiter=",")
+
+//memequals cases
+//cases memequals: (s -> e && as <==> s) ==> as -> e
+points_to(SFID, SLOC, STYPE, SCAT, EFID, ELOC, ETYPE, ECAT) :- 
+memlocation(SFID, SLOC, STYPE, SCAT), 
+memlocation(EFID, ELOC, ETYPE, ECAT), 
+memequals(SFID, SLOC, STYPE, SCAT, S2FID, S2LOC, S2TYPE, S2CAT), 
+points_to(S2FID, S2LOC, S2TYPE, S2CAT, EFID, ELOC, ETYPE, ECAT).
+//cases memequals: (s -> e && ae <==> e) ==> s -> ae
+points_to(SFID, SLOC, STYPE, SCAT, EFID, ELOC, ETYPE, ECAT) :- 
+memlocation(SFID, SLOC, STYPE, SCAT), 
+memlocation(EFID, ELOC, ETYPE, ECAT), 
+memequals(EFID, ELOC, ETYPE, ECAT, E2FID, E2LOC, E2TYPE, E2CAT), 
+points_to(SFID, SLOC, STYPE, SCAT, E2FID, E2LOC, E2TYPE, E2CAT).
+//case memequals: (s -> e && as <==> s && ae <==> e) ==> as -> ae
+points_to(SFID, SLOC, STYPE, SCAT, EFID, ELOC, ETYPE, ECAT) :- 
+memlocation(SFID, SLOC, STYPE, SCAT), 
+memlocation(EFID, ELOC, ETYPE, ECAT),
+memequals(SFID, SLOC, STYPE, SCAT, S2FID, S2LOC, S2TYPE, S2CAT), 
+memequals(EFID, ELOC, ETYPE, ECAT, E2FID, E2LOC, E2TYPE, E2CAT), 
+points_to(S2FID, S2LOC, S2TYPE, S2CAT, E2FID, E2LOC, E2TYPE, E2CAT).
 
 
-.decl points_to(start: _memlocation, end: _memlocation)
-//.output points_to(delimiter=",")
-//cases memequals
-points_to(START, END) :- memlocation(START), memlocation(END), 
-memequals(START, ALTSTART), points_to(ALTSTART, END).
-points_to(START, END) :- memlocation(START), memlocation(END), 
-memequals(END, ALTEND), points_to(START, ALTEND).
-points_to(START, END) :- memlocation(START), memlocation(END), 
-memequals(START, ALTSTART), memequals(END, ALTEND), points_to(ALTSTART, ALTEND).
 //case store address to integer
-points_to(START, END) :- 
+points_to(SFID, SLOC, STYPE, SCAT, EFID, ELOC, ETYPE, ECAT) :- 
 block(FID, BID, _),
 instruction(BID, IID, _, OPC), OPC = "store",
-get_second_operand(IID, DEST),//ORIGIN points to DEST 
-get_fourth_operand(IID, ORIGIN),
-pointer_level(ORIGINTYP, ORIGINTYP_PLVL),
-ORIGINMEM = [FID, ORIGIN, ORIGINTYP, ORIGINCAT], DESTMEM = [FID, DEST, DESTTYP, DESTCAT],
-memlocation(ORIGINMEM), memlocation(DESTMEM),
-memtype(ORIGINTYP), memtype(DESTTYP), memcategory(ORIGINCAT), memcategory(DESTCAT),
-pointer_level(DESTTYP, DESTTYP_PLVL),
-DESTTYP_PLVL < ORIGINTYP_PLVL,
-DESTTYP != "unknown", //TODO: fix parser to include types
-START = ORIGINMEM, END = DESTMEM.
-//case load 
-points_to(OPMEM, LOADEDMEM) :-
-memlocation(LOADEDMEM), memlocation(OPMEM),
-LOADEDMEM = [FID, LOADEDMEMLOC, LOADEDMEMTYP, X], OPMEM = [FID, OPMEMLOC, OPMEMTYP, Y],
-memtype(LOADEDMEMTYP), memtype(OPMEMTYP), memcategory(X), memcategory(Y),
-instruction(BID, IID, VREG, OPC), block(FID, BID, _), OPC = "load",
-pointer_level(LOADEDMEMTYP, LOADEDMEMTYP_PLVL),
-pointer_level(OPMEMTYP, OPMEM_PLVL),
-LOADEDMEMTYP_PLVL < OPMEM_PLVL,
-LOADEDMEMTYP_PLVL >= 1,
-VREG = LOADEDMEMLOC, 
-get_third_operand(IID, LOADADDR), 
-LOADADDR = OPMEMLOC.
+get_second_operand(IID, ELOC),
+get_fourth_operand(IID, SLOC),
+pointer_level(STYPE, STYPE_PLVL),
+memlocation(SFID, SLOC, STYPE, SCAT), memlocation(EFID, ELOC, ETYPE, ECAT),
+pointer_level(ETYPE, ETYPE_PLVL),
+ETYPE_PLVL < STYPE_PLVL,
+ETYPE != "unknown", //TODO: fix parser to include types
+SFID = FID,
+EFID = FID.
 
+//case load 
+points_to(SFID, SLOC, STYPE, SCAT, EFID, ELOC, ETYPE, ECAT) :-
+memlocation(SFID, SLOC, STYPE, SCAT), 
+memlocation(EFID, ELOC, ETYPE, ECAT),
+instruction(BID, IID, VREG, OPC), block(FID, BID, _), OPC = "load",
+pointer_level(STYPE, STYPE_PLVL),
+pointer_level(ETYPE, ETYPE_PLVL),
+STYPE_PLVL < ETYPE_PLVL,
+STYPE_PLVL >= 1,
+VREG = SLOC, 
+get_third_operand(IID, ELOC), 
+SFID = FID,
+EFID = FID.
 
 
 .decl get_val_of_load(instructionid: _instructionid, value: symbol)
 get_val_of_load(IID, VAL) :- instruction(BID, IID, VREG, OPC), block(FID, BID, _), OPC = "load",
 get_first_operand(IID, LOADTYPE), !is_pointer(LOADTYPE),
-INSMEMLOC = [FID, VREG, _, _], LOADEDLOC = [FID, VAL, _, _],
-points_to(INSMEMLOC, LOADEDLOC).
+points_to(FID, VREG, _, _, FID, VAL, _, _).

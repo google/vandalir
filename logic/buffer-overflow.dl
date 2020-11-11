@@ -1,6 +1,75 @@
+//get size of heap allocation
+.decl get_size_of_heap_alloc(instructionid: _instructionid, size: number)
+get_size_of_heap_alloc(IID, SIZE) :- is_heap_allocation_call(IID), is_malloc_call_instruction(IID), get_size_of_malloc(IID, SIZE).
+get_size_of_heap_alloc(IID, SIZE) :- is_heap_allocation_call(IID), is_calloc_call_instruction(IID), get_size_of_calloc(IID, SIZE).
+get_size_of_heap_alloc(IID, SIZE) :- is_heap_allocation_call(IID), is_realloc_call_instruction(IID), get_size_of_realloc(IID, SIZE).
+
+
+//get size of malloc
+.decl get_size_of_malloc(instructionid: _instructionid, size: number)
+//case hard coded size
+get_size_of_malloc(IID, SIZE) :- is_malloc_call_instruction(IID),
+get_first_operand(IID, OV1),
+is_numeric(OV1),
+SIZE = to_number(OV1).
+//case get size by vreg
+get_size_of_malloc(IID, SIZE) :- is_malloc_call_instruction(IID),
+get_first_operand(IID, OV1),
+block(FID, BID, _), instruction(BID, IID, _, _),
+is_vreg(OV1),
+get_int_by_vreg(SIZE, FID, OV1).
+
+//get size of calloc
+//case both hardcoaded
+.decl get_size_of_calloc(instructionid: _instructionid, size: number)
+get_size_of_calloc(IID, SIZE) :- is_calloc_call_instruction(IID),
+get_first_operand(IID, OV1), get_second_operand(IID, OV2),
+is_numeric(OV1), is_numeric(OV2),
+SIZE = to_number(OV1)*to_number(OV2).
+//case vreg, hardcoded
+get_size_of_calloc(IID, SIZE) :- is_calloc_call_instruction(IID),
+get_first_operand(IID, OV1), get_second_operand(IID, OV2),
+block(FID, BID, _), instruction(BID, IID, _, _),
+get_int_by_vreg(SIZE1, FID, OV1),
+is_vreg(OV1), is_numeric(OV2),
+SIZE2 = to_number(OV2), 
+SIZE = SIZE1*SIZE2.
+//case hardcoded, vreg
+get_size_of_calloc(IID, SIZE) :- is_calloc_call_instruction(IID),
+get_first_operand(IID, OV1), get_second_operand(IID, OV2),
+block(FID, BID, _), instruction(BID, IID, _, _),
+get_int_by_vreg(SIZE2, FID, OV2),
+is_numeric(OV1), is_vreg(OV2),
+SIZE1 = to_number(OV1),
+SIZE = SIZE1*SIZE2.
+//case both hardcoded
+get_size_of_calloc(IID, SIZE) :- is_calloc_call_instruction(IID),
+get_first_operand(IID, OV1), get_second_operand(IID, OV2),
+block(FID, BID, _), instruction(BID, IID, _, _),
+get_int_by_vreg(SIZE1, FID, OV1),
+get_int_by_vreg(SIZE2, FID, OV2),
+is_vreg(OV1), is_vreg(OV2),
+SIZE = SIZE1*SIZE2.
+
+//get size of realloc
+//case hard coded size
+.decl get_size_of_realloc(instructionid: _instructionid, size: number)
+get_size_of_realloc(IID, SIZE) :- is_realloc_call_instruction(IID),
+get_second_operand(IID, OV2), 
+is_numeric(OV2),
+SIZE = to_number(OV2).
+//case get size by vreg
+get_size_of_realloc(IID, SIZE) :- is_realloc_call_instruction(IID),
+get_second_operand(IID, OV2), 
+is_vreg(OV2),
+block(FID, BID, _), instruction(BID, IID, _, _),
+get_int_by_vreg(SIZE, FID, OV2).
+
+
+
 //get size of buffer by virtual register
 .decl get_buffsize_by_vreg(size: number, functionid: _functionid, _vreg: symbol)
-//.output get_buffsize_by_vreg(delimiter=",")
+.output get_buffsize_by_vreg(delimiter=",")
 //case alloca (end recursion)
 get_buffsize_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, IID, VREG, OPC), OPC = "alloca",
 get_size_of_alloca(IID, VAL), get_second_operand(IID, ALLOCATYPE),
@@ -12,8 +81,7 @@ get_first_operand(IID, OV1), get_buffsize_by_vreg(VAL, FID, OV1).
 
 //case memequals
 get_buffsize_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, _, VREG, _),
-memequals(START, END), START = [FID, START_LOC, _, _], 
-END = [END_FID, END_LOC, _, _], 
+memequals(FID, START_LOC, _, _, END_FID, END_LOC, _, _), 
 START_LOC = VREG,
 get_buffsize_by_vreg(VAL, END_FID, END_LOC).
 
@@ -25,7 +93,7 @@ VAL = SIZE.
 
 //actual implementation of get possible integer values
 .decl get_int_by_vreg(value: number, functionid: _functionid, _vreg: symbol)
-//.output get_int_by_vreg(delimiter=",")
+.output get_int_by_vreg(delimiter=",")
 //case add
 get_int_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, IID, VREG, OPC), OPC = "add",
 get_first_operand(IID, OV1), get_third_operand(IID, OV2), 
@@ -43,8 +111,7 @@ get_buffsize_by_vreg(VAL, FID, OV1).
 
 //case memequals
 get_int_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, _, VREG, _),
-memequals(START, END), START = [FID, START_LOC, _, _], 
-END = [FID, END_LOC, _, _], 
+memequals(FID, START_LOC, _, _, FID, END_LOC, _, _), 
 START_LOC = VREG,
 get_int_by_vreg(VAL, FID, END_LOC).
 
