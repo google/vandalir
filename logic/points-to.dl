@@ -51,15 +51,10 @@ functionid2: _functionid, memlocation2: symbol, memtyp2: symbol, memcategory2: _
 
 //case: (a <==> b) ==> (b <==> a)
 memequals(FID1, LOC1, TYPE1, CAT1, FID2, LOC2, TYPE2, CAT2) :- 
-memlocation(FID1, LOC1, TYPE1, CAT1), 
-memlocation(FID2, LOC2, TYPE2, CAT2), 
 memequals(FID2, LOC2, TYPE2, CAT2, FID1, LOC1, TYPE1, CAT1).
 
 //case points-to: (x -> a && x -> b) ==> (a <==> b)
 memequals(FID1, LOC1, TYPE1, CAT1, FID2, LOC2, TYPE2, CAT2) :- 
-memlocation(FID1, LOC1, TYPE1, CAT1), 
-memlocation(FID2, LOC2, TYPE2, CAT2), 
-//memlocation(PFID, PLOC, PTYPE, PCAT), 
 points_to(PFID, PLOC, PTYPE, PCAT, FID1, LOC1, TYPE1, CAT1), 
 points_to(PFID, PLOC, PTYPE, PCAT, FID2, LOC2, TYPE2, CAT2).
 
@@ -124,8 +119,8 @@ memequals(EFID, ELOC, ETYPE, ECAT, E2FID, E2LOC, E2TYPE, E2CAT),
 points_to(SFID, SLOC, STYPE, SCAT, E2FID, E2LOC, E2TYPE, E2CAT).
 //case memequals: (s -> e && as <==> s && ae <==> e) ==> as -> ae
 points_to(SFID, SLOC, STYPE, SCAT, EFID, ELOC, ETYPE, ECAT) :- 
-memlocation(SFID, SLOC, STYPE, SCAT), 
-memlocation(EFID, ELOC, ETYPE, ECAT),
+//memlocation(SFID, SLOC, STYPE, SCAT), 
+//memlocation(EFID, ELOC, ETYPE, ECAT),
 memequals(SFID, SLOC, STYPE, SCAT, S2FID, S2LOC, S2TYPE, S2CAT), 
 memequals(EFID, ELOC, ETYPE, ECAT, E2FID, E2LOC, E2TYPE, E2CAT), 
 points_to(S2FID, S2LOC, S2TYPE, S2CAT, E2FID, E2LOC, E2TYPE, E2CAT).
@@ -138,7 +133,8 @@ instruction(BID, IID, _, OPC), OPC = "store",
 get_second_operand(IID, ELOC),
 get_fourth_operand(IID, SLOC),
 pointer_level(STYPE, STYPE_PLVL),
-memlocation(SFID, SLOC, STYPE, SCAT), memlocation(EFID, ELOC, ETYPE, ECAT),
+memlocation(SFID, SLOC, STYPE, SCAT), 
+memlocation(EFID, ELOC, ETYPE, ECAT),
 pointer_level(ETYPE, ETYPE_PLVL),
 ETYPE_PLVL < STYPE_PLVL,
 ETYPE != "unknown", //TODO: fix parser to include types
