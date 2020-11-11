@@ -15,7 +15,7 @@ memcategory(MEM) :- MEM = "vreg".
 
 
 .decl memlocation(functionid: _functionid, memlocation: symbol, memtyp: symbol, memcategory: _memcategory)
-.output memlocation(delimiter=",")
+//.output memlocation(delimiter=",")
 //stack allocations
 memlocation(FID, LOC, TYP, CAT) :- instruction(BID, IID, LOC, OPC), block(FID, BID, _),
 OPC = "alloca", CAT = "stack", memcategory(CAT), 
@@ -47,7 +47,7 @@ get_first_operand(IID, TYP).
 //find equal memory location (alias analysis)
 .decl memequals(functionid1: _functionid, memlocation1: symbol, memtyp1: symbol, memcategory1: _memcategory, 
 functionid2: _functionid, memlocation2: symbol, memtyp2: symbol, memcategory2: _memcategory)
-.output memequals(delimiter=",")
+//.output memequals(delimiter=",")
 
 //case: (a <==> b) ==> (b <==> a)
 memequals(FID1, LOC1, TYPE1, CAT1, FID2, LOC2, TYPE2, CAT2) :- 
@@ -59,7 +59,7 @@ memequals(FID2, LOC2, TYPE2, CAT2, FID1, LOC1, TYPE1, CAT1).
 memequals(FID1, LOC1, TYPE1, CAT1, FID2, LOC2, TYPE2, CAT2) :- 
 memlocation(FID1, LOC1, TYPE1, CAT1), 
 memlocation(FID2, LOC2, TYPE2, CAT2), 
-memlocation(PFID, PLOC, PTYPE, PCAT), 
+//memlocation(PFID, PLOC, PTYPE, PCAT), 
 points_to(PFID, PLOC, PTYPE, PCAT, FID1, LOC1, TYPE1, CAT1), 
 points_to(PFID, PLOC, PTYPE, PCAT, FID2, LOC2, TYPE2, CAT2).
 
@@ -107,7 +107,7 @@ FID2 = FID.
 //points-to analysis
 .decl points_to(functionid1: _functionid, memlocation1: symbol, memtyp1: symbol, memcategory1: _memcategory, 
 functionid2: _functionid, memlocation2: symbol, memtyp2: symbol, memcategory2: _memcategory)
-.output points_to(delimiter=",")
+//.output points_to(delimiter=",")
 
 //memequals cases
 //cases memequals: (s -> e && as <==> s) ==> as -> e

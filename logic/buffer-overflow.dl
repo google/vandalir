@@ -69,7 +69,7 @@ get_int_by_vreg(SIZE, FID, OV2).
 
 //get size of buffer by virtual register
 .decl get_buffsize_by_vreg(size: number, functionid: _functionid, _vreg: symbol)
-.output get_buffsize_by_vreg(delimiter=",")
+//.output get_buffsize_by_vreg(delimiter=",")
 //case alloca (end recursion)
 get_buffsize_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, IID, VREG, OPC), OPC = "alloca",
 get_size_of_alloca(IID, VAL), get_second_operand(IID, ALLOCATYPE),
@@ -93,7 +93,7 @@ VAL = SIZE.
 
 //actual implementation of get possible integer values
 .decl get_int_by_vreg(value: number, functionid: _functionid, _vreg: symbol)
-.output get_int_by_vreg(delimiter=",")
+//.output get_int_by_vreg(delimiter=",")
 //case add
 get_int_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, IID, VREG, OPC), OPC = "add",
 get_first_operand(IID, OV1), get_third_operand(IID, OV2), 
@@ -116,8 +116,8 @@ START_LOC = VREG,
 get_int_by_vreg(VAL, FID, END_LOC).
 
 
-//case load integer
-//case store integer
+//TODO: case load integer
+//TODO: case store integer ?
 
 
 //strncpy vulnerable to bo
