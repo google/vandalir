@@ -15,7 +15,7 @@ memcategory(MEM) :- MEM = "vreg".
 
 
 .decl memlocation(functionid: _functionid, memlocation: symbol, memtyp: symbol, memcategory: _memcategory)
-.output memlocation(delimiter=",")
+//.output memlocation(delimiter=",")
 //stack allocations
 memlocation(FID, LOC, TYP, CAT) :- instruction(BID, IID, LOC, OPC), block(FID, BID, _),
 OPC = "alloca", CAT = "stack", memcategory(CAT), 
@@ -100,6 +100,60 @@ LOC1 = VREG,
 LOC2 = VREG_ORIG,
 FID1 = FID,
 FID2 = FID.
+
+//case function return
+memequals(FID1, LOC1, TYPE1, CAT1, FID2, LOC2, TYPE2, CAT2) :-
+memlocation(FID1, LOC1, TYPE1, CAT1), 
+memlocation(FID2, LOC2, TYPE2, CAT2),
+instruction(BID, IID, _, OPC), block(FID, BID, _), function(FID, FNAME, _, RETTYPE),
+OPC = "ret",
+get_first_operand(IID, VREG_RETVAL),
+instruction(BID_CALL, IID_CALL, _, _), block(FID_CALL, BID_CALL, _),
+is_call_instruction(IID_CALL),
+get_function_for_call_instruction(FNAME, IID_CALL),
+LOC1 = VREG_RETVAL,
+TYPE1 = RETTYPE,
+TYPE2 = RETTYPE,
+memcategory(CAT1),
+memcategory(CAT2),
+FID1 = FID,
+FID2 = FID_CALL.
+
+//case function arguments
+memequals(FID1, LOC1, TYPE1, CAT1, FID2, LOC2, TYPE2, CAT2) :-
+memlocation(FID1, LOC1, TYPE1, CAT1), 
+memlocation(FID2, LOC2, TYPE2, CAT2),
+get_call_argument_and_function_register(_, CFID, CARG, FID, VREG, ARGTYPE),
+FID1 = CFID, LOC1=CARG, TYPE1 = ARGTYPE, memcategory(CAT1),
+FID2 = FID, LOC2=VREG, TYPE1 =  ARGTYPE, memcategory(CAT2).
+
+
+.decl get_call_argument_and_function_register(instructionid: _instructionid, caller_functionid: _functionid, call_arg: symbol, 
+called_functionid: _functionid, functionreg: symbol, argumenttype: symbol)
+//.output get_call_argument_and_function_register(delimiter=",")
+get_call_argument_and_function_register(IID, CFID, CARG, FID, VREG, ARGTYPE) :- 
+instruction(BID, IID, _, _), block(CFID, BID, _), is_call_instruction(IID),
+get_function_for_call_instruction(FNAME, IID),
+function(FID, FNAME, "define", _), //only get self defined functions
+//opval(VREG), opval(ARGTYPE), opval(CARG),
+get_ith_argument_register(FID, ARGNUM, _, VREG, ARGTYPE),
+get_ith_call_argument(IID, ARGNUM, CARG), is_vreg(CARG).
+
+
+.decl get_ith_argument_register(functionid: _functionid, i:number, argid:_argumentid, argument: _vreg, argumenttype: symbol)
+//.output get_ith_argument_register(delimiter=",")
+get_ith_argument_register(FID, I, ARGID, VREG, ARGTYPE) :- argument(FID, ARGID, VREG, ARGTYPE), I = 1, !argument(FID, ARGID-1, _, _). 
+get_ith_argument_register(FID, I, ARGID, VREG, ARGTYPE) :- argument(FID, ARGID, VREG, ARGTYPE), I > 1,
+I = I2+1, get_ith_argument_register(FID, I2, ARGID-1, _, _).
+
+.decl get_ith_call_argument(instructionid: _instructionid, i:number, val: symbol)
+//.output get_ith_call_argument(delimiter=",")
+	get_ith_call_argument(IID, I, VAL) :- 
+	is_call_instruction(IID), 
+	get_num_operands(IID, ARGNUM2), ARGNUM = ARGNUM2-1,
+	get_ith_operand(IID, I, VAL),
+	I<=ARGNUM.
+
 
 //points-to analysis
 .decl points_to(functionid1: _functionid, memlocation1: symbol, memtyp1: symbol, memcategory1: _memcategory, 

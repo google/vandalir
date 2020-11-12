@@ -30,7 +30,21 @@ get_fifth_operand(IID, VAL) :-
 operand(IID, OID1, _), operand(IID, OID2, _), operand(IID, OID3, _), operand(IID, OID4, _), operand(IID, OID5, OV5),
 !operand(IID, OID1-1, _), OID2=OID1+1, OID3=OID2+1, OID4=OID3+1, OID5=OID4+1, VAL = OV5.
 
+//get ith operand
+.decl get_ith_operand(instructionid: _instructionid, i: number, operandvalue: symbol)
+get_ith_operand(IID, I, VAL) :- I=1, get_first_operand(IID, VAL).
+get_ith_operand(IID, I, VAL) :- I=2, get_second_operand(IID, VAL).
+get_ith_operand(IID, I, VAL) :- I=3, get_third_operand(IID, VAL).
+get_ith_operand(IID, I, VAL) :- I=4, get_fourth_operand(IID, VAL).
+get_ith_operand(IID, I, VAL) :- I=5, get_fifth_operand(IID, VAL).
+get_ith_operand(IID, I, VAL) :- I>5, get_ith_operand_recursive(IID, _, I, VAL).
 
+//recursive helper
+.decl get_ith_operand_recursive(instructionid: _instructionid, operandid: _operandid, i: number, operandvalue: symbol)
+get_ith_operand_recursive(IID, OID, I, VAL) :- I=1, operand(IID, OID, OV1), !operand(IID, OID-1, _), VAL = OV1.
+get_ith_operand_recursive(IID, OID, I, VAL) :- I>1, I=I2+1, operand(IID, OID, VAL), get_ith_operand_recursive(IID, OID-1, I2, _).
+
+//get last operand
 .decl get_last_operand(instructionid: _instructionid, operandvalue: symbol)
 get_last_operand(IID, OV) :- 
 operand(IID, OID, OV), !operand(IID, OID+1, _).
