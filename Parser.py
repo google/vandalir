@@ -261,7 +261,7 @@ class Parser:
             # print(splitInstructions[0])
             # print(splitInstructions[1])
             if(splitInstructions[0][0] == "i" and splitInstructions[1]):  # remove integer type
-                if(opcode == "call"):  # do not parse types for call instructions (as they are given by function def)
+                if(opcode == "call" or opcode == "ret"):  # do not parse types for call instructions (as they are given by function def)
                     operand = [splitInstructions[1].strip()]
                 else:
                     operand = [splitInstructions[0].strip(), splitInstructions[1].strip()]
@@ -314,7 +314,7 @@ class Parser:
                 module = parse_assembly(code)
         elif(inputFileExtension == '.bc'):
             os.system("llvm-dis-"+LLVM_VER+" "+self.inputFile)
-            print("LLVM bitecode file was disassembled to .ll file.")
+            print("LLVM bitcode file was disassembled to .ll file.")
             self.inputFile = self.inputFile[:-3]+".ll"
 
             with open(self.inputFile, 'r') as file:

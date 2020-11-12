@@ -111,11 +111,19 @@ is_realloc_call_instruction(IID) :- is_call_instruction(IID), get_last_operand(I
 
 //if call instruction give called function name
 .decl get_function_for_call_instruction(functionname: symbol, instructionid: _instructionid)
-//case not a call instruction
-get_function_for_call_instruction(OPC, IID) :- instruction(_, IID, _, OPC), OPC != "call".
 //a call instruction
-get_function_for_call_instruction(NAME, IID) :- instruction(_, IID, _, OPC), OPC = "call",
-MAXID = max OID : {operand(IID, OID, _) }, operand(IID, MAXID, NAME).
+get_function_for_call_instruction(NAME, IID) :- is_call_instruction(IID),
+get_last_operand(IID, NAME).
+
+
+.decl get_fid_for_call_instruction(functionid: _functionid, instructionid: _instructionid)
+//.output get_fid_for_call_instruction(delimiter=",")
+get_fid_for_call_instruction(FID, IID) :- get_function_for_call_instruction(FNAME, IID), get_fid_by_fname(FID, FNAME).
+
+
+.decl get_fid_by_fname(functionid: _functionid, fname: symbol)
+get_fid_by_fname(FID, FNAME) :- function(FID, FNAME, _, _).
+
 
 //get size of alloca
 .decl get_size_of_alloca(instructionid: _instructionid, size: number)

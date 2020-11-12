@@ -28,13 +28,19 @@ TYP = "i8*".
 memlocation(FID, LOC, TYP, CAT) :- global(LOC),
 FID = -1, CAT = "global", memcategory(CAT),
 TYP = "unknown". //TODO: add parsing for globals
+//vreg function call
+memlocation(FID, LOC, TYP, CAT) :- instruction(BID, IID, VREG, OPC), block(FID, BID, _),
+OPC = "call", get_function_for_call_instruction(FNAME, IID), function(_, FNAME, _, RETTYPE),
+LOC = VREG,
+CAT = "vreg",
+TYP = RETTYPE.
 //vreg no load
 memlocation(FID, LOC, TYP, CAT) :- instruction(BID, IID, VREG, OPC), block(FID, BID, _),
-OPC != "load", OPC != "alloca", !is_heap_allocation_call(IID),
+OPC != "load", OPC != "alloca", OPC != "alloca", !is_heap_allocation_call(IID),
 VREG != "%-1",
 LOC = VREG,
 CAT = "vreg", memcategory(CAT),
-TYP = "unknown".  //TODO: add type info for call instructions via function return value
+TYP = "unknown". 
 //vreg load
 memlocation(FID, LOC, TYP, CAT) :- instruction(BID, IID, VREG, OPC), block(FID, BID, _),
 OPC = "load",
@@ -88,7 +94,6 @@ TYPE1_PLVL = TYPE2_PLVL,
 FID1 = FID,
 FID2 = FID.
 
-
 //case conversion instruction
 memequals(FID1, LOC1, TYPE1, CAT1, FID2, LOC2, TYPE2, CAT2) :-
 memlocation(FID1, LOC1, TYPE1, CAT1), 
@@ -105,13 +110,12 @@ FID2 = FID.
 memequals(FID1, LOC1, TYPE1, CAT1, FID2, LOC2, TYPE2, CAT2) :-
 memlocation(FID1, LOC1, TYPE1, CAT1), 
 memlocation(FID2, LOC2, TYPE2, CAT2),
-instruction(BID, IID, _, OPC), block(FID, BID, _), function(FID, FNAME, _, RETTYPE),
-OPC = "ret",
-get_first_operand(IID, VREG_RETVAL),
-instruction(BID_CALL, IID_CALL, _, _), block(FID_CALL, BID_CALL, _),
-is_call_instruction(IID_CALL),
-get_function_for_call_instruction(FNAME, IID_CALL),
+get_fid_for_call_instruction(FID, IID),
+function(FID, _, _, RETTYPE),
+get_ret_register(FID, VREG_RETVAL),
+instruction(BID, IID, VREG, _), block(FID_CALL, BID, _),
 LOC1 = VREG_RETVAL,
+LOC2 = VREG,
 TYPE1 = RETTYPE,
 TYPE2 = RETTYPE,
 memcategory(CAT1),
@@ -128,6 +132,12 @@ FID1 = CFID, LOC1=CARG, TYPE1 = ARGTYPE, memcategory(CAT1),
 FID2 = FID, LOC2=VREG, TYPE1 =  ARGTYPE, memcategory(CAT2).
 
 
+.decl get_ret_register(functionid: _functionid, returnregister: symbol)
+//.output get_ret_register(delimiter=",")
+get_ret_register(FID, RREG) :- instruction(BID, IID, _, OPC), block(FID, BID, _), 
+OPC = "ret", get_first_operand(IID, RREG), is_vreg(RREG).
+
+
 .decl get_call_argument_and_function_register(instructionid: _instructionid, caller_functionid: _functionid, call_arg: symbol, 
 called_functionid: _functionid, functionreg: symbol, argumenttype: symbol)
 //.output get_call_argument_and_function_register(delimiter=",")
@@ -135,7 +145,6 @@ get_call_argument_and_function_register(IID, CFID, CARG, FID, VREG, ARGTYPE) :-
 instruction(BID, IID, _, _), block(CFID, BID, _), is_call_instruction(IID),
 get_function_for_call_instruction(FNAME, IID),
 function(FID, FNAME, "define", _), //only get self defined functions
-//opval(VREG), opval(ARGTYPE), opval(CARG),
 get_ith_argument_register(FID, ARGNUM, _, VREG, ARGTYPE),
 get_ith_call_argument(IID, ARGNUM, CARG), is_vreg(CARG).
 
@@ -148,11 +157,11 @@ I = I2+1, get_ith_argument_register(FID, I2, ARGID-1, _, _).
 
 .decl get_ith_call_argument(instructionid: _instructionid, i:number, val: symbol)
 //.output get_ith_call_argument(delimiter=",")
-	get_ith_call_argument(IID, I, VAL) :- 
-	is_call_instruction(IID), 
-	get_num_operands(IID, ARGNUM2), ARGNUM = ARGNUM2-1,
-	get_ith_operand(IID, I, VAL),
-	I<=ARGNUM.
+get_ith_call_argument(IID, I, VAL) :- 
+is_call_instruction(IID), 
+get_num_operands(IID, ARGNUM2), ARGNUM = ARGNUM2-1,
+get_ith_operand(IID, I, VAL),
+I<=ARGNUM.
 
 
 //points-to analysis
@@ -175,8 +184,6 @@ memequals(EFID, ELOC, ETYPE, ECAT, E2FID, E2LOC, E2TYPE, E2CAT),
 points_to(SFID, SLOC, STYPE, SCAT, E2FID, E2LOC, E2TYPE, E2CAT).
 //case memequals: (s -> e && as <==> s && ae <==> e) ==> as -> ae
 points_to(SFID, SLOC, STYPE, SCAT, EFID, ELOC, ETYPE, ECAT) :- 
-//memlocation(SFID, SLOC, STYPE, SCAT), 
-//memlocation(EFID, ELOC, ETYPE, ECAT),
 memequals(SFID, SLOC, STYPE, SCAT, S2FID, S2LOC, S2TYPE, S2CAT), 
 memequals(EFID, ELOC, ETYPE, ECAT, E2FID, E2LOC, E2TYPE, E2CAT), 
 points_to(S2FID, S2LOC, S2TYPE, S2CAT, E2FID, E2LOC, E2TYPE, E2CAT).
@@ -211,7 +218,7 @@ get_third_operand(IID, SLOC),
 SFID = FID,
 EFID = FID.
 
-
+//not sure what this is or whether this is used
 .decl get_val_of_load(instructionid: _instructionid, value: symbol)
 get_val_of_load(IID, VAL) :- instruction(BID, IID, VREG, OPC), block(FID, BID, _), OPC = "load",
 get_first_operand(IID, LOADTYPE), !is_pointer(LOADTYPE),
