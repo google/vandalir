@@ -9,5 +9,6 @@ then
 fi
 clang -S -emit-llvm "$FILEPATH" -o "./llvm-ir/$FILENAME.ll"
 python3 Parser.py "./llvm-ir/$FILENAME.ll"
-souffle "./logic/main.dl" -F "./facts" -D "./output"
+souffle "./logic/main.dl" -F "./facts" -D "./output" -p "./profile" -j 4
+souffle-profile "./profile" -j
 echo "execution finished output written to output directory"
