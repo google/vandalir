@@ -58,7 +58,7 @@ get_next_or_called_block(FID, BID, NFID, NBID) :- block(FID, BID, _), block(NFID
 //case next block following function call
 get_next_or_called_block(FID, BID, NFID, NBID) :- block(FID, BID, _), block(NFID, NBID, _), get_callee_block(FID, BID, NFID, NBID).
 
-//get all possible previous block transisting function calls
+//get all possible previous blocks, transisting function calls
 .decl is_before(functionid: _functionid, blockid: _blockid, before_functionid: _functionid, before_blockid: _blockid)
 //direct before
 is_before(FID, BID, BFID, BBID) :- get_previous_or_caller_block(FID, BID, BFID, BBID).
@@ -67,7 +67,7 @@ is_before(FID, BID, BFID, BBID) :- block(FID, BID, _), block(PFID, PBID, _),
 get_previous_or_caller_block(FID, BID, PFID, PBID), 
 is_before(PFID, PBID, BFID, BBID).
 
-//get all possible following block transisting function calls
+//get all possible following blocks, transisting function calls
 .decl is_behind(functionid: _functionid, blockid: _blockid, behind_functionid: _functionid, behind_blockid: _blockid)
 //direct before
 is_behind(FID, BID, BFID, BBID) :- get_next_or_called_block(FID, BID, BFID, BBID).
@@ -75,3 +75,36 @@ is_behind(FID, BID, BFID, BBID) :- get_next_or_called_block(FID, BID, BFID, BBID
 is_behind(FID, BID, BFID, BBID) :- block(FID, BID, _), block(PFID, PBID, _),
 get_next_or_called_block(FID, BID, PFID, PBID), 
 is_behind(PFID, PBID, BFID, BBID).
+
+
+.decl is_instruction_before_other_within_block(instructionid: _instructionid, instructionid_before: _instructionid)
+is_instruction_before_other_within_block(IID, IID_BEFORE) :- instruction(BID, IID, _, _), instruction(BID, IID_BEFORE, _, _),
+IID_BEFORE < IID.
+
+
+.decl is_instruction_behind_other_within_block(instructionid: _instructionid, instructionid_behind: _instructionid)
+is_instruction_behind_other_within_block(IID, IID_BEHIND) :- instruction(BID, IID, _, _), instruction(BID, IID_BEHIND, _, _),
+IID_BEHIND > IID.
+
+
+.decl is_instruction_before_other(instructionid: _instructionid, instructionid_before: _instructionid)
+//case instructions in same basic block
+is_instruction_before_other(IID, IID_BEFORE) :- 
+instruction(BID, IID, _, _), instruction(BID_BEFORE, IID_BEFORE, _, _),
+BID = BID_BEFORE, is_instruction_before_other_within_block(IID, IID_BEFORE).
+//case instructions in different basic blocks
+is_instruction_before_other(IID, IID_BEFORE) :-
+instruction(BID, IID, _, _), instruction(BID_BEFORE, IID_BEFORE, _, _), 
+BID != BID_BEFORE,
+block(FID, BID, _), block(FID_BEFORE, BID_BEFORE, _),
+is_behind(FID, BID, FID_BEFORE, BID_BEFORE).
+
+.decl is_instruction_behind_other(instructionid: _instructionid, instructionid_behind: _instructionid)
+//case instructions in same basic block
+is_instruction_behind_other(IID, IID_BEHIND) :- instruction(BID, IID, _, _), instruction(BID_BEHIND, IID_BEHIND, _, _),
+BID = BID_BEHIND, is_instruction_behind_other_within_block(IID, IID_BEHIND).
+//case instructions in different basic blocks
+is_instruction_behind_other(IID, IID_BEHIND) :- instruction(BID, IID, _, _), instruction(BID_BEHIND, IID_BEHIND, _, _),
+BID != BID_BEHIND,
+block(FID, BID, _), block(FID_BEHIND, BID_BEHIND, _),
+is_behind(FID, BID, FID_BEHIND, BID_BEHIND).
