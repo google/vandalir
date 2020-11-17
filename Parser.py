@@ -261,7 +261,7 @@ class Parser:
             # print(splitInstructions[0])
             # print(splitInstructions[1])
             if(splitInstructions[0][0] == "i" and splitInstructions[1]):  # remove integer type
-                if(opcode == "call" or opcode == "ret"):  # do not parse types for call instructions (as they are given by function def)
+                if(opcode == "call" or opcode == "ret" or "getelementptr"):  # do not parse types for call instructions (as they are given by function def)
                     operand = [splitInstructions[1].strip()]
                 else:
                     operand = [splitInstructions[0].strip(), splitInstructions[1].strip()]

@@ -1,6 +1,6 @@
 
 .type _memcategory <: symbol
-
+.type _abstractObject <: symbol
 
 .decl memtype(memtype: symbol)
 memtype(MEM) :- MEM = "unknown". //unkown type
@@ -11,15 +11,43 @@ memtype(MEM) :- type(MEM).
 memcategory(MEM) :- MEM = "stack".
 memcategory(MEM) :- MEM = "heap".
 memcategory(MEM) :- MEM = "global".
+memcategory(MEM) :- MEM = "arrayAll".
+memcategory(MEM) :- MEM = "arrayIndex".
+memcategory(MEM) :- MEM = "field".
 memcategory(MEM) :- MEM = "vreg".
 
 
+.decl memlocation_array_enumerator(functionid: _functionid, memlocation: symbol, enumerator: number, memtyp: symbol, memcategory: _memcategory)
+memlocation_array_enumerator(FID, LOC, NUM, TYP, CAT) :- 
+instruction(BID, IID, LOC, OPC), block(FID, BID, _),
+OPC = "alloca", CAT = "arrayIndex", memcategory(CAT), 
+get_first_operand(IID, SIZE), is_numeric(SIZE), to_number(SIZE) > 1,
+get_second_operand(IID, TYP), NUM = 0, NUM<to_number(SIZE).
+
+memlocation_array_enumerator(FID, LOC, NUM, TYP, CAT) :- 
+instruction(BID, IID, LOC, OPC), block(FID, BID, _),
+OPC = "alloca", CAT = "arrayIndex", memcategory(CAT), 
+get_first_operand(IID, SIZE), is_numeric(SIZE), to_number(SIZE) > 1,
+get_second_operand(IID, TYP), NUM > 0, NUM<to_number(SIZE), NUM = NUM2+1,
+memlocation_array_enumerator(FID, LOC, NUM2, TYP, CAT).
+
 .decl memlocation(functionid: _functionid, memlocation: symbol, memtyp: symbol, memcategory: _memcategory)
-//.output memlocation(delimiter=",")
-//stack allocations
+.output memlocation(delimiter=",")
+//stack allocations of one element.
 memlocation(FID, LOC, TYP, CAT) :- instruction(BID, IID, LOC, OPC), block(FID, BID, _),
 OPC = "alloca", CAT = "stack", memcategory(CAT), 
+get_first_operand(IID, SIZE), is_numeric(SIZE), to_number(SIZE) = 1,
 get_second_operand(IID, TYP).
+//stack allocations of array (all element).
+memlocation(FID, LOC, TYP, CAT) :- instruction(BID, IID, LOC, OPC), block(FID, BID, _),
+OPC = "alloca", CAT = "arrayAll", memcategory(CAT), 
+get_first_operand(IID, SIZE), is_numeric(SIZE), to_number(SIZE) > 1,
+get_second_operand(IID, TYP).
+//stack allocations of array (index elements).
+memlocation(FID, LOCATION, TYP, CAT) :- 
+memlocation_array_enumerator(FID, LOC, NUM, TYP, CAT),
+LOCATION = cat(cat(LOC, "."), to_string(NUM)).
+
 //heap allocations
 memlocation(FID, LOC, TYP, CAT) :- instruction(BID, IID, LOC, _), block(FID, BID, _),
 is_heap_allocation_call(IID), CAT = "heap", memcategory(CAT),
