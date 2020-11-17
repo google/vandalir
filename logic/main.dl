@@ -4,6 +4,8 @@
 //framework
 #include "instructions.dl"
 #include "control-flow.dl"
+#include "memlocation.dl"
+#include "alias.dl"
 #include "points-to.dl"
 
 
