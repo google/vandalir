@@ -301,7 +301,7 @@ class Parser:
 
         # parse getelementptr as its own instruction
         if("getelementptr" in operand and operand[0] != "%"):
-            print(operand)
+            #print(operand)
             operand = self.parseGetElementPtrInstructionGivenAsString(instruction, operand)
             return [operand.strip()]
 
