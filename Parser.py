@@ -17,6 +17,13 @@ class Parser:
 
     def __init__(self, input):
         self.inputFile = input
+        self.functionid = 0
+        self.argumentid = 0
+        self.blockid = 0
+        self.instructionid = 0
+        self.operandid = 0
+
+        self.artificialInstructionId = -1
         self.outputList = {
             "function": list(),
             "argument": list(),
@@ -31,12 +38,6 @@ class Parser:
 
         module = self.getInputFile()
 
-        functionid = 0
-        argumentid = 0
-        blockid = 0
-        instructionid = 0
-        operandid = 0
-
         self.parseGlobals(module)
 
         for function in module.functions:
@@ -47,23 +48,23 @@ class Parser:
             if(not any(function.blocks)):
                 functiontype = "declare"
 
-            function_str = "function("+str(functionid)+";\""+str(function.name)+"\";\""+functiontype+"\";\""+str(function.type).split('(')[0].strip()+"\")"
+            function_str = "function("+str(self.functionid)+";\""+str(function.name)+"\";\""+functiontype+"\";\""+str(function.type).split('(')[0].strip()+"\")"
             self.output(function_str)
 
             for argument in function.arguments:
                 argumentRegisterStr = "%"+str(argumentRegister)
-                arguments_str = "argument("+str(functionid)+";"+str(argumentid)+";"+argumentRegisterStr+";\""+str(argument.type)+"\")"
+                arguments_str = "argument("+str(self.functionid)+";"+str(self.argumentid)+";"+argumentRegisterStr+";\""+str(argument.type)+"\")"
                 self.output(arguments_str)
-                argumentid += 1
+                self.argumentid += 1
                 argumentRegister += 1
 
             for block in function.blocks:
                 (label, preds) = self.getControlFlowInfoFromBlock(block)
                 if(len(preds) > 0):
                     for predecessor in preds:
-                        pred_str = "predecessor("+str(functionid)+";"+str(label)+";"+str(predecessor)+")"
+                        pred_str = "predecessor("+str(self.functionid)+";"+str(label)+";"+str(predecessor)+")"
                         self.output(pred_str)
-                block_str = "block("+str(functionid)+";"+str(blockid)+";\""+str(label)+"\")"
+                block_str = "block("+str(self.functionid)+";"+str(self.blockid)+";\""+str(label)+"\")"
 
                 self.output(block_str)
                 for instruction in block.instructions:
@@ -71,75 +72,79 @@ class Parser:
                     # print(fullInstruction)
 
                     # get virtual Register number
-                    virtualRegister = "%-1"
-                    splitFuillInstruction = fullInstruction.split(" ")
-                    if(splitFuillInstruction[0][0] == "%" and splitFuillInstruction[0][1:].isnumeric()):
-                        virtualRegister = "%"+str(splitFuillInstruction[0][1:])
+                    virtualRegister = self.getVirtualRegisterOfInstruction(instruction)
                     # print(virtualRegister)
 
-                    instruction_str = "instruction("+str(blockid)+";"+str(instructionid)+";\""+virtualRegister+"\";\""+str(instruction.opcode)+"\")"
+                    instruction_str = "instruction("+str(self.blockid)+";"+str(self.instructionid)+";\""+virtualRegister+"\";\""+str(instruction.opcode)+"\")"
                     self.output(instruction_str)
 
                     # operand processing
                     if(str(instruction.opcode) == "alloca"):  # alloca instruction
-                        operandid = self.parseAllocaInstruction(fullInstruction, instructionid, operandid)
+                        self.parseAllocaInstruction(fullInstruction)
                     elif(str(instruction.opcode) == "store"):  # store instruction
-                        self.parseStoreInstruction(instruction, instructionid, operandid)
-                        operandid += 4
+                        self.parseStoreInstruction(instruction)
                     elif(str(instruction.opcode) == "load"):  # load instruction
-                        self.parseLoadInstruction(instruction, instructionid, operandid)
-                        operandid += 3
+                        self.parseLoadInstruction(instruction)
                     elif(str(instruction.opcode) == "phi"):  # load instruction
-                        self.parsePhiInstruction(fullInstruction, instructionid, operandid)
-                        operandid += 5
+                        self.parsePhiInstruction(fullInstruction)
                     elif(str(instruction.opcode) in CONV_INSTRUCTIONS):  # conversion instruction
-                        operandid = self.parseConversionInstructions(instruction, instructionid, operandid)
+                        self.parseConversionInstructions(instruction)
                     elif(str(instruction.opcode) == "br"):  # br instruction
                         for operand in instruction.operands:
-                            processedOperands = self.preprocessOperand(str(instruction.opcode), operand)
+                            processedOperands = self.preprocessOperand(instruction, operand)
                             for procOp in processedOperands:
                                 if(not procOp):  # skip empty operands
                                     continue
-                                operand_str = "operand("+str(instructionid)+";"+str(operandid)+";\""+procOp+"\")"
+                                operand_str = "operand("+str(self.instructionid)+";"+str(self.operandid)+";\""+procOp+"\")"
                                 self.output(operand_str)
-                                operandid += 1
+                                self.operandid += 1
                     else:
-                        for operand in instruction.operands:
-                            processedOperands = self.preprocessOperand(str(instruction.opcode), operand)
-                            for procOp in processedOperands:
-                                if(not procOp):  # skip empty operands
-                                    continue
-                                operand_str = "operand("+str(instructionid)+";"+str(operandid)+";\""+procOp+"\")"
-                                self.output(operand_str)
-                                operandid += 1
-                    instructionid += 1
-                blockid += 1
+                        self.parseDefaultInstructions(instruction)
+                    self.instructionid += 1
+                self.blockid += 1
 
-            functionid += 1
+            self.functionid += 1
 
         print("Parsing successful.")
 
-    def parseConversionInstructions(self, instruction, instructionid, operandid):
+    def getVirtualRegisterOfInstruction(self, instruction):
+        fullInstruction = str(instruction).strip()
+        virtualRegister = "%-1"
+        splitFuillInstruction = fullInstruction.split(" ")
+        if(splitFuillInstruction[0][0] == "%" and splitFuillInstruction[0][1:].isnumeric()):
+            virtualRegister = "%"+str(splitFuillInstruction[0][1:])
+        return virtualRegister
+
+    def parseDefaultInstructions(self, instruction):
         for operand in instruction.operands:
-            processedOperands = self.preprocessOperand(str(instruction.opcode), operand)
+            processedOperands = self.preprocessOperand(instruction, operand)
             for procOp in processedOperands:
                 if(not procOp):  # skip empty operands
                     continue
-                operand_str = "operand("+str(instructionid)+";"+str(operandid)+";\""+procOp+"\")"
+                operand_str = "operand("+str(self.instructionid)+";"+str(self.operandid)+";\""+procOp+"\")"
                 self.output(operand_str)
-                operandid += 1
+                self.operandid += 1
+
+    def parseConversionInstructions(self, instruction):
+        for operand in instruction.operands:
+            processedOperands = self.preprocessOperand(instruction, operand)
+            for procOp in processedOperands:
+                if(not procOp):  # skip empty operands
+                    continue
+                operand_str = "operand("+str(self.instructionid)+";"+str(self.operandid)+";\""+procOp+"\")"
+                self.output(operand_str)
+                self.operandid += 1
         fullInstruction = str(instruction).strip()
         splitInstruction = fullInstruction.split(" to ")
         if(len(splitInstruction) != 2):
             print("ERROR: conversion instruction has != 1 'to'!")
             sys.exit(1)
         operand = splitInstruction[1].strip()
-        operand_str = "operand("+str(instructionid)+";"+str(operandid)+";\""+operand+"\")"
+        operand_str = "operand("+str(self.instructionid)+";"+str(self.operandid)+";\""+operand+"\")"
         self.output(operand_str)
-        operandid += 1
-        return operandid
+        self.operandid += 1
 
-    def parsePhiInstruction(self, fullInstruction, instructionid, operandid):
+    def parsePhiInstruction(self, fullInstruction):
         instr = fullInstruction.split("phi ")[1]
         instr = instr.split(" ")
         #print("phi:"+str(fullInstruction))
@@ -158,30 +163,29 @@ class Parser:
 
         operands = [datatype, firstVal, firstCondBlock, secondVal, secondCondBlock]
         for operand in operands:
-            operand_str = "operand("+str(instructionid)+";"+str(operandid)+";\""+operand+"\")"
+            operand_str = "operand("+str(self.instructionid)+";"+str(self.operandid)+";\""+operand+"\")"
             self.output(operand_str)
-            operandid += 1
+            self.operandid += 1
 
-    def parseAllocaInstruction(self, fullInstruction, instructionid, operandid):
+    def parseAllocaInstruction(self, fullInstruction):
         if("[" in fullInstruction and "]" in fullInstruction):  # allocate arrays
             operand = fullInstruction[fullInstruction.find("[")+1:fullInstruction.rfind("]")].strip()
             operandSplit = operand.split("x")
             for operand in operandSplit:
-                operand_str = "operand("+str(instructionid)+";"+str(operandid)+";\""+str(operand).strip()+"\")"
+                operand_str = "operand("+str(self.instructionid)+";"+str(self.operandid)+";\""+str(operand).strip()+"\")"
                 self.output(operand_str)
-                operandid += 1
+                self.operandid += 1
         else:  # allocate regular variables
-            operand_str = "operand("+str(instructionid)+";"+str(operandid)+";\""+"1"+"\")"
+            operand_str = "operand("+str(self.instructionid)+";"+str(self.operandid)+";\""+"1"+"\")"
             self.output(operand_str)
-            operandid += 1
+            self.operandid += 1
             operandSplit = fullInstruction.split(" ")
             operand = operandSplit[3].replace(",", "").strip()
-            operand_str = "operand("+str(instructionid)+";"+str(operandid)+";\""+str(operand).strip()+"\")"
+            operand_str = "operand("+str(self.instructionid)+";"+str(self.operandid)+";\""+str(operand).strip()+"\")"
             self.output(operand_str)
-            operandid += 1
-        return operandid
+            self.operandid += 1
 
-    def parseLoadInstruction(self, instruction, instructionid, operandid):
+    def parseLoadInstruction(self, instruction):
         operands = [None]*3
         ops = str(instruction).strip()
         ops = ops.replace("load ", "")
@@ -213,11 +217,11 @@ class Parser:
 
         for op in operands:
             op = str(op).strip()
-            operand_str = "operand("+str(instructionid)+";"+str(operandid)+";\""+op+"\")"
+            operand_str = "operand("+str(self.instructionid)+";"+str(self.operandid)+";\""+op+"\")"
             self.output(operand_str)
-            operandid += 1
+            self.operandid += 1
 
-    def parseStoreInstruction(self, instruction, instructionid, operandid):
+    def parseStoreInstruction(self, instruction):
         operands = [None]*4
         ops = str(instruction).strip().replace("store ", "").split(", ")
         operand1_split = ops[0].strip().split(" ")
@@ -229,9 +233,9 @@ class Parser:
 
         for op in operands:
             op = str(op).strip()
-            operand_str = "operand("+str(instructionid)+";"+str(operandid)+";\""+op+"\")"
+            operand_str = "operand("+str(self.instructionid)+";"+str(self.operandid)+";\""+op+"\")"
             self.output(operand_str)
-            operandid += 1
+            self.operandid += 1
 
     def parseGlobals(self, module):
         globals = list(module.global_variables)
@@ -241,11 +245,49 @@ class Parser:
             glob_str = "global(" + globalName + ")"
             self.output(glob_str)
 
-    @staticmethod
-    def preprocessOperand(opcode, operand):
+    def parseGetElementPtrInstructionGivenAsString(self, callInstruction, strInstruction):
+
+        # create its own artificial instruction
+        virtualRegister = self.getVirtualRegisterOfInstruction(callInstruction)
+        virtualRegister += "_"+str(self.artificialInstructionId)
+        opcode = "getelementptr"
+        instruction_str = "instruction("+str(self.blockid)+";"+str(self.artificialInstructionId)+";\""+virtualRegister+"\";\""+opcode+"\")"
+        self.output(instruction_str)
+        # parse operands for artificial instruction
+
+        # print(strInstruction)
+        strInstruction = strInstruction[strInstruction.find("(")+1:strInstruction.find(")")].strip()
+        operandList = strInstruction.split(", ")
+        operandList = operandList[1:]
+
+        operandList[0] = operandList[0][operandList[0].find("]")+1:]
+        operandList[0] = operandList[0][operandList[0].find("*")+1:]
+
+        # print(operandList)
+
+        for operand in operandList:
+            processedOperands = self.preprocessOperand(opcode, operand)
+            for procOp in processedOperands:
+                if(not procOp):  # skip empty operands
+                    continue
+                operand_str = "operand("+str(self.artificialInstructionId)+";"+str(self.operandid)+";\""+procOp+"\")"
+                self.output(operand_str)
+                self.operandid += 1
+
+        self.artificialInstructionId -= 1
+        return virtualRegister
+
+    def preprocessOperand(self, instruction, operand):
+
+        if(isinstance(instruction, str)):
+            opcode = instruction
+        else:
+            opcode = str(instruction.opcode)
 
         operand = str(operand).strip()
-        # print("operand:"+str(operand))
+
+        #if(opcode == "getelementptr"):
+        #    print("operand:"+str(operand))
 
         if(opcode == "call"):  # call operand
             if("declare" in operand):  # function call operand
@@ -253,9 +295,15 @@ class Parser:
             if("define" in operand):  # function call operand
                 operand = operand[operand.find("@")+1:operand.find("(")].strip()
         else:
-            if("; " in operand): #remove long src code (llvmlite bug)
+            if("; " in operand):  # remove long src code (llvmlite bug)
                 operand = operand.split("; ")[0]
         splitInstructions = operand.strip().split(" ")
+
+        # parse getelementptr as its own instruction
+        if("getelementptr" in operand and operand[0] != "%"):
+            print(operand)
+            operand = self.parseGetElementPtrInstructionGivenAsString(instruction, operand)
+            return [operand.strip()]
 
         if(len(splitInstructions) > 1):
             # print(splitInstructions[0])
