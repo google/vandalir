@@ -2,9 +2,12 @@
 *.o
 /test/test
 /llvm-ir/test_annotated.ll
-/profiler.html
+/profiler_html
 *.cpp
 /facts
 /output
 /test
 !/test/test.c
+llvm-ir/
+!/llvm-ir/test.ll
+profile
