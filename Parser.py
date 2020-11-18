@@ -238,12 +238,35 @@ class Parser:
             self.operandid += 1
 
     def parseGlobals(self, module):
+
         globals = list(module.global_variables)
         globals.extend(list(module.functions))
         for glob in globals:
             globalName = "@"+str(glob.name)
-            glob_str = "global(" + globalName + ")"
+            # print(globalName)
+            globType = str(glob.type)
+            (globType, globTypeArraySize) = self.parseType(globType)
+            glob_str = "global("+globalName+";"+globType+";"+str(globTypeArraySize)+")"
             self.output(glob_str)
+
+    # mode 0: get return type of functions, if function types are supplied
+    def parseType(self, operand, mode=0):
+        # print(operand)
+        if(mode == 0):
+            if("(" in operand):
+                operand = operand[:operand.find("(")].strip()
+        if("[" in operand and "]" in operand): 
+            inBrackets = operand[operand.find("[")+1:operand.find("]")].strip()
+            # print("IB:"+str(inBrackets))
+            if(" x ") in inBrackets:
+                inBrackets = inBrackets.split(" x ")
+                operand = inBrackets[1]+operand[operand.find("]")+1:]
+                number = int(inBrackets[0].strip())
+        else:
+            number = 1
+        # print(operand)
+        operand = operand.strip()
+        return (operand, number)
 
     def parseGetElementPtrInstructionGivenAsString(self, callInstruction, strInstruction):
 

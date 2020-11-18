@@ -7,6 +7,7 @@
 .type _operandid <: number
 .type _label <: symbol
 .type _vreg <: symbol
+.type _memcategory <: symbol
 
 .decl type(type: symbol)
 type(T) :- T = OV, operand(_,_,OV).
@@ -33,5 +34,5 @@ opval(T) :- T = OV, operand(_,_,OV).
 .decl operand(instructionid: _instructionid, operandid: _operandid, operandvalue: symbol)
 .input operand(delimiter=";")
 
-.decl global(name: symbol)
+.decl global(name: symbol, type: symbol, size: number)
 .input global(delimiter=";")
