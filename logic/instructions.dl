@@ -153,6 +153,11 @@ heap_allocation_instruction(INS) :- INS = "realloc".
 is_vreg(T) :- contains("%", T), opval(T),
 SUBSTR = substr(T, 1, strlen(T)), !contains("%", SUBSTR).
 
+//is given operand a global
+.decl is_global(type: symbol)
+is_global(T) :- contains("@", T), opval(T),
+SUBSTR = substr(T, 1, strlen(T)), !contains("@", SUBSTR).
+
 //is given operand a pointer
 .decl is_pointer(type: symbol)
 is_pointer(T) :- pointer_level(T, LVL), LVL > 0.

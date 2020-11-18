@@ -1,8 +1,8 @@
 //find equal memory location (alias analysis)
 .decl memequals(functionid1: _functionid, memlocation1: symbol, memtyp1: symbol, memcategory1: _memcategory, 
 functionid2: _functionid, memlocation2: symbol, memtyp2: symbol, memcategory2: _memcategory)
-//.output memequals(delimiter=",")
-
+.output memequals(delimiter=",")
+/*
 //case: (a <==> b) ==> (b <==> a)
 memequals(FID1, LOC1, TYPE1, CAT1, FID2, LOC2, TYPE2, CAT2) :- 
 memequals(FID2, LOC2, TYPE2, CAT2, FID1, LOC1, TYPE1, CAT1).
@@ -76,6 +76,100 @@ memlocation(FID2, LOC2, TYPE2, CAT2),
 get_call_argument_and_function_register(_, CFID, CARG, FID, VREG, ARGTYPE),
 FID1 = CFID, LOC1=CARG, TYPE1 = ARGTYPE, memcategory(CAT1),
 FID2 = FID, LOC2=VREG, TYPE1 =  ARGTYPE, memcategory(CAT2).
+
+*/
+
+//from here on the cases for array handling
+
+//first cases, where specific element of array could be located
+
+//case array (getelementptr), both indices numeric, first index = 0, array is vreg
+memequals(FID1, LOC1, TYPE1, CAT1, FID2, LOC2, TYPE2, CAT2) :-
+memlocation(FID1, LOC1, TYPE1, CAT1), //LOC1 instruction
+memlocation(FID2, LOC2, TYPE2, CAT2),
+block(FID1, BID, _), TYPE1 = "unknown", //Todo: add type info to getelemeptr (boath parsings in Parser)
+CAT1 = "vreg",
+instruction(BID, IID, LOC1, OPC), OPC = "getelementptr",
+get_first_operand(IID, ARRAY), is_vreg(ARRAY),
+get_second_operand(IID, INDEX1), INDEX1 = "0",
+get_third_operand(IID, INDEX2), is_numeric(INDEX2),
+FID2 = FID1, 
+LOC2 = cat(cat(ARRAY, "."), INDEX2), 
+CAT2 = "arrayIndex". 
+
+//case array (getelementptr), both indices numeric, first index = 0, array is global
+memequals(FID1, LOC1, TYPE1, CAT1, FID2, LOC2, TYPE2, CAT2) :-
+memlocation(FID1, LOC1, TYPE1, CAT1), //LOC1 instruction
+memlocation(FID2, LOC2, TYPE2, CAT2),
+block(FID1, BID, _), TYPE1 = "unknown", //Todo: add type info to getelemeptr (boath parsings in Parser)
+CAT1 = "vreg",
+instruction(BID, IID, LOC1, OPC), OPC = "getelementptr",
+get_first_operand(IID, ARRAY), is_global(ARRAY),
+get_second_operand(IID, INDEX1), INDEX1 = "0",
+get_third_operand(IID, INDEX2), is_numeric(INDEX2),
+FID2 = -1, 
+LOC2 = cat(cat(ARRAY, "."), INDEX2), 
+CAT2 = "arrayIndex". 
+/*
+//case array (getelementptr), first index = 0, second not numeric, but found, array is vreg
+memequals(FID1, LOC1, TYPE1, CAT1, FID2, LOC2, TYPE2, CAT2) :-
+memlocation(FID1, LOC1, TYPE1, CAT1), //LOC1 instruction
+memlocation(FID2, LOC2, TYPE2, CAT2),
+block(FID1, BID, _), TYPE1 = "unknown", //Todo: add type info to getelemeptr (boath parsings in Parser)
+CAT1 = "vreg",
+instruction(BID, IID, LOC1, OPC), OPC = "getelementptr",
+get_first_operand(IID, ARRAY), is_vreg(ARRAY),
+get_second_operand(IID, INDEX1), INDEX1 = "0",
+get_third_operand(IID, INDEX2VREG), is_vreg(INDEX2VREG),
+get_int_by_vreg(INDEX2, FID1, INDEX2VREG),
+FID2 = FID1, 
+LOC2 = cat(cat(ARRAY, "."), to_string(INDEX2)), 
+CAT2 = "arrayIndex". 
+
+//case array (getelementptr), first index = 0, second not numeric, but found, array is global
+memequals(FID1, LOC1, TYPE1, CAT1, FID2, LOC2, TYPE2, CAT2) :-
+memlocation(FID1, LOC1, TYPE1, CAT1), //LOC1 instruction
+memlocation(FID2, LOC2, TYPE2, CAT2),
+block(FID1, BID, _), TYPE1 = "unknown", //Todo: add type info to getelemeptr (boath parsings in Parser)
+CAT1 = "vreg",
+instruction(BID, IID, LOC1, OPC), OPC = "getelementptr",
+get_first_operand(IID, ARRAY), is_global(ARRAY),
+get_second_operand(IID, INDEX1), INDEX1 = "0",
+get_third_operand(IID, INDEX2VREG), is_vreg(INDEX2VREG),
+get_int_by_vreg(INDEX2, FID1, INDEX2VREG),
+FID2 = -1, 
+LOC2 = cat(cat(ARRAY, "."), to_string(INDEX2)), 
+CAT2 = "arrayIndex". 
+*/
+//now cases, where specific element of array could NOT be located
+
+//case array (getelementptr), first index = 0, second not numeric, array is vreg
+memequals(FID1, LOC1, TYPE1, CAT1, FID2, LOC2, TYPE2, CAT2) :-
+memlocation(FID1, LOC1, TYPE1, CAT1), //LOC1 instruction
+memlocation(FID2, LOC2, TYPE2, CAT2),
+block(FID1, BID, _), TYPE1 = "unknown", //Todo: add type info to getelemeptr (boath parsings in Parser)
+CAT1 = "vreg",
+instruction(BID, IID, LOC1, OPC), OPC = "getelementptr",
+get_first_operand(IID, ARRAY), is_vreg(ARRAY),
+get_second_operand(IID, INDEX1), INDEX1 = "0",
+get_third_operand(IID, INDEX2VREG), is_vreg(INDEX2VREG),
+FID2 = FID1, 
+LOC2 = ARRAY,
+CAT2 = "arrayAll". 
+
+//case array (getelementptr), first index = 0, second not numeric, array is global
+memequals(FID1, LOC1, TYPE1, CAT1, FID2, LOC2, TYPE2, CAT2) :-
+memlocation(FID1, LOC1, TYPE1, CAT1), //LOC1 instruction
+memlocation(FID2, LOC2, TYPE2, CAT2),
+block(FID1, BID, _), TYPE1 = "unknown", //Todo: add type info to getelemeptr (boath parsings in Parser)
+CAT1 = "vreg",
+instruction(BID, IID, LOC1, OPC), OPC = "getelementptr",
+get_first_operand(IID, ARRAY), is_global(ARRAY),
+get_second_operand(IID, INDEX1), INDEX1 = "0",
+get_third_operand(IID, INDEX2VREG), is_vreg(INDEX2VREG),
+FID2 = -1, 
+LOC2 = ARRAY,
+CAT2 = "arrayAll". 
 
 
 

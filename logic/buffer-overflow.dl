@@ -91,7 +91,7 @@ is_heap_allocation_call(IID), get_size_of_heap_alloc(IID, SIZE),
 VAL = SIZE.
 
 
-//actual implementation of get possible integer values
+//get possible integer values
 .decl get_int_by_vreg(value: number, functionid: _functionid, _vreg: symbol)
 //.output get_int_by_vreg(delimiter=",")
 //case add
