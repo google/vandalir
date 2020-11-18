@@ -6,14 +6,14 @@ functionid2: _functionid, memlocation2: symbol, memtyp2: symbol, memcategory2: _
 //memequals cases
 //cases memequals: (s -> e && as <==> s) ==> as -> e
 points_to(SFID, SLOC, STYPE, SCAT, EFID, ELOC, ETYPE, ECAT) :- 
-memlocation(SFID, SLOC, STYPE, SCAT), 
-memlocation(EFID, ELOC, ETYPE, ECAT), 
+//memlocation(SFID, SLOC, STYPE, SCAT), 
+//memlocation(EFID, ELOC, ETYPE, ECAT), 
 memequals(SFID, SLOC, STYPE, SCAT, S2FID, S2LOC, S2TYPE, S2CAT), 
 points_to(S2FID, S2LOC, S2TYPE, S2CAT, EFID, ELOC, ETYPE, ECAT).
 //cases memequals: (s -> e && ae <==> e) ==> s -> ae
 points_to(SFID, SLOC, STYPE, SCAT, EFID, ELOC, ETYPE, ECAT) :- 
-memlocation(SFID, SLOC, STYPE, SCAT), 
-memlocation(EFID, ELOC, ETYPE, ECAT), 
+//memlocation(SFID, SLOC, STYPE, SCAT), 
+//memlocation(EFID, ELOC, ETYPE, ECAT), 
 memequals(EFID, ELOC, ETYPE, ECAT, E2FID, E2LOC, E2TYPE, E2CAT), 
 points_to(SFID, SLOC, STYPE, SCAT, E2FID, E2LOC, E2TYPE, E2CAT).
 //case memequals: (s -> e && as <==> s && ae <==> e) ==> as -> ae
