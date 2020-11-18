@@ -87,6 +87,8 @@ class Parser:
                         self.parseLoadInstruction(instruction)
                     elif(str(instruction.opcode) == "phi"):  # load instruction
                         self.parsePhiInstruction(fullInstruction)
+                    elif(str(instruction.opcode) == "getelementptr"):  # getelementptr instruction
+                        self.parseGetElementPtrInstruction(instruction)
                     elif(str(instruction.opcode) in CONV_INSTRUCTIONS):  # conversion instruction
                         self.parseConversionInstructions(instruction)
                     elif(str(instruction.opcode) == "br"):  # br instruction
@@ -117,6 +119,22 @@ class Parser:
 
     def parseDefaultInstructions(self, instruction):
         for operand in instruction.operands:
+            processedOperands = self.preprocessOperand(instruction, operand)
+            for procOp in processedOperands:
+                if(not procOp):  # skip empty operands
+                    continue
+                operand_str = "operand("+str(self.instructionid)+";"+str(self.operandid)+";\""+procOp+"\")"
+                self.output(operand_str)
+                self.operandid += 1
+
+    def parseGetElementPtrInstruction(self, instruction):
+        fullInstruction = str(instruction)
+        brackets = fullInstruction[fullInstruction.find("["):fullInstruction.find("]")+1]
+        (returnType, size) = self.parseType(brackets)
+        allOperands = list(instruction.operands)
+        allOperands.append(returnType)
+
+        for operand in allOperands:
             processedOperands = self.preprocessOperand(instruction, operand)
             for procOp in processedOperands:
                 if(not procOp):  # skip empty operands
@@ -260,7 +278,7 @@ class Parser:
             # print("IB:"+str(inBrackets))
             if(" x ") in inBrackets:
                 inBrackets = inBrackets.split(" x ")
-                operand = inBrackets[1]+operand[operand.find("]")+1:]
+                operand = inBrackets[1]  # do not parse it as pointer! +operand[operand.find("]")+1:]
                 number = int(inBrackets[0].strip())
         else:
             number = 1
@@ -279,6 +297,8 @@ class Parser:
         # parse operands for artificial instruction
 
         # print(strInstruction)
+        returnType = strInstruction[:strInstruction.find(" ")-1]
+        # print(":"+returnType+":")
         strInstruction = strInstruction[strInstruction.find("(")+1:strInstruction.find(")")].strip()
         operandList = strInstruction.split(", ")
         operandList = operandList[1:]
@@ -287,6 +307,7 @@ class Parser:
         operandList[0] = operandList[0][operandList[0].find("*")+1:]
 
         # print(operandList)
+        operandList.append(returnType)
 
         for operand in operandList:
             processedOperands = self.preprocessOperand(opcode, operand)

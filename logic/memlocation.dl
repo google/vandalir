@@ -57,7 +57,7 @@ CAT = "vreg",
 TYP = RETTYPE.
 //vreg no load
 memlocation(FID, LOC, TYP, CAT) :- instruction(BID, IID, VREG, OPC), block(FID, BID, _),
-OPC != "load", OPC != "alloca", OPC != "alloca", !is_heap_allocation_call(IID),
+OPC != "load", OPC != "alloca", OPC != "getelementptr", !is_heap_allocation_call(IID),
 VREG != "%-1",
 LOC = VREG,
 CAT = "vreg", memcategory(CAT),
@@ -69,6 +69,12 @@ VREG != "%-1",
 LOC = VREG,
 CAT = "vreg", memcategory(CAT),
 get_first_operand(IID, TYP).
+//vreg getelementptr
+memlocation(FID, LOC, TYP, CAT) :- instruction(BID, IID, VREG, OPC), block(FID, BID, _),
+OPC = "getelementptr",
+LOC = VREG,
+CAT = "vreg", memcategory(CAT),
+get_fourth_operand(IID, TYP).
 //function arguments
 memlocation(FID, LOC, TYPE, CAT) :- argument(FID, _, LOC, TYPE), CAT = "stack".
 
