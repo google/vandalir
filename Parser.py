@@ -31,7 +31,9 @@ class Parser:
             "instruction": list(),
             "operand": list(),
             "predecessor": list(),
-            "global": list()
+            "global": list(),
+            "struct": list(),
+            "struct_operand": list()
         }
 
     def parse(self):
@@ -39,6 +41,7 @@ class Parser:
         module = self.getInputFile()
 
         self.parseGlobals(module)
+        self.parseStructs(module)
 
         for function in module.functions:
             argumentRegister = 0
@@ -266,6 +269,32 @@ class Parser:
             (globType, globTypeArraySize) = self.parseType(globType)
             glob_str = "global("+globalName+";"+globType+";"+str(globTypeArraySize)+")"
             self.output(glob_str)
+
+    def parseStructs(self, module):
+
+        structs = list(module.struct_types)
+        structId = 0
+        structTypeId = 0
+
+        for struct in structs:
+            name = "%"+struct.name
+            # print(str(struct))
+            struct_str = str(struct)
+            inBrackets = struct_str[struct_str.find("{")+1:struct_str.find("}")-1]
+            # print(inBrackets)
+            types = inBrackets.strip().split(", ")
+            operandsList = list()
+            for elementType in types:
+                elementType = self.parseType(elementType)
+                operandsList.append(elementType)
+                struct_operands_str = "struct_operand("+str(structId)+";"+str(structTypeId)+";"+elementType[0]+";"+str(elementType[1])+")"
+                self.output(struct_operands_str)
+                structTypeId += 1
+
+            structs_str = "struct("+str(structId)+";"+name+";"+str(len(operandsList))+")"
+            self.output(structs_str)
+
+            structId += 1
 
     # mode 0: get return type of functions, if function types are supplied
     def parseType(self, operand, mode=0):

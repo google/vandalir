@@ -1,10 +1,11 @@
 //types
-//.type id = functionid | blockid | argumentid | instructionid | operandid
 .type _functionid <: number
 .type _blockid <: number
 .type _argumentid <: number
 .type _instructionid <: number
 .type _operandid <: number
+.type _structid <: number
+.type _structoperandid <: number
 .type _label <: symbol
 .type _vreg <: symbol
 .type _memcategory <: symbol
@@ -36,3 +37,9 @@ opval(T) :- T = OV, operand(_,_,OV).
 
 .decl global(name: symbol, type: symbol, size: number)
 .input global(delimiter=";")
+
+.decl struct(structid: _structid, name: symbol, size: number)
+.input struct(delimiter=";")
+
+.decl structoperand(structid: _structid, structoperandid:_structoperandid, type: symbol, size: number)
+.input structoperand(delimiter=";")
