@@ -2,7 +2,9 @@
 #include "types.dl"
 
 //framework
+#include "util.dl"
 #include "instructions.dl"
+#include "operands.dl"
 #include "control-flow.dl"
 #include "memlocation.dl"
 #include "alias.dl"

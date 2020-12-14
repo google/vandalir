@@ -41,7 +41,7 @@ get_ith_operand(IID, I, VAL) :- I>5, get_ith_operand_recursive(IID, _, I, VAL).
 
 //recursive helper
 .decl get_ith_operand_recursive(instructionid: _instructionid, operandid: _operandid, i: number, operandvalue: symbol)
-get_ith_operand_recursive(IID, OID, I, VAL) :- I=1, operand(IID, OID, OV1), !operand(IID, OID-1, _), VAL = OV1.
+get_ith_operand_recursive(IID, OID, I, VAL) :- I=1, operand(IID, OID, VAL), !operand(IID, OID-1, _).
 get_ith_operand_recursive(IID, OID, I, VAL) :- I>1, I=I2+1, operand(IID, OID, VAL), get_ith_operand_recursive(IID, OID-1, I2, _).
 
 //get last operand
@@ -128,9 +128,17 @@ get_fid_by_fname(FID, FNAME) :- function(FID, FNAME, _, _).
 //get size of alloca
 .decl get_size_of_alloca(instructionid: _instructionid, size: number)
 get_size_of_alloca(IID, SIZE) :- instruction(_, IID, _, OPC), OPC = "alloca",
-get_first_operand(IID, OV1),
+get_second_operand(IID, OV1),
 SIZE = to_number(OV1).
 
+.decl is_alloca_multidimensional(instructionid: _instructionid)
+is_alloca_multidimensional(IID) :- instruction(_, IID, _, OPC), OPC = "alloca",
+get_num_operands(IID, OPCOUNT), OPCOUNT>2.
+
+.decl get_alloca_arraylevel(instructionid: _instructionid, arraylevel: number)
+.output get_alloca_arraylevel(delimiter=";")
+get_alloca_arraylevel(IID, SIZE) :- instruction(_, IID, _, OPC), OPC = "alloca",
+get_num_operands(IID, OPCOUNT), SIZE = OPCOUNT-1.
 
 //heap
 
@@ -144,46 +152,3 @@ heap_allocation_instruction(FNAME).
 heap_allocation_instruction(INS) :- INS = "malloc".
 heap_allocation_instruction(INS) :- INS = "calloc".
 heap_allocation_instruction(INS) :- INS = "realloc".
-
-
-//operand instructions
-
-//is given operand a vreg
-.decl is_vreg(type: symbol)
-is_vreg(T) :- contains("%", T), opval(T),
-SUBSTR = substr(T, 1, strlen(T)), !contains("%", SUBSTR).
-
-//is given operand a global
-.decl is_global(type: symbol)
-is_global(T) :- contains("@", T), opval(T),
-SUBSTR = substr(T, 1, strlen(T)), !contains("@", SUBSTR).
-
-//is given operand a pointer
-.decl is_pointer(type: symbol)
-is_pointer(T) :- pointer_level(T, LVL), LVL > 0.
-
-.decl is_numeric(type: symbol)
-is_numeric(VAL) :- opval(VAL), 
-!contains(":", VAL), !contains("%", VAL), !contains("[", VAL), !contains("]", VAL),
-!contains("(", VAL), !contains(")", VAL), !contains("'", VAL), !contains(" ", VAL),
-!contains("a", VAL), !contains("b", VAL), !contains("c", VAL), !contains("d", VAL), 
-!contains("e", VAL), !contains("f", VAL), !contains("g", VAL), !contains("h", VAL), 
-!contains("i", VAL), !contains("j", VAL), !contains("k", VAL), !contains("l", VAL), 
-!contains("m", VAL), !contains("n", VAL), !contains("o", VAL), !contains("p", VAL), 
-!contains("q", VAL), !contains("r", VAL), !contains("s", VAL), !contains("t", VAL), 
-!contains("u", VAL), !contains("v", VAL), !contains("w", VAL), !contains("x", VAL), 
-!contains("y", VAL), !contains("z", VAL), !contains("A", VAL), !contains("B", VAL), 
-!contains("C", VAL), !contains("D", VAL), !contains("E", VAL), !contains("F", VAL), 
-!contains("G", VAL), !contains("H", VAL), !contains("I", VAL), !contains("J", VAL), 
-!contains("K", VAL), !contains("L", VAL), !contains("M", VAL), !contains("N", VAL), 
-!contains("O", VAL), !contains("P", VAL), !contains("Q", VAL), !contains("R", VAL), 
-!contains("S", VAL), !contains("T", VAL), !contains("U", VAL), !contains("V", VAL), 
-!contains("W", VAL), !contains("X", VAL), !contains("Y", VAL), !contains("Z", VAL). 
-
-//get level of pointer (or pointer to pointer, etc.)
-.decl pointer_level(type: symbol, level: number)
-//.output pointer_level(delimiter=",")
-pointer_level(TYPE, LVL) :- type(TYPE), !contains("*", TYPE), LVL = 0.
-pointer_level(TYPE, LVL) :- type(TYPE), contains("*", TYPE), LVL=OLDLVL+1, 
-SUBSTR = substr(TYPE, 0, strlen(TYPE)-1),
-pointer_level(SUBSTR, OLDLVL).

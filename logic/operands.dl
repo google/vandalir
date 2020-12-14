@@ -1,0 +1,50 @@
+//operand instructions
+
+//is given operand a vreg
+.decl is_vreg(type: symbol)
+is_vreg(T) :- contains("%", T), opval(T),
+SUBSTR = substr(T, 1, strlen(T)), !contains("%", SUBSTR).
+
+//is given operand a struct
+.decl is_struct(type: symbol)
+is_struct(T) :- is_vreg(T), substr(T, 0, 8) = "%struct.".
+
+//is given operand a multidimensional array
+.decl is_multidimensional(type: symbol)
+is_multidimensional(T) :- contains("x", T), opval(T).
+
+//is given operand a global
+.decl is_global(type: symbol)
+is_global(T) :- contains("@", T), opval(T),
+SUBSTR = substr(T, 1, strlen(T)), !contains("@", SUBSTR).
+
+//is given operand a pointer
+.decl is_pointer(type: symbol)
+is_pointer(T) :- pointer_level(T, LVL), LVL > 0.
+
+.decl is_numeric(type: symbol)
+is_numeric(VAL) :- opval(VAL), 
+!contains(":", VAL), !contains("%", VAL), !contains("[", VAL), !contains("]", VAL),
+!contains("(", VAL), !contains(")", VAL), !contains("'", VAL), !contains(" ", VAL),
+!contains("a", VAL), !contains("b", VAL), !contains("c", VAL), !contains("d", VAL), 
+!contains("e", VAL), !contains("f", VAL), !contains("g", VAL), !contains("h", VAL), 
+!contains("i", VAL), !contains("j", VAL), !contains("k", VAL), !contains("l", VAL), 
+!contains("m", VAL), !contains("n", VAL), !contains("o", VAL), !contains("p", VAL), 
+!contains("q", VAL), !contains("r", VAL), !contains("s", VAL), !contains("t", VAL), 
+!contains("u", VAL), !contains("v", VAL), !contains("w", VAL), !contains("x", VAL), 
+!contains("y", VAL), !contains("z", VAL), !contains("A", VAL), !contains("B", VAL), 
+!contains("C", VAL), !contains("D", VAL), !contains("E", VAL), !contains("F", VAL), 
+!contains("G", VAL), !contains("H", VAL), !contains("I", VAL), !contains("J", VAL), 
+!contains("K", VAL), !contains("L", VAL), !contains("M", VAL), !contains("N", VAL), 
+!contains("O", VAL), !contains("P", VAL), !contains("Q", VAL), !contains("R", VAL), 
+!contains("S", VAL), !contains("T", VAL), !contains("U", VAL), !contains("V", VAL), 
+!contains("W", VAL), !contains("X", VAL), !contains("Y", VAL), !contains("Z", VAL).
+//is_numeric(VAL) :- anumber(VAL2), VAL = to_string(VAL2). 
+
+//get level of pointer (or pointer to pointer, etc.)
+.decl pointer_level(type: symbol, level: number)
+//.output pointer_level(delimiter=",")
+pointer_level(TYPE, LVL) :- type(TYPE), !contains("*", TYPE), LVL = 0.
+pointer_level(TYPE, LVL) :- type(TYPE), contains("*", TYPE), LVL=OLDLVL+1, 
+SUBSTR = substr(TYPE, 0, strlen(TYPE)-1),
+pointer_level(SUBSTR, OLDLVL).

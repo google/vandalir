@@ -132,8 +132,12 @@ class Parser:
 
     def parseGetElementPtrInstruction(self, instruction):
         fullInstruction = str(instruction)
-        brackets = fullInstruction[fullInstruction.find("["):fullInstruction.find("]")+1]
-        (returnType, size) = self.parseType(brackets)
+        if "inbounds" in fullInstruction:
+            typeGEP = fullInstruction[fullInstruction.find("inbounds ")+9:fullInstruction.find(", ")].strip()
+        else:
+            typeGEP = fullInstruction[fullInstruction.find("getelementptr ")+14:fullInstruction.find(", ")].strip()
+        # print("GEP "+typeGEP)
+        (returnType, size) = self.parseType(typeGEP)
         allOperands = list(instruction.operands)
         allOperands.append(returnType)
 
@@ -189,20 +193,17 @@ class Parser:
             self.operandid += 1
 
     def parseAllocaInstruction(self, fullInstruction):
-        if("[" in fullInstruction and "]" in fullInstruction):  # allocate arrays
-            operand = fullInstruction[fullInstruction.find("[")+1:fullInstruction.rfind("]")].strip()
-            operandSplit = operand.split("x")
-            for operand in operandSplit:
-                operand_str = "operand("+str(self.instructionid)+";"+str(self.operandid)+";\""+str(operand).strip()+"\")"
-                self.output(operand_str)
-                self.operandid += 1
-        else:  # allocate regular variables
-            operand_str = "operand("+str(self.instructionid)+";"+str(self.operandid)+";\""+"1"+"\")"
-            self.output(operand_str)
-            self.operandid += 1
-            operandSplit = fullInstruction.split(" ")
-            operand = operandSplit[3].replace(",", "").strip()
-            operand_str = "operand("+str(self.instructionid)+";"+str(self.operandid)+";\""+str(operand).strip()+"\")"
+        start = fullInstruction.find("alloca ")+7
+        end = fullInstruction.rfind(", align")
+        allocaType = fullInstruction[start:end]
+        (allocaType, arraySize) = self.parseType(allocaType)
+
+        operand_str = "operand("+str(self.instructionid)+";"+str(self.operandid)+";"+allocaType+")"
+        self.output(operand_str)
+        self.operandid += 1
+        arraySizes = arraySize.split("x")
+        for arraySize in arraySizes:
+            operand_str = "operand("+str(self.instructionid)+";"+str(self.operandid)+";"+arraySize+")"
             self.output(operand_str)
             self.operandid += 1
 
@@ -302,18 +303,25 @@ class Parser:
         if(mode == 0):
             if("(" in operand):
                 operand = operand[:operand.find("(")].strip()
-        if("[" in operand and "]" in operand): 
-            inBrackets = operand[operand.find("[")+1:operand.find("]")].strip()
-            # print("IB:"+str(inBrackets))
-            if(" x ") in inBrackets:
-                inBrackets = inBrackets.split(" x ")
-                operand = inBrackets[1]  # do not parse it as pointer! +operand[operand.find("]")+1:]
-                number = int(inBrackets[0].strip())
+        if("[" in operand and "]" in operand):  # array detected
+            # print(operand)
+            inBrackets = operand
+            number = ""
+            while("[" in inBrackets and "]" in inBrackets):
+                inBrackets = inBrackets[inBrackets.find("[")+1:inBrackets.rfind("]")].strip()
+                # print("IB:"+str(inBrackets))
+                if(" x ") in inBrackets:
+                    number += "x"+inBrackets[:inBrackets.find(" x ")].strip()  # do not parse it as pointer! +operand[operand.find("]")+1:]
+                    if(not ("[" in inBrackets) or ( "]" in inBrackets)):
+                        operand = inBrackets[inBrackets.find(" x ")+2:].strip()
+            number = number[1:]  # remove leading "x"
         else:
-            number = 1
+            number = "1"
         # print(operand)
         operand = operand.strip()
-        return (operand, number)
+        result = (operand, number)
+        # print(result)
+        return result
 
     def parseGetElementPtrInstructionGivenAsString(self, callInstruction, strInstruction):
 
@@ -458,7 +466,7 @@ class Parser:
             return tuple()
         else:
             if(block[0] == "%"):  # first block in function
-                number = "0"#block.split("=")[0].strip()[1:]
+                number = "0"  # block.split("=")[0].strip()[1:]
                 # if(not number.isnumeric()):
                 #    print("failed parsing control flow of blocks: block virtual address of first block in function is not numeric.")
                 #    return
