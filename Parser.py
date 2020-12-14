@@ -33,7 +33,7 @@ class Parser:
             "predecessor": list(),
             "global": list(),
             "struct": list(),
-            "struct_operand": list()
+            "structoperand": list()
         }
 
     def parse(self):
@@ -116,7 +116,7 @@ class Parser:
         fullInstruction = str(instruction).strip()
         virtualRegister = "%-1"
         splitFuillInstruction = fullInstruction.split(" ")
-        if(splitFuillInstruction[0][0] == "%" and splitFuillInstruction[0][1:].isnumeric()):
+        if(splitFuillInstruction[0][0] == "%"):
             virtualRegister = "%"+str(splitFuillInstruction[0][1:])
         return virtualRegister
 
@@ -274,9 +274,9 @@ class Parser:
 
         structs = list(module.struct_types)
         structId = 0
-        structTypeId = 0
 
         for struct in structs:
+            structTypeId = 0
             name = "%"+struct.name
             # print(str(struct))
             struct_str = str(struct)
@@ -287,7 +287,7 @@ class Parser:
             for elementType in types:
                 elementType = self.parseType(elementType)
                 operandsList.append(elementType)
-                struct_operands_str = "struct_operand("+str(structId)+";"+str(structTypeId)+";"+elementType[0]+";"+str(elementType[1])+")"
+                struct_operands_str = "structoperand("+str(structId)+";"+str(structTypeId)+";"+elementType[0]+";"+str(elementType[1])+")"
                 self.output(struct_operands_str)
                 structTypeId += 1
 
@@ -458,30 +458,30 @@ class Parser:
             return tuple()
         else:
             if(block[0] == "%"):  # first block in function
-                number = block.split("=")[0].strip()[1:]
-                if(not number.isnumeric()):
-                    print("failed parsing control flow of blocks: block virtual address of first block in function is not numeric.")
-                    return
+                number = "0"#block.split("=")[0].strip()[1:]
+                # if(not number.isnumeric()):
+                #    print("failed parsing control flow of blocks: block virtual address of first block in function is not numeric.")
+                #    return
+                # else:
+                label = str(int(number)-1)+":"
+            # if(block[0].isnumeric()):  # second or laterblock with given label.
+            label = block.split(":")[0]+":"
+            searchtxt = block[block.find("preds = ")+8:]
+            # print("\n\n\n\n"+searchtxt)
+            args = searchtxt.split(" ")
+            for arg in args:
+                if(not arg):
+                    break
+                if(arg[0] == "%"):
+                    predlabel = arg[1:]
+                    if(arg[-1] == ","):
+                        predlabel = predlabel[:-1]
+                    predlabel = predlabel+":"
+                    preds.append(predlabel)
+                    if(arg[-1] != ","):
+                        break
                 else:
-                    label = str(int(number)-1)+":"
-            if(block[0].isnumeric()):  # second or laterblock with given label.
-                label = block.split(":")[0]+":"
-                searchtxt = block[block.find("preds = ")+8:]
-                # print("\n\n\n\n"+searchtxt)
-                args = searchtxt.split(" ")
-                for arg in args:
-                    if(not arg):
-                        break
-                    if(arg[0] == "%"):
-                        predlabel = arg[1:]
-                        if(arg[-1] == ","):
-                            predlabel = predlabel[:-1]
-                        predlabel = predlabel+":"
-                        preds.append(predlabel)
-                        if(arg[-1] != ","):
-                            break
-                    else:
-                        break
+                    break
         return (label, preds)
 
 
