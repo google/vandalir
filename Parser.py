@@ -12,6 +12,12 @@ LLVM_VER = "10"
 CONV_INSTRUCTIONS = ["trunc", "zext", "sext", "fptrunc", "fpext", "fptoui", "fptosi",
                      "uitofp", "sitofp", "ptrtoint", "inttoptr", "bitcast", "addrspacecast"]
 
+# this limit describes the maximum number of elements in one array, that are used by the analysis
+LIMIT = 1000
+
+# describes the maximum depth of structs or arrays within structs
+MAXDEPTH = 4
+
 
 class Parser:
 
@@ -22,6 +28,8 @@ class Parser:
         self.blockid = 0
         self.instructionid = 0
         self.operandid = 0
+
+        self.allocaVregs = list()
 
         self.artificialInstructionId = -1
         self.outputList = {
@@ -42,7 +50,12 @@ class Parser:
 
         self.parseGlobals(module)
         self.parseStructs(module)
+        self.parse_module(module)
+        self.generate_helper_facts()
 
+        print("Parsing successful.")
+
+    def parse_module(self, module):
         for function in module.functions:
             argumentRegister = 0
 
@@ -83,6 +96,7 @@ class Parser:
 
                     # operand processing
                     if(str(instruction.opcode) == "alloca"):  # alloca instruction
+                        self.allocaVregs.append(virtualRegister)
                         self.parseAllocaInstruction(fullInstruction)
                     elif(str(instruction.opcode) == "store"):  # store instruction
                         self.parseStoreInstruction(instruction)
@@ -109,8 +123,6 @@ class Parser:
                 self.blockid += 1
 
             self.functionid += 1
-
-        print("Parsing successful.")
 
     def getVirtualRegisterOfInstruction(self, instruction):
         fullInstruction = str(instruction).strip()
@@ -456,6 +468,35 @@ class Parser:
 
         return module
 
+    def generate_helper_facts(self):
+        self.generate_anumber()
+        # self.generate_concatenated_locations()
+
+    def generate_anumber(self):
+        with open(FACTS_DIR+"/anumber.facts", "w") as f:
+            outputList = list()
+            for i in range(0, LIMIT):
+                outputList.append(str(i))
+            f.writelines("\n".join(outputList))
+
+    # def generate_concatenated_locations(self):
+    #     with open(FACTS_DIR+"/concatenated_locations.facts", "w") as f:
+    #         for vreg in self.allocaVregs:
+    #             currentLevel = 0
+    #             baseString = vreg
+    #             outputStrings = self.concatenated_locations_helper(baseString, currentLevel)
+    #             f.writelines("\n".join(outputStrings))
+
+    def concatenated_locations_helper(self, baseString, currentLevel):
+        outputStrings = list()
+        for i in range(0, LIMIT):
+            newString = baseString+"."+str(i)
+            outputStrings.append(newString)
+        if (currentLevel+1 == MAXDEPTH):
+            return outputStrings
+        else:
+            for newBaseString in outputStrings:
+                outputStrings.extend(self.concatenated_locations_helper(newBaseString, currentLevel+1))
     @staticmethod
     def getControlFlowInfoFromBlock(block):
         label = ""
