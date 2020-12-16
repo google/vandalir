@@ -1,4 +1,7 @@
-//enumerates until 1000
+//enumerates 0 until limit, maximum limit: 100000
+
+//ok, do not use this!
+//use NUM>=0, NUM<LIM, anumber(NUM) instead for better performance!
 .decl enumerate(number: number, limit: number)
 enumerate(NUM, LIM) :- NUM=0, anumber(LIM).
 enumerate(NUM, LIM) :- NUM>0, NUM<LIM, anumber(LIM), anumber(NUM).

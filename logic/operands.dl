@@ -7,21 +7,36 @@ SUBSTR = substr(T, 1, strlen(T)), !contains("%", SUBSTR).
 
 //is given operand a struct
 .decl is_struct(type: symbol)
-is_struct(T) :- is_vreg(T), substr(T, 0, 8) = "%struct.".
+is_struct(T) :- is_vreg(T), substr(T, 0, 8) = "%struct.", !is_pointer(T).
 
 //is given operand a multidimensional array
 .decl is_multidimensional(type: symbol)
 is_multidimensional(T) :- contains("x", T), opval(T).
+
+//is given operand a concatenated memory location, used with arrays/structs
+//maximal depth currently: 3
+//.decl is_concatenated_location(type: symbol)
+//is_concatenated_location(T) :- is_vreg(X), anumber(NUM), T = cat(cat(X, "."), to_string(NUM)).
+//is_concatenated_location(T) :- is_concatenated_location(X), anumber(NUM), anumber(NUM2),
+//T = cat(cat(cat(cat(X, "."), to_string(NUM)), "."), to_string(NUM2)). 
+//is_concatenated_location(T) :- is_concatenated_location(X), anumber(NUM), anumber(NUM2), anumber(NUM3),
+//T = cat(cat(cat(cat(cat(cat(X, "."), to_string(NUM)), "."), to_string(NUM2)), "."), to_string(NUM3)).
+//is_concatenated_location(T) :- is_concatenated_location(X), anumber(NUM), anumber(NUM2), anumber(NUM3), anumber(NUM4),
+//T = cat(cat(cat(cat(cat(cat(cat(cat(X, "."), to_string(NUM)), "."), to_string(NUM2)), "."), to_string(NUM3)), "."), to_string(NUM4)).
+//is_concatenated_location(T) :- is_concatenated_location(X), anumber(NUM), anumber(NUM2), anumber(NUM3), anumber(NUM4), anumber(NUM5),
+//T = cat(cat(cat(cat(cat(cat(cat(cat(cat(cat(X, "."), to_string(NUM)), "."), to_string(NUM2)), "."), to_string(NUM3)), "."), to_string(NUM4)), "."), to_string(NUM5)).
+
+//is location either a vreg or a concatenated location
+//.decl is_vreg_or_concatenated_location(type: symbol)
+//is_vreg_or_concatenated_location(T) :- is_vreg(T).
+//is_vreg_or_concatenated_location(T) :- is_concatenated_location(T).
 
 //is given operand a global
 .decl is_global(type: symbol)
 is_global(T) :- contains("@", T), opval(T),
 SUBSTR = substr(T, 1, strlen(T)), !contains("@", SUBSTR).
 
-//is given operand a pointer
-.decl is_pointer(type: symbol)
-is_pointer(T) :- pointer_level(T, LVL), LVL > 0.
-
+//is given operand numeric (aka is not a string)
 .decl is_numeric(type: symbol)
 is_numeric(VAL) :- opval(VAL), 
 !contains(":", VAL), !contains("%", VAL), !contains("[", VAL), !contains("]", VAL),
@@ -40,6 +55,10 @@ is_numeric(VAL) :- opval(VAL),
 !contains("S", VAL), !contains("T", VAL), !contains("U", VAL), !contains("V", VAL), 
 !contains("W", VAL), !contains("X", VAL), !contains("Y", VAL), !contains("Z", VAL).
 //is_numeric(VAL) :- anumber(VAL2), VAL = to_string(VAL2). 
+
+//is given operand a pointer
+.decl is_pointer(type: symbol)
+is_pointer(T) :- pointer_level(T, LVL), LVL > 0.
 
 //get level of pointer (or pointer to pointer, etc.)
 .decl pointer_level(type: symbol, level: number)

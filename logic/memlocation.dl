@@ -16,6 +16,8 @@ memcategory(MEM) :- MEM = "vreg".
 
 .decl memlocation(functionid: _functionid, memlocation: symbol, memtyp: symbol, memcategory: _memcategory)
 .output memlocation(delimiter=",")
+//stack allocations
+
 //stack allocations of one element.
 memlocation(FID, LOC, TYPE, CAT) :- instruction(BID, IID, LOC, OPC), block(FID, BID, _),
 OPC = "alloca", CAT = "stack", memcategory(CAT), 
@@ -32,6 +34,7 @@ get_second_operand(IID, SIZE).
 //stack allocations of array (index elements).
 memlocation(FID, LOCATION, TYPE, CAT) :- 
 memlocation_alloca_array_enumerator(FID, LOC, NUM, TYPE, CAT),
+!is_struct(TYPE),
 LOCATION = cat(cat(LOC, "."), to_string(NUM)).
 
 
@@ -41,25 +44,13 @@ memlocation(FID, LOC, TYPE, CAT) :- instruction(BID, IID, _, OPC), block(FID, BI
 OPC = "alloca", CAT = "arrayAll", memcategory(CAT), is_alloca_multidimensional(IID),
 get_first_operand(IID, TYPE), 
 memlocation_multidim_array_enumerator(IID, _, _, LOC).
-
 //stack allocations of array (index elements).
 memlocation(FID, LOC, TYPE, CAT) :- instruction(BID, IID, _, OPC), block(FID, BID, _),
 OPC = "alloca", CAT = "arrayIndex", memcategory(CAT), is_alloca_multidimensional(IID),
 get_first_operand(IID, TYPE), 
 memlocation_multidim_array_enumerator(IID, _, LOC, _).
 
-
-
-//stack allocations of struct (all element) when an array of structs is allocated
-memlocation(FID, LOCATION, TYPE, CAT) :- 
-instruction(BID, IID, LOC, OPC), block(FID, BID, _),
-OPC = "alloca", get_first_operand(IID, TYPE), get_second_operand(IID, SIZE),
-is_numeric(SIZE), to_number(SIZE) > 1,
-is_struct(TYPE),
-CAT = "structAll",
-enumerate(NUM, to_number(SIZE)-1),
-LOCATION = cat(cat(LOC, "."), to_string(NUM)).
-
+//structs
 //stack allocations of struct (all element), when a single struct is allocated
 memlocation(FID, LOC, TYPE, CAT) :- 
 instruction(BID, IID, LOC, OPC), block(FID, BID, _),
@@ -67,17 +58,34 @@ OPC = "alloca", get_first_operand(IID, TYPE), get_second_operand(IID, SIZE),
 is_numeric(SIZE), to_number(SIZE) = 1,
 is_struct(TYPE),
 CAT = "structAll".
+//stack allocations of struct (all element) when an array of structs is allocated
+memlocation(FID, LOCATION, TYPE, CAT) :- 
+instruction(BID, IID, LOC, OPC), block(FID, BID, _),
+OPC = "alloca", get_first_operand(IID, TYPE), get_second_operand(IID, SIZE),
+is_numeric(SIZE), to_number(SIZE) > 1,
+is_struct(TYPE),
+CAT = "structAll",
+NUM >= 0, NUM < to_number(SIZE)-1, anumber(NUM),
+LOCATION = cat(cat(LOC, "."), to_string(NUM)).
 
-/*
-//TODO: create this only when allocated (with FID, etc)
-//stack allocations of struct (index elements).
-memlocation(FID, LOC, TYPE, CAT) :- 
-struct(SID, NAME, _), structoperand(SID, SOID, BASETYPE, SIZE),
-FID = -1,
-LOC = cat(cat(NAME, "."), to_string(SOID)),
-TYPE = cat(BASETYPE, "*"),//struct has pointer to basetype
-CAT = "structIndex".
-*/
+//parse subelements of struct
+//stack allocations of subelements of a struct (index elements) when a single struct is allocated
+memlocation(FID, LOCATION, TYPE, CAT) :- 
+instruction(BID, IID, LOC, OPC), block(FID, BID, _),
+OPC = "alloca", get_first_operand(IID, ALLOCTYPE), get_second_operand(IID, ALLOCSIZE),
+is_numeric(ALLOCSIZE), to_number(ALLOCSIZE) = 1,
+struct(_, STRUCTNAME, _),
+STRUCTNAME = ALLOCTYPE,
+memlocation_alloca_struct_subelements(FID, LOCATION, LOC, STRUCTNAME, TYPE, CAT).
+//stack allocations of subelements of a struct (index elements) when a 1-dim array of structs is allocated
+memlocation(FID, LOCATION, TYPE, CAT) :- 
+instruction(BID, IID, LOC, OPC), block(FID, BID, _),
+OPC = "alloca", get_first_operand(IID, STRUCTNAME), get_second_operand(IID, SIZE),
+is_numeric(SIZE), to_number(SIZE) > 1,
+is_struct(STRUCTNAME),
+NUM >= 0, NUM < to_number(SIZE)-1, anumber(NUM),
+STARTLOCATION = cat(cat(LOC, "."), to_string(NUM)),
+memlocation_alloca_struct_subelements(FID, LOCATION, STARTLOCATION, STRUCTNAME, TYPE, CAT).
 
 
 //heap allocations
@@ -162,7 +170,7 @@ FID = -1, CAT = "arrayIndex", memcategory(CAT).
 
 //recursive helper to enumerate multidimensional arrays
 .decl memlocation_multidim_array_enumerator(instructionid: _instructionid, level: number, location: symbol, startlocation: symbol)
-.output memlocation_multidim_array_enumerator(delimiter=";")
+//.output memlocation_multidim_array_enumerator(delimiter=";")
 //case level=0
 memlocation_multidim_array_enumerator(IID, LEVEL, LOC, STARTLOC) :-
 instruction(_, IID, STARTLOC, OPC), OPC = "alloca",
@@ -170,8 +178,8 @@ get_alloca_arraylevel(IID, ARRAYLEVEL), ARRAYLEVEL > 1,
 LEVEL = 0, 
 LOC = cat(cat(STARTLOC, "."), to_string(I)),
 get_ith_operand(IID, LEVEL+2, ELEMENTS_IN_LEVEL),
-enumerate(I, to_number(ELEMENTS_IN_LEVEL)).
-//recursive cae
+I>=0, I<to_number(ELEMENTS_IN_LEVEL), anumber(I).
+//recursive case
 memlocation_multidim_array_enumerator(IID, LEVEL, LOC, STARTLOC) :-
 instruction(_, IID, _, OPC), OPC = "alloca",
 get_alloca_arraylevel(IID, ARRAYLEVEL), ARRAYLEVEL > 1, 
@@ -180,13 +188,11 @@ LEVEL < NUMOPERANDS-1,
 anumber(LEVEL), 
 LOC = cat(cat(STARTLOC, "."), to_string(I)),
 get_ith_operand(IID, LEVEL+2, ELEMENTS_IN_LEVEL),
-enumerate(I, to_number(ELEMENTS_IN_LEVEL)),
-memlocation_multidim_array_enumerator(IID, LEVEL-1, STARTLOC, _)
-.
+I>=0, I<to_number(ELEMENTS_IN_LEVEL), anumber(I),
+memlocation_multidim_array_enumerator(IID, LEVEL-1, STARTLOC, _).
 
 
-
-//recursive helper to enumerate struct allocations
+//recursive helper to enumerate struct allocations (global element)
 .decl memlocation_alloca_struct_enumerator(functionid: _functionid, memlocation: symbol, enumerator: number, memtyp: symbol, memcategory: _memcategory)
 memlocation_alloca_struct_enumerator(FID, LOC, NUM, TYPE, CAT) :- 
 instruction(BID, IID, LOC, OPC), block(FID, BID, _),
@@ -202,6 +208,131 @@ get_first_operand(IID, TYPE),
 get_second_operand(IID, SIZE), is_numeric(SIZE), to_number(SIZE) > 1,
 NUM > 0, NUM<to_number(SIZE), NUM<to_number(SIZE), NUM = NUM2+1,
 memlocation_alloca_struct_enumerator(FID, LOC, NUM2, TYPE, CAT).
+
+//recursive helpter to enumerate struct sub elements (index elements)
+.decl memlocation_alloca_struct_subelements(functionid: _functionid, outputmemlocation: symbol, startmemlocation: symbol, structname: symbol, memtype: symbol, memcategory: _memcategory)
+.output memlocation_alloca_struct_subelements(delimiter=",")
+
+//normal struct element, which is not an array
+//case: normal struct element, which is neither an array not another struct
+memlocation_alloca_struct_subelements(FID, OUTPUT, STARTLOC, STRUCTNAME, TYPE, CAT) :-
+struct(SID, STRUCTNAME, _),
+structoperand(SID, OPID, OPTYPE, OPSIZE),
+!is_struct(OPTYPE),
+!is_multidimensional(OPSIZE),
+to_number(OPSIZE) = 1,
+OUTPUT = cat(cat(STARTLOC, "."), to_string(OPID)),
+TYPE = OPTYPE,
+CAT = "structIndex",
+concatenated(FID, STARTLOC).
+//case: subelement is a struct -> AllElement
+memlocation_alloca_struct_subelements(FID, OUTPUT, STARTLOC, STRUCTNAME, TYPE, CAT) :-
+struct(SID, STRUCTNAME, _),
+structoperand(SID, OPID, OPTYPE, OPSIZE),
+is_struct(OPTYPE),
+!is_multidimensional(OPSIZE),
+is_numeric(OPSIZE),
+to_number(OPSIZE) = 1,
+OUTPUT = cat(cat(STARTLOC, "."), to_string(OPID)),
+TYPE = OPTYPE,
+CAT = "structAll",
+concatenated(FID, STARTLOC).
+//case: subelement is a struct -> Parse actual struct recursively
+memlocation_alloca_struct_subelements(FID, OUTPUT, STARTLOC, STRUCTNAME, TYPE, CAT) :-
+struct(SID, STRUCTNAME, _),
+structoperand(SID, OPID, OPTYPE, OPSIZE),
+is_struct(OPTYPE),
+!is_multidimensional(OPSIZE),
+is_numeric(OPSIZE),
+to_number(OPSIZE) = 1,
+STARTLOCINNERSTRUCT = cat(cat(STARTLOC, "."), to_string(OPID)),
+memlocation_alloca_struct_subelements(FID, OUTPUT, STARTLOCINNERSTRUCT, OPTYPE, TYPE, CAT),
+concatenated(FID, STARTLOC).
+
+//struct elements which are 1-dim arrays
+//case All Element for 1-dim arrays as sub element
+memlocation_alloca_struct_subelements(FID, OUTPUT, STARTLOC, STRUCTNAME, TYPE, CAT) :-
+struct(SID, STRUCTNAME, _),
+structoperand(SID, OPID, OPTYPE, OPSIZE),
+!is_multidimensional(OPSIZE),
+to_number(OPSIZE) > 1,
+OUTPUT = cat(cat(STARTLOC, "."), to_string(OPID)),
+TYPE = OPTYPE,
+CAT = "arrayAll",
+concatenated(FID, STARTLOC).
+//case Index Element for 1-dim arrays as sub element, the 1-dim array is not a struct element
+memlocation_alloca_struct_subelements(FID, OUTPUT, STARTLOC, STRUCTNAME, TYPE, CAT) :-
+struct(SID, STRUCTNAME, _),
+structoperand(SID, OPID, OPTYPE, OPSIZE),
+!is_struct(OPTYPE),
+!is_multidimensional(OPSIZE),
+to_number(OPSIZE) > 1,
+OUTPUT = cat(cat(cat(cat(STARTLOC, "."), to_string(OPID)), "."), to_string(NUM)),
+NUM >= 0, NUM < to_number(OPSIZE), anumber(NUM),
+TYPE = OPTYPE,
+CAT = "arrayIndex",
+concatenated(FID, STARTLOC).
+//case Index Element for 1-dim arrays as sub element, the 1-dim array is not a struct element
+memlocation_alloca_struct_subelements(FID, OUTPUT, STARTLOC, STRUCTNAME, TYPE, CAT) :-
+struct(SID, STRUCTNAME, _),
+structoperand(SID, OPID, OPTYPE, OPSIZE),
+is_struct(OPTYPE),
+!is_multidimensional(OPSIZE),
+to_number(OPSIZE) > 1,
+OUTPUT = cat(cat(cat(cat(STARTLOC, "."), to_string(OPID)), "."), to_string(NUM)),
+NUM >= 0, NUM < to_number(OPSIZE), anumber(NUM),
+TYPE = OPTYPE,
+CAT = "structAll",
+concatenated(FID, STARTLOC).
+//case Index Element for 1-dim arrays as sub element, the 1-dim array is a struct element
+memlocation_alloca_struct_subelements(FID, OUTPUT, STARTLOC, STRUCTNAME, TYPE, CAT) :-
+struct(SID, STRUCTNAME, _),
+structoperand(SID, OPID, OPTYPE, OPSIZE),
+is_struct(OPTYPE),
+!is_multidimensional(OPSIZE),
+to_number(OPSIZE) > 1,
+STARTLOCINNERSTRUCT = cat(cat(cat(cat(STARTLOC, "."), to_string(OPID)), "."), to_string(NUM)),
+NUM >= 0, NUM < to_number(OPSIZE), anumber(NUM),
+memlocation_alloca_struct_subelements(FID, OUTPUT, STARTLOCINNERSTRUCT, OPTYPE, TYPE, CAT),
+concatenated(FID, STARTLOC).
+
+
+
+
+//case MultiDim Array
+/*
+memlocation_alloca_struct_subelements(OUTPUT, STARTLOC, STRUCTNAME, TYPE, CAT) :-
+struct(SID, STRUCTNAME, _),
+structoperand(SID, OPID, OPTYPE, OPSIZE),
+!is_struct(OPTYPE),
+is_multidimensional(OPSIZE),
+
+
+
+
+.decl memlocation_struct_subelement_multidim_array_enumerator(, level: number, location: symbol, startlocation: symbol)
+memlocation_struct_subelement_multidim_array_enumerator(LEVEL, LOC, STARTLOC) :-
+LEVEL = 0, 
+LOC = cat(cat(STARTLOC, "."), to_string(I)),
+get_ith_operand(IID, LEVEL+2, ELEMENTS_IN_LEVEL),
+I>=0, I<to_number(ELEMENTS_IN_LEVEL), anumber(I).
+//recursive case
+memlocation_struct_subelement_multidim_array_enumerator(IID, LEVEL, LOC, STARTLOC) :-
+get_num_operands(IID, NUMOPERANDS),
+LEVEL < NUMOPERANDS-1,
+anumber(LEVEL), 
+LOC = cat(cat(STARTLOC, "."), to_string(I)),
+get_ith_operand(IID, LEVEL+2, ELEMENTS_IN_LEVEL),
+I>=0, I<to_number(ELEMENTS_IN_LEVEL), anumber(I),
+memlocation_struct_subelement_multidim_array_enumerator(IID, LEVEL-1, STARTLOC, _).
+*/
+
+
+.decl concatenated(functionid: _functionid, location: symbol)
+.output concatenated(delimiter = ",")
+concatenated(FID, LOC) :- is_vreg(LOC), instruction(BID, _, LOC, _), block(FID, BID, _).
+concatenated(FID, LOC) :- memlocation(FID, LOC, _, _).
+//concatenated(FID, LOC) :- block(FID, _, _), LOC="%3.2.0".
 
 
 //not sure what this is or whether this is used
