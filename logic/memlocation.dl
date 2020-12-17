@@ -198,7 +198,7 @@ memlocation_alloca_array_enumerator(FID, LOC, NUM2, TYPE, CAT).
 //recursive helper function to enumerate global arrays
 //TODO: this one seems quite ugly, might benefit from a rewrite
 .decl memlocation_global_array_enumerator(functionid: _functionid, memlocation: symbol, enumerator: number, memtyp: symbol, memcategory: _memcategory)
-.output memlocation_global_array_enumerator(delimiter=",")
+//.output memlocation_global_array_enumerator(delimiter=",")
 memlocation_global_array_enumerator(FID, LOC, NUM, TYPE, CAT) :-
 global(LOC, TYPE, SIZE),
 NUM = 0, NUM<SIZE,
