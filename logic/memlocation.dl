@@ -350,13 +350,6 @@ memlocation_struct_subelement_multidim_array_enumerator(IID, LEVEL-1, STARTLOC, 
 */
 
 
-.decl concatenated(functionid: _functionid, location: symbol)
-.output concatenated(delimiter = ",")
-concatenated(FID, LOC) :- is_vreg(LOC), instruction(BID, _, LOC, _), block(FID, BID, _).
-concatenated(FID, LOC) :- memlocation(FID, LOC, _, _).
-//concatenated(FID, LOC) :- block(FID, _, _), LOC="%3.2.0".
-
-
 //not sure what this is or whether this is used
 .decl get_val_of_load(instructionid: _instructionid, value: symbol)
 get_val_of_load(IID, VAL) :- instruction(BID, IID, VREG, OPC), block(FID, BID, _), OPC = "load",

@@ -77,103 +77,78 @@ get_call_argument_and_function_register(_, CFID, CARG, FID, VREG, ARGTYPE),
 FID1 = CFID, LOC1=CARG, TYPE1 = ARGTYPE, memcategory(CAT1),
 FID2 = FID, LOC2=VREG, TYPE1 =  ARGTYPE, memcategory(CAT2).
 */
+
 //from here on the cases for array handling
 
 //first cases, where specific element of array could be located
-
-//case array (getelementptr), both indices numeric, first index = 0, array is vreg
+//case array (getelementptr)
 memequals(FID1, LOC1, TYPE1, CAT1, FID2, LOC2, TYPE2, CAT2) :-
-memlocation(FID1, LOC1, TYPE1, CAT1), //LOC1 instruction
+memlocation(FID1, LOC1, TYPE1, CAT1), //LOC1 = GEP instruction
 memlocation(FID2, LOC2, TYPE2, CAT2),
-block(FID1, BID, _), TYPE1 = TYPE2, 
-CAT1 = "vreg",
-instruction(BID, IID, LOC1, OPC), OPC = "getelementptr",
-get_first_operand(IID, ARRAY), is_vreg(ARRAY),
-get_second_operand(IID, INDEX1), INDEX1 = "0",
-get_third_operand(IID, INDEX2), is_numeric(INDEX2),
-FID2 = FID1, 
-LOC2 = cat(cat(ARRAY, "."), INDEX2), 
-CAT2 = "arrayIndex". 
-
-//case array (getelementptr), both indices numeric, first index = 0, array is global
-memequals(FID1, LOC1, TYPE1, CAT1, FID2, LOC2, TYPE2, CAT2) :-
-memlocation(FID1, LOC1, TYPE1, CAT1), //LOC1 instruction
-memlocation(FID2, LOC2, TYPE2, CAT2),
-block(FID1, BID, _), TYPE1 = TYPE2, 
-CAT1 = "vreg",
-instruction(BID, IID, LOC1, OPC), OPC = "getelementptr",
-get_first_operand(IID, ARRAY), is_global(ARRAY),
-get_second_operand(IID, INDEX1), INDEX1 = "0",
-get_third_operand(IID, INDEX2), is_numeric(INDEX2),
-FID2 = -1, 
-LOC2 = cat(cat(ARRAY, "."), INDEX2), 
-CAT2 = "arrayIndex". 
-
-//case array (getelementptr), first index = 0, second not numeric, but found, array is vreg
-memequals(FID1, LOC1, TYPE1, CAT1, FID2, LOC2, TYPE2, CAT2) :-
-memlocation(FID1, LOC1, TYPE1, CAT1), //LOC1 instruction
-memlocation(FID2, LOC2, TYPE2, CAT2),
-block(FID1, BID, _), TYPE1 = TYPE2, 
-CAT1 = "vreg",
-instruction(BID, IID, LOC1, OPC), OPC = "getelementptr",
-get_first_operand(IID, ARRAY), is_vreg(ARRAY),
-get_second_operand(IID, INDEX1), INDEX1 = "0",
-get_third_operand(IID, INDEX2VREG), is_vreg(INDEX2VREG),
-get_int_by_vreg(INDEX2, FID1, INDEX2VREG),
-FID2 = FID1, 
-LOC2 = cat(cat(ARRAY, "."), to_string(INDEX2)), 
-CAT2 = "arrayIndex". 
-
-//case array (getelementptr), first index = 0, second not numeric, but found, array is global
-memequals(FID1, LOC1, TYPE1, CAT1, FID2, LOC2, TYPE2, CAT2) :-
-memlocation(FID1, LOC1, TYPE1, CAT1), //LOC1 instruction
-memlocation(FID2, LOC2, TYPE2, CAT2),
-block(FID1, BID, _), TYPE1 = TYPE2, 
-CAT1 = "vreg",
-instruction(BID, IID, LOC1, OPC), OPC = "getelementptr",
-get_first_operand(IID, ARRAY), is_global(ARRAY),
-get_second_operand(IID, INDEX1), INDEX1 = "0",
-get_third_operand(IID, INDEX2VREG), is_vreg(INDEX2VREG),
-get_int_by_vreg(INDEX2, FID1, INDEX2VREG),
-FID2 = -1, 
-LOC2 = cat(cat(ARRAY, "."), to_string(INDEX2)), 
-CAT2 = "arrayIndex". 
-
-//now cases, where specific element of array could NOT be located
-//due to datalog implementations: actually all cases where second operand is not numeric are included
-
-//case array (getelementptr), first index = 0, second not numeric, array is vreg
-memequals(FID1, LOC1, TYPE1, CAT1, FID2, LOC2, TYPE2, CAT2) :-
-memlocation(FID1, LOC1, TYPE1, CAT1), //LOC1 instruction
-memlocation(FID2, LOC2, TYPE2, CAT2),
-block(FID1, BID, _), TYPE1 = TYPE2, 
-CAT1 = "vreg",
-instruction(BID, IID, LOC1, OPC), OPC = "getelementptr",
-get_first_operand(IID, ARRAY), is_vreg(ARRAY),
-get_second_operand(IID, INDEX1), INDEX1 = "0",
-get_third_operand(IID, INDEX2VREG), is_vreg(INDEX2VREG),
-FID2 = FID1, 
-LOC2 = ARRAY,
-CAT2 = "arrayAll". 
-
-//case array (getelementptr), first index = 0, second not numeric, array is global
-memequals(FID1, LOC1, TYPE1, CAT1, FID2, LOC2, TYPE2, CAT2) :-
-memlocation(FID1, LOC1, TYPE1, CAT1), //LOC1 instruction
-memlocation(FID2, LOC2, TYPE2, CAT2),
-block(FID1, BID, _), TYPE1 = TYPE2, 
-CAT1 = "vreg",
-instruction(BID, IID, LOC1, OPC), OPC = "getelementptr",
-get_first_operand(IID, ARRAY), is_global(ARRAY),
-get_second_operand(IID, INDEX1), INDEX1 = "0",
-get_third_operand(IID, INDEX2VREG), is_vreg(INDEX2VREG),
-FID2 = -1, 
-LOC2 = ARRAY,
-CAT2 = "arrayAll". 
-
+block(FID1, BID, _), 
+FID2 = FID1, //equal functions
+//TYPE1 = TYPE2, //TYPE1 gives the "basetype" of the GEP used for calculation. NOT the actual return type! 
+instruction(BID, IID, LOC1, OPC), OPC = "getelementptr", //LOC 1 is GEP instruction
+get_first_operand(IID, DATAOBJ), is_vreg(DATAOBJ),
+iterate_gep_indices(FID1, DATAOBJ, RESULTLOC, IID, _),
+LOC2 = RESULTLOC.
+//case memequals to get GEPs that do not directly reference allocations, but e.g. other GEPs
 
 
 //help relations
 
+//iterate through all indicies of gep instruction
+.decl iterate_gep_indices(functionid: _functionid, startlocation: symbol, endlocation: symbol, instructionid: _instructionid, level: number)
+//case maximum level reached
+.output iterate_gep_indices(delimiter=",")
+iterate_gep_indices(FID, STARTLOC, RESULT, IID, LEVEL) :-
+block(FID, BID, _), instruction(BID, IID, _, OPC), OPC = "getelementptr",// substr(STARTLOC, 0, strlen(DATAOBJ)) = DATAOBJ,
+//get_first_operand(IID, DATAOBJ),
+concatenated(FID, STARTLOC),
+get_ith_operand(IID, LEVEL, NEWINDEX),
+RESULT = cat(cat(STARTLOC, "."), NEWINDEX),
+get_num_operands(IID, NUMOPERANDS),
+LEVEL = NUMOPERANDS-1,
+LEVEL > 1.
+//case first level, index!=0
+iterate_gep_indices(FID, STARTLOC, RESULT, IID, LEVEL) :-
+block(FID, BID, _), instruction(BID, IID, _, OPC), OPC = "getelementptr",// substr(STARTLOC, 0, strlen(DATAOBJ)) = DATAOBJ,
+//get_first_operand(IID, DATAOBJ),
+concatenated(FID, STARTLOC),
+get_ith_operand(IID, LEVEL, NEWINDEX),
+NEWINDEX != to_string(0),
+NEWSTARTLOC = cat(cat(STARTLOC, "."), NEWINDEX),
+LEVEL = 2,
+iterate_gep_indices(FID, NEWSTARTLOC, RESULT, IID, LEVEL+1)
+.
+//case first level, index=0
+iterate_gep_indices(FID, STARTLOC, RESULT, IID, LEVEL) :-
+block(FID, BID, _), instruction(BID, IID, _, OPC), OPC = "getelementptr",// substr(STARTLOC, 0, strlen(DATAOBJ)) = DATAOBJ,
+//get_first_operand(IID, DATAOBJ),
+concatenated(FID, STARTLOC),
+get_ith_operand(IID, LEVEL, NEWINDEX),
+NEWINDEX = to_string(0),
+LEVEL = 2,
+iterate_gep_indices(FID, STARTLOC, RESULT, IID, LEVEL+1)//skip this level if index = 0
+.
+//case not final level reached, but also not the first level
+iterate_gep_indices(FID, STARTLOC, RESULT, IID, LEVEL) :-
+block(FID, BID, _), instruction(BID, IID, _, OPC), OPC = "getelementptr",// substr(STARTLOC, 0, strlen(DATAOBJ)) = DATAOBJ,
+//get_first_operand(IID, DATAOBJ),
+concatenated(FID, STARTLOC),
+get_ith_operand(IID, LEVEL, NEWINDEX),
+NEWSTARTLOC = cat(cat(STARTLOC, "."), NEWINDEX),
+get_num_operands(IID, NUMOPERANDS),
+LEVEL < NUMOPERANDS-1,
+LEVEL > 2,
+iterate_gep_indices(FID, NEWSTARTLOC, RESULT, IID, LEVEL+1)
+.
+iterate_gep_indices(FID, STARTLOC, RESULT, IID, LEVEL) :-
+memequals(FID,STARTLOC,_,_,FID,ALTSTART,_,_),
+iterate_gep_indices(FID, ALTSTART, RESULT, IID, LEVEL).
+
+
+//get the vreg of all return instructions of one function
 .decl get_ret_register(functionid: _functionid, returnregister: symbol)
 //.output get_ret_register(delimiter=",")
 get_ret_register(FID, RREG) :- instruction(BID, IID, _, OPC), block(FID, BID, _), 
