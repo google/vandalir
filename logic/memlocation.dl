@@ -166,11 +166,11 @@ LOC = VREG,
 CAT = "vreg", memcategory(CAT),
 get_first_operand(IID, TYPE).
 //vreg getelementptr
-memlocation(FID, LOC, TYPE, CAT) :- instruction(BID, IID, VREG, OPC), block(FID, BID, _),
+memlocation(FID, LOC, TYPE, CAT) :- instruction(BID, _, VREG, OPC), block(FID, BID, _),
 OPC = "getelementptr",
 LOC = VREG,
 CAT = "vreg", memcategory(CAT),
-get_fourth_operand(IID, TYPE).
+TYPE = "unknown".
 //function arguments
 memlocation(FID, LOC, TYPE, CAT) :- argument(FID, _, LOC, TYPE), CAT = "stack".
 
