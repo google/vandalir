@@ -85,7 +85,7 @@ OPC = "alloca", get_first_operand(IID, TYPE), get_second_operand(IID, SIZE),
 is_numeric(SIZE), to_number(SIZE) > 1,
 is_struct(TYPE),
 CAT = "structAll",
-NUM >= 0, NUM < to_number(SIZE)-1, anumber(NUM),
+NUM >= 0, NUM < to_number(SIZE), anumber(NUM),
 LOCATION = cat(cat(LOC, "."), to_string(NUM)).
 
 //parse subelements of struct
@@ -105,7 +105,7 @@ instruction(BID, IID, LOC, OPC), block(FID, BID, _),
 OPC = "alloca", get_first_operand(IID, STRUCTNAME), get_second_operand(IID, SIZE),
 is_numeric(SIZE), to_number(SIZE) > 1,
 is_struct(STRUCTNAME),
-NUM >= 0, NUM < to_number(SIZE)-1, anumber(NUM),
+NUM >= 0, NUM < to_number(SIZE), anumber(NUM),
 STARTLOCATION = cat(cat(LOC, "."), to_string(NUM)),
 memlocation_alloca_struct_subelements(FID, LOCATION, STARTLOCATION, STRUCTNAME, TYPE, CAT).
 
