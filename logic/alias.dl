@@ -86,10 +86,10 @@ memequals(FID1, LOC1, TYPE1, CAT1, FID2, LOC2, TYPE2, CAT2) :-
 memlocation(FID1, LOC1, TYPE1, CAT1), //LOC1 = GEP instruction
 memlocation(FID2, LOC2, TYPE2, CAT2),
 block(FID1, BID, _), 
-FID2 = FID1, //equal functions
+//FID2 = FID1, //equal functions //FID2 can be -1 if global
 //TYPE1 = TYPE2, //TYPE1 gives the "basetype" of the GEP used for calculation. NOT the actual return type! 
 instruction(BID, IID, LOC1, OPC), OPC = "getelementptr", //LOC 1 is GEP instruction
-get_first_operand(IID, DATAOBJ), is_vreg(DATAOBJ),
+get_first_operand(IID, DATAOBJ), 
 iterate_gep_indices(FID1, DATAOBJ, RESULTLOC, IID, _),
 LOC2 = RESULTLOC.
 //case memequals to get GEPs that do not directly reference allocations, but e.g. other GEPs
@@ -102,8 +102,7 @@ LOC2 = RESULTLOC.
 //case maximum level reached
 .output iterate_gep_indices(delimiter=",")
 iterate_gep_indices(FID, STARTLOC, RESULT, IID, LEVEL) :-
-block(FID, BID, _), instruction(BID, IID, _, OPC), OPC = "getelementptr",// substr(STARTLOC, 0, strlen(DATAOBJ)) = DATAOBJ,
-//get_first_operand(IID, DATAOBJ),
+block(FID, BID, _), instruction(BID, IID, _, OPC), OPC = "getelementptr",
 concatenated(FID, STARTLOC),
 get_ith_operand(IID, LEVEL, NEWINDEX),
 RESULT = cat(cat(STARTLOC, "."), NEWINDEX),
@@ -112,8 +111,7 @@ LEVEL = NUMOPERANDS-1,
 LEVEL > 1.
 //case first level, index!=0
 iterate_gep_indices(FID, STARTLOC, RESULT, IID, LEVEL) :-
-block(FID, BID, _), instruction(BID, IID, _, OPC), OPC = "getelementptr",// substr(STARTLOC, 0, strlen(DATAOBJ)) = DATAOBJ,
-//get_first_operand(IID, DATAOBJ),
+block(FID, BID, _), instruction(BID, IID, _, OPC), OPC = "getelementptr",
 concatenated(FID, STARTLOC),
 get_ith_operand(IID, LEVEL, NEWINDEX),
 NEWINDEX != to_string(0),
@@ -123,8 +121,7 @@ iterate_gep_indices(FID, NEWSTARTLOC, RESULT, IID, LEVEL+1)
 .
 //case first level, index=0
 iterate_gep_indices(FID, STARTLOC, RESULT, IID, LEVEL) :-
-block(FID, BID, _), instruction(BID, IID, _, OPC), OPC = "getelementptr",// substr(STARTLOC, 0, strlen(DATAOBJ)) = DATAOBJ,
-//get_first_operand(IID, DATAOBJ),
+block(FID, BID, _), instruction(BID, IID, _, OPC), OPC = "getelementptr",
 concatenated(FID, STARTLOC),
 get_ith_operand(IID, LEVEL, NEWINDEX),
 NEWINDEX = to_string(0),
@@ -133,8 +130,7 @@ iterate_gep_indices(FID, STARTLOC, RESULT, IID, LEVEL+1)//skip this level if ind
 .
 //case not final level reached, but also not the first level
 iterate_gep_indices(FID, STARTLOC, RESULT, IID, LEVEL) :-
-block(FID, BID, _), instruction(BID, IID, _, OPC), OPC = "getelementptr",// substr(STARTLOC, 0, strlen(DATAOBJ)) = DATAOBJ,
-//get_first_operand(IID, DATAOBJ),
+block(FID, BID, _), instruction(BID, IID, _, OPC), OPC = "getelementptr",
 concatenated(FID, STARTLOC),
 get_ith_operand(IID, LEVEL, NEWINDEX),
 NEWSTARTLOC = cat(cat(STARTLOC, "."), NEWINDEX),
