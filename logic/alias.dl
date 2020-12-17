@@ -129,14 +129,14 @@ NEWINDEX != to_string(0),
 NEWSTARTLOC = cat(cat(STARTLOC, "."), NEWINDEX),
 LEVEL = 2,
 iterate_gep_indices(FID, NEWSTARTLOC, RESULT, IID, LEVEL+1).
-//case first level, index=0
+//case first level, index=2
 iterate_gep_indices(FID, STARTLOC, RESULT, IID, LEVEL) :-
 block(FID, BID, _), instruction(BID, IID, _, OPC), OPC = "getelementptr",
 concatenated(FID, STARTLOC),
 get_ith_operand(IID, LEVEL, NEWINDEX),
 NEWINDEX = to_string(0),
 LEVEL = 2,
-iterate_gep_indices(FID, STARTLOC, RESULT, IID, LEVEL+1).//skip this level if index = 0
+iterate_gep_indices(FID, STARTLOC, RESULT, IID, LEVEL+1).//skip this level if index = 2 (first level)
 //case not final level reached, but also not the first level
 iterate_gep_indices(FID, STARTLOC, RESULT, IID, LEVEL) :-
 block(FID, BID, _), instruction(BID, IID, _, OPC), OPC = "getelementptr",
