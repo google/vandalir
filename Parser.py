@@ -276,7 +276,7 @@ class Parser:
         globals = list(module.global_variables)
         globals.extend(list(module.functions))
         for glob in globals:
-            globalName = "@"+str(glob.name)
+            globalName = "@"+str(glob.name).replace(".", "_")
             # print(globalName)
             globType = str(glob.type)
             (globType, globTypeArraySize) = self.parseType(globType)
@@ -437,7 +437,9 @@ class Parser:
 
             if(not changed):
                 newOutput.append(outputEntry)
-
+        if(outputType == "operand"):
+            if(newOutput[2][0] == "@"):
+                newOutput[2] = newOutput[2].replace(".", "_")
         self.outputList[outputType].append(";".join(newOutput))
 
     def printOutput(self):

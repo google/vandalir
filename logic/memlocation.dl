@@ -142,6 +142,7 @@ global(LOC, BASETYPE, SIZE),
 TYPE = cat(BASETYPE, "*"),
 SIZE > 1,
 memlocation_global_array_enumerator(FID, LOC, NUM, BASETYPE, CAT),
+//NUM = SIZE-1,
 LOCATION = cat(cat(LOC, "."), to_string(NUM)).
 
 
@@ -193,14 +194,16 @@ get_second_operand(IID, SIZE), is_numeric(SIZE), to_number(SIZE) > 1,
 get_first_operand(IID, TYPE), NUM > 0, NUM<to_number(SIZE), NUM = NUM2+1,
 memlocation_alloca_array_enumerator(FID, LOC, NUM2, TYPE, CAT).
 
+
 //recursive helper function to enumerate global arrays
+//TODO: this one seems quite ugly, might benefit from a rewrite
 .decl memlocation_global_array_enumerator(functionid: _functionid, memlocation: symbol, enumerator: number, memtyp: symbol, memcategory: _memcategory)
+.output memlocation_global_array_enumerator(delimiter=",")
 memlocation_global_array_enumerator(FID, LOC, NUM, TYPE, CAT) :-
 global(LOC, TYPE, SIZE),
 NUM = 0, NUM<SIZE,
 SIZE > 1,
 FID = -1, CAT = "arrayIndex", memcategory(CAT).
-
 memlocation_global_array_enumerator(FID, LOC, NUM, TYPE, CAT) :-
 global(LOC, TYPE, SIZE),
 NUM > 0, NUM<SIZE, NUM = NUM2+1,
