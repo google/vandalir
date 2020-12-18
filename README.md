@@ -33,10 +33,16 @@ sudo apt-get install souffle
 To start the full pipeline on a c file simply run:
 
 ```
-./run.sh path/to/sourcefile.c
+./run.sh -f path/to/sourcefile.c
 ```
 
-The results are then stored in the output directory. If no path is specified the bo.c file from the test directory is used.
+The results are then stored in the output directory. 
+
+Additional parameters for run.sh
+
+`-p  generate profile using souffle's profiler`
+
+`-c  compile to C++ before executing (useful if large/complex programs are analyzed)`
 
 The current processing pipeline done within this script consists of the following steps:
 
