@@ -514,9 +514,11 @@ class Parser:
                 #    print("failed parsing control flow of blocks: block virtual address of first block in function is not numeric.")
                 #    return
                 # else:
-                label = str(int(number)-1)+":"
+                label = str(int(number))+":"
+                print("here we go")
             # if(block[0].isnumeric()):  # second or laterblock with given label.
-            label = block.split(":")[0]+":"
+            else:
+                label = block.split(":")[0]+":"
             searchtxt = block[block.find("preds = ")+8:]
             # print("\n\n\n\n"+searchtxt)
             args = searchtxt.split(" ")
