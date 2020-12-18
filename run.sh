@@ -12,11 +12,23 @@ FILENAME=$(echo "$FILE" | cut -f 1 -d '.')
 FILEEXTENSION="${FILE##*.}"
 if [ "$FILEEXTENSION" != "c" ]
 then
-  echo "file extension needs to be .c"
-  exit 1
+  if [ "$FILEEXTENSION" != "bc" ]
+  then
+    if [ "$FILEEXTENSION" != "ll" ]
+    then
+      echo "file extension needs to be .c, .bc or .ll"
+      exit 1
+    fi
+  fi
 fi
-clang -S -emit-llvm "$FILEPATH" -o "./llvm-ir/$FILENAME.ll"
-python3 Parser.py "./llvm-ir/$FILENAME.ll"
+
+if [ "$FILEEXTENSION" == "c" ]
+then
+  clang -S -emit-llvm "$FILEPATH" -o "./llvm-ir/$FILENAME.ll"
+  python3 Parser.py "./llvm-ir/$FILENAME.ll"
+else
+  python3 Parser.py "$FILEPATH"
+fi
 souffle "./logic/main.dl" $CFLAG -F "./facts" -D "./output" $PFLAG -j 4
 [[ -z "$PFLAG" ]] || souffle-profile "./profile" -j
 echo "execution finished output written to output directory"
