@@ -515,7 +515,6 @@ class Parser:
                 #    return
                 # else:
                 label = str(int(number))+":"
-                print("here we go")
             # if(block[0].isnumeric()):  # second or laterblock with given label.
             else:
                 label = block.split(":")[0]+":"
