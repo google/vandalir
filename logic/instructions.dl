@@ -136,7 +136,7 @@ is_alloca_multidimensional(IID) :- instruction(_, IID, _, OPC), OPC = "alloca",
 get_num_operands(IID, OPCOUNT), OPCOUNT>2.
 
 .decl get_alloca_arraylevel(instructionid: _instructionid, arraylevel: number)
-.output get_alloca_arraylevel(delimiter=";")
+//.output get_alloca_arraylevel(delimiter=";")
 get_alloca_arraylevel(IID, SIZE) :- instruction(_, IID, _, OPC), OPC = "alloca",
 get_num_operands(IID, OPCOUNT), SIZE = OPCOUNT-1.
 

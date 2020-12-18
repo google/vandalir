@@ -1,8 +1,8 @@
 //find equal memory location (alias analysis)
 .decl memequals(functionid1: _functionid, memlocation1: symbol, memtyp1: symbol, memcategory1: _memcategory, 
 functionid2: _functionid, memlocation2: symbol, memtyp2: symbol, memcategory2: _memcategory)
-.output memequals(delimiter=",")
-/*
+//.output memequals(delimiter=",")
+
 //case: (a <==> b) ==> (b <==> a)
 memequals(FID1, LOC1, TYPE1, CAT1, FID2, LOC2, TYPE2, CAT2) :- 
 memequals(FID2, LOC2, TYPE2, CAT2, FID1, LOC1, TYPE1, CAT1).
@@ -76,7 +76,7 @@ memlocation(FID2, LOC2, TYPE2, CAT2),
 get_call_argument_and_function_register(_, CFID, CARG, FID, VREG, ARGTYPE),
 FID1 = CFID, LOC1=CARG, TYPE1 = ARGTYPE, memcategory(CAT1),
 FID2 = FID, LOC2=VREG, TYPE1 =  ARGTYPE, memcategory(CAT2).
-*/
+
 
 //from here on the cases for array handling
 
@@ -111,7 +111,7 @@ LOC2 = RESULTLOC.
 //iterate through all indicies of gep instruction
 .decl iterate_gep_indices(functionid: _functionid, startlocation: symbol, endlocation: symbol, instructionid: _instructionid, level: number)
 //case maximum level reached
-.output iterate_gep_indices(delimiter=",")
+//.output iterate_gep_indices(delimiter=",")
 iterate_gep_indices(FID, STARTLOC, RESULT, IID, LEVEL) :-
 block(FID, BID, _), instruction(BID, IID, _, OPC), OPC = "getelementptr",
 concatenated(FID, STARTLOC),

@@ -15,7 +15,7 @@ memcategory(MEM) :- MEM = "structIndex".
 memcategory(MEM) :- MEM = "vreg".
 
 .decl memlocation(functionid: _functionid, memlocation: symbol, memtyp: symbol, memcategory: _memcategory)
-.output memlocation(delimiter=",")
+//.output memlocation(delimiter=",")
 //stack allocations
 
 //stack allocations of one element.
@@ -254,7 +254,7 @@ memlocation_alloca_struct_enumerator(FID, LOC, NUM2, TYPE, CAT).
 
 //recursive helpter to enumerate struct sub elements (index elements)
 .decl memlocation_alloca_struct_subelements(functionid: _functionid, outputmemlocation: symbol, startmemlocation: symbol, structname: symbol, memtype: symbol, memcategory: _memcategory)
-.output memlocation_alloca_struct_subelements(delimiter=",")
+//.output memlocation_alloca_struct_subelements(delimiter=",")
 
 //normal struct element, which is not an array
 //case: normal struct element, which is neither an array not another struct

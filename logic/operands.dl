@@ -62,7 +62,7 @@ is_pointer(T) :- pointer_level(T, LVL), LVL > 0.
 
 //is given operand either a virtual register, global or concatenated
 .decl concatenated(functionid: _functionid, location: symbol)
-.output concatenated(delimiter = ",")
+//.output concatenated(delimiter = ",")
 concatenated(FID, LOC) :- is_vreg(LOC), instruction(BID, _, LOC, _), block(FID, BID, _).
 concatenated(FID, LOC) :- memlocation(FID, LOC, _, _).
 concatenated(FID, LOC) :- function(FID, _, _, _), is_global(LOC).
