@@ -53,7 +53,10 @@ is_numeric(VAL) :- opval(VAL),
 !contains("K", VAL), !contains("L", VAL), !contains("M", VAL), !contains("N", VAL), 
 !contains("O", VAL), !contains("P", VAL), !contains("Q", VAL), !contains("R", VAL), 
 !contains("S", VAL), !contains("T", VAL), !contains("U", VAL), !contains("V", VAL), 
-!contains("W", VAL), !contains("X", VAL), !contains("Y", VAL), !contains("Z", VAL).
+!contains("W", VAL), !contains("X", VAL), !contains("Y", VAL), !contains("Z", VAL),
+!contains("{", VAL), !contains("}", VAL), !contains("/", VAL), !contains("_", VAL),
+strlen(VAL)<=9 //ensure it fits into maxint
+.
 //is_numeric(VAL) :- anumber(VAL2), VAL = to_string(VAL2). 
 
 //is given operand a pointer
