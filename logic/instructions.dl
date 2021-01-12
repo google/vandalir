@@ -93,6 +93,10 @@ is_strncpy_call_instruction(IID) :- is_call_instruction(IID), get_last_operand(I
 .decl is_strlen_call_instruction(instructionid: _instructionid)
 is_strlen_call_instruction(IID) :- is_call_instruction(IID), get_last_operand(IID, OV), OV = "strlen".
 
+//get only call sizeof instructions
+.decl is_sizeof_call_instruction(instructionid: _instructionid)
+is_sizeof_call_instruction(IID) :- is_call_instruction(IID), get_last_operand(IID, OV), OV = "sizeof".
+
 //get only call fgets instructions
 .decl is_fgets_call_instruction(instructionid: _instructionid)
 is_fgets_call_instruction(IID) :- is_call_instruction(IID), get_last_operand(IID, OV), OV = "fgets".
@@ -152,3 +156,23 @@ heap_allocation_instruction(FNAME).
 heap_allocation_instruction(INS) :- INS = "malloc".
 heap_allocation_instruction(INS) :- INS = "calloc".
 heap_allocation_instruction(INS) :- INS = "realloc".
+
+
+
+
+
+//argument relations
+
+.decl get_relative_argid(functionid: _functionid, argid: _argumentid, argid_relative: number)
+get_relative_argid(FID, ARGID, ARGID_REL) :- 
+argument(FID, ARGID, _, _), 
+argument(FID, ARGID2, _, _), 
+!ARGID2<ARGID, 
+ARGID_REL = 1.
+
+get_relative_argid(FID, ARGID, ARGID_REL) :- 
+argument(FID, ARGID, _, _), 
+argument(FID, ARGID2, _, _), 
+ARGID2<ARGID, 
+get_relative_argid(FID, ARGID2, ARGID2_REL),
+ARGID_REL = ARGID2_REL+(ARGID-ARGID2).
