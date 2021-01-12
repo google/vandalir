@@ -5,57 +5,75 @@
 
 #define BUFFSIZE 8
 
-void reverse(char *x, int begin, int end)
-{
-   char c;
-
-   if (begin >= end)
-      return;
-
-   c          = *(x+begin);
-   *(x+begin) = *(x+end);
-   *(x+end)   = c;
-
-   reverse(x, ++begin, --end);
-}
-
-char* reverseName(char* name) {
-    char* retname;
-    if(strcmp("joschua", name) == 0) {
-        return name;
-    }
-    int a = 5;
-    for(int i = 0; i < 20; i++) {
-        a += 1;
-    }
-    int *b;
-    b = &a;
-    int c;
-    c = *b;
-    int *d;
-    d = b;
-
-    printf("addr of a %p\n", a);
-    printf("addr of b %p\n", b);
-    printf("addr of c %p\n", c);
-    printf("addr of d %p\n", d);
-    printf("val of a %d\n", a);
-    printf("val of b %d\n", b);
-    printf("val of c %d\n", c);
-    printf("val of d %d\n", d);
-
-    reverse(name, 0, strlen(name)-1);
-    retname = name;
+char* getInput(char* name) {
+    fgets(name, sizeof(char)*BUFFSIZE+1, stdin);
     return name;
 }
 
-int main() {
-    char name[BUFFSIZE];
-    char* input;
-    char* revname;
-    char** inputpointer;
+struct name {
+  char vorname[20];
+  char nachname[30];
+  int age;
+};
 
-	input = calloc(BUFFSIZE, sizeof(char));
+struct munger_struct {
+  int f1;
+  int f2;
+  struct name someone[3];
+};
+/*
+void munge(struct munger_struct *P) {
+  P[0].f1 = P[1].f1 + P[2].f2;
+}
+*/
+void arrayTest() {
+
+
+    //struct munger_struct Array[3];
+    //munge(Array);
+
+    //int numberOfnames = 10;
+    //int twodim[2][4][5];
+    //twodim[1][3][0] = 1;
+    struct name person[3][3];
+    strcpy(person[0][0].vorname, "Joschua");
+    int x = 5;
+    if (x>4) {
+      x = 4;
+    }
+    //struct name people[4];
+    //strcpy(people[3].vorname, "Joschua");
+    //strcpy(people[2].nachname, "Schilling");
+    /*
+    people[2].someVal[0] = 42;
+    people[2].someVal[1] = 1337;
+    */
+    //printf("%s\n", people[3].vorname);
+    
+
+    /*
+    char str[20] = "teststring";
+    str[2] = 'x';
+    int index = 3;
+    str[index] = 'y';
+    */
+}
+
+int main(int argc, char *argv[]) {
+    arrayTest();
+    char name[BUFFSIZE-1];
+    char* input;
+    char* temp;
+    char* modname;
+    char** inputpointer;
+    char someInput[30];
+
+  if(argv[1] != NULL) {
+    strncpy(someInput, argv[1], sizeof(someInput));
+    printf("argument1:%s\n", someInput);
+  }
+
+	input = calloc(BUFFSIZE-1, sizeof(char));
 
     //without the following line ==> only overflow in strncpy detected
     input = realloc(input, (BUFFSIZE-1)*sizeof(char));
@@ -65,12 +83,11 @@ int main() {
 	printf("Enter your name:\n");
 
     //off by one
-	fgets(*inputpointer, sizeof(char)*BUFFSIZE, stdin);
 
-    strncpy(name, input, strlen(input)-1+2);
+    temp = getInput(input);
 
-	revname = reverseName(name);
+    strncpy(name, *inputpointer, BUFFSIZE);
 
-	printf("Hello, %s. Welcome!", revname);
+	printf("Hello %s", name);
 	return 0;
 }
