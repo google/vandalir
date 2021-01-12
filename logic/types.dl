@@ -44,6 +44,9 @@ opval(T) :- T = OV, operand(_,_,OV).
 .decl structoperand(structid: _structid, structoperandid:_structoperandid, type: symbol, size: symbol)
 .input structoperand(delimiter=";")
 
+.decl userinput(functionname: symbol, argnumber: number)
+.input userinput(delimiter=";")
+
 //this contains all numbers 0-100k, used for enumerations
 .decl anumber(number: number)
 .input anumber(delimiter=";")
