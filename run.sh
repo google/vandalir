@@ -31,4 +31,5 @@ else
 fi
 souffle "./logic/main.dl" $CFLAG -F "./facts" -D "./output" $PFLAG -j 4
 [[ -z "$PFLAG" ]] || souffle-profile "./profile" -j
+[[ -z "$CFLAG" ]] || rm ./*.cpp
 echo "execution finished output written to output directory"
