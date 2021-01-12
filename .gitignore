@@ -8,6 +8,7 @@
 /output
 /test
 !/test/test.c
+!/test/discoverFull.ll
 llvm-ir/
 !/llvm-ir/test.ll
 profile
