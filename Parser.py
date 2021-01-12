@@ -12,9 +12,6 @@ LLVM_VER = "10"
 CONV_INSTRUCTIONS = ["trunc", "zext", "sext", "fptrunc", "fpext", "fptoui", "fptosi",
                      "uitofp", "sitofp", "ptrtoint", "inttoptr", "bitcast", "addrspacecast"]
 
-USER_INPUT = [["main", "1"], ["main", "2"], ["main", "3"], ["main", "4"], ["main", "5"],
-              ["main", "6"], ["main", "7"], ["main", "8"], ["main", "9"], ["main", "10"]]
-
 # this limit describes the maximum number of elements in one array, that are used by the analysis
 LIMIT = 1000
 
@@ -67,14 +64,12 @@ class Parser:
             if(not any(function.blocks)):
                 functiontype = "declare"
 
-            function_str = "function("+str(self.functionid)+";\""+str(function.name)+"\";\"" + \
-                functiontype+"\";\""+str(function.type).split('(')[0].strip()+"\")"
+            function_str = "function("+str(self.functionid)+";\""+str(function.name)+"\";\""+functiontype+"\";\""+str(function.type).split('(')[0].strip()+"\")"
             self.output(function_str)
 
             for argument in function.arguments:
                 argumentRegisterStr = "%"+str(argumentRegister)
-                arguments_str = "argument("+str(self.functionid)+";"+str(self.argumentid) + \
-                    ";"+argumentRegisterStr+";\""+str(argument.type)+"\")"
+                arguments_str = "argument("+str(self.functionid)+";"+str(self.argumentid)+";"+argumentRegisterStr+";\""+str(argument.type)+"\")"
                 self.output(arguments_str)
                 self.argumentid += 1
                 argumentRegister += 1
@@ -96,8 +91,7 @@ class Parser:
                     virtualRegister = self.getVirtualRegisterOfInstruction(instruction)
                     # print(virtualRegister)
 
-                    instruction_str = "instruction("+str(self.blockid)+";"+str(self.instructionid) + \
-                        ";\""+virtualRegister+"\";\""+str(instruction.opcode)+"\")"
+                    instruction_str = "instruction("+str(self.blockid)+";"+str(self.instructionid)+";\""+virtualRegister+"\";\""+str(instruction.opcode)+"\")"
                     self.output(instruction_str)
 
                     # operand processing
@@ -120,8 +114,7 @@ class Parser:
                             for procOp in processedOperands:
                                 if(not procOp):  # skip empty operands
                                     continue
-                                operand_str = "operand("+str(self.instructionid)+";" + \
-                                    str(self.operandid)+";\""+procOp+"\")"
+                                operand_str = "operand("+str(self.instructionid)+";"+str(self.operandid)+";\""+procOp+"\")"
                                 self.output(operand_str)
                                 self.operandid += 1
                     else:
@@ -191,7 +184,7 @@ class Parser:
     def parsePhiInstruction(self, fullInstruction):
         instr = fullInstruction.split("phi ")[1]
         instr = instr.split(" ")
-        # print("phi:"+str(fullInstruction))
+        #print("phi:"+str(fullInstruction))
 
         if(len(instr) < 7):
             print("ERROR: phi instruction could not be parsed. Num of parts < 7.")
@@ -239,18 +232,19 @@ class Parser:
             after = ops[LocCloseBracket+1:]
             while(after[0] == "*" or after[0] == " "):
                 after = after[1:]
-            # print("b:"+before)
-            # print("a:"+after)
-            # sys.exit(1)
+            #print("b:"+before)
+            #print("a:"+after)
+            #sys.exit(1)
             ops = before+after
+
 
         ops = ops.split(", ")
         operands[0] = ops[0].strip()
         if(" = " in operands[0]):
             operands[0] = operands[0].split(" = ")[1].strip()
         operand2_split = ops[1].strip().split(" ")
-        # print(ops)
-        # print(operand2_split)
+        #print(ops)
+        #print(operand2_split)
 
         operands[1] = operand2_split[0]
         operands[2] = operand2_split[1]
@@ -306,10 +300,7 @@ class Parser:
             for elementType in types:
                 elementType = self.parseType(elementType)
                 operandsList.append(elementType)
-                struct_operands_str = "structoperand("+str(structId)+";" + \
-                    str(structTypeId)+";"+elementType[0]+";"+str(elementType[1])+")"
-                #print(name)
-                #print(struct_operands_str)
+                struct_operands_str = "structoperand("+str(structId)+";"+str(structTypeId)+";"+elementType[0]+";"+str(elementType[1])+")"
                 self.output(struct_operands_str)
                 structTypeId += 1
 
@@ -332,9 +323,8 @@ class Parser:
                 inBrackets = inBrackets[inBrackets.find("[")+1:inBrackets.rfind("]")].strip()
                 # print("IB:"+str(inBrackets))
                 if(" x ") in inBrackets:
-                    # do not parse it as pointer! +operand[operand.find("]")+1:]
-                    number += "x"+inBrackets[:inBrackets.find(" x ")].strip()
-                    if(not ("[" in inBrackets) or ("]" in inBrackets)):
+                    number += "x"+inBrackets[:inBrackets.find(" x ")].strip()  # do not parse it as pointer! +operand[operand.find("]")+1:]
+                    if(not ("[" in inBrackets) or ( "]" in inBrackets)):
                         operand = inBrackets[inBrackets.find(" x ")+2:].strip()
             number = number[1:]  # remove leading "x"
         else:
@@ -351,8 +341,7 @@ class Parser:
         virtualRegister = self.getVirtualRegisterOfInstruction(callInstruction)
         virtualRegister += "_"+str(self.artificialInstructionId)
         opcode = "getelementptr"
-        instruction_str = "instruction("+str(self.blockid)+";" + \
-            str(self.artificialInstructionId)+";\""+virtualRegister+"\";\""+opcode+"\")"
+        instruction_str = "instruction("+str(self.blockid)+";"+str(self.artificialInstructionId)+";\""+virtualRegister+"\";\""+opcode+"\")"
         self.output(instruction_str)
         # parse operands for artificial instruction
 
@@ -390,7 +379,7 @@ class Parser:
 
         operand = str(operand).strip()
 
-        # if(opcode == "getelementptr"):
+        #if(opcode == "getelementptr"):
         #    print("operand:"+str(operand))
 
         if(opcode == "call"):  # call operand
@@ -405,7 +394,7 @@ class Parser:
 
         # parse getelementptr as its own instruction
         if("getelementptr" in operand and operand[0] != "%"):
-            # print(operand)
+            #print(operand)
             operand = self.parseGetElementPtrInstructionGivenAsString(instruction, operand)
             return [operand.strip()]
 
@@ -413,8 +402,7 @@ class Parser:
             # print(splitInstructions[0])
             # print(splitInstructions[1])
             if(splitInstructions[0][0] == "i" and splitInstructions[1]):  # remove integer type
-                # do not parse types for call instructions (as they are given by function def)
-                if(opcode == "call" or opcode == "ret" or "getelementptr"):
+                if(opcode == "call" or opcode == "ret" or "getelementptr"):  # do not parse types for call instructions (as they are given by function def)
                     operand = [splitInstructions[1].strip()]
                 else:
                     operand = [splitInstructions[0].strip(), splitInstructions[1].strip()]
@@ -443,9 +431,6 @@ class Parser:
         for outputEntry in outputSplitted:
             changed = False
             if(not outputEntry.isnumeric()):
-                if(not outputEntry):
-                    print("Warning: outputEntry empty. Skipping output value.")
-                    return
                 if(outputEntry[0] == '"' and outputEntry[-1] == '"'):  # and outputEntry[1:-1].isnumeric()):
                     newOutput.append(outputEntry[1:-1])
                     changed = True
@@ -487,7 +472,7 @@ class Parser:
 
     def generate_helper_facts(self):
         self.generate_anumber()
-        self.generate_userinput_facts()
+        # self.generate_concatenated_locations()
 
     def generate_anumber(self):
         with open(FACTS_DIR+"/anumber.facts", "w") as f:
@@ -496,13 +481,13 @@ class Parser:
                 outputList.append(str(i))
             f.writelines("\n".join(outputList))
 
-    def generate_userinput_facts(self):
-        with open(FACTS_DIR+"/userinput.facts", "w") as f:
-            outputList = USER_INPUT
-            for i in range(0, len(outputList)):
-                if(i > 0):
-                    f.writelines("\n")
-                f.writelines(";".join(outputList[i]))
+    # def generate_concatenated_locations(self):
+    #     with open(FACTS_DIR+"/concatenated_locations.facts", "w") as f:
+    #         for vreg in self.allocaVregs:
+    #             currentLevel = 0
+    #             baseString = vreg
+    #             outputStrings = self.concatenated_locations_helper(baseString, currentLevel)
+    #             f.writelines("\n".join(outputStrings))
 
     def concatenated_locations_helper(self, baseString, currentLevel):
         outputStrings = list()
@@ -514,7 +499,6 @@ class Parser:
         else:
             for newBaseString in outputStrings:
                 outputStrings.extend(self.concatenated_locations_helper(newBaseString, currentLevel+1))
-
     @staticmethod
     def getControlFlowInfoFromBlock(block):
         label = ""
