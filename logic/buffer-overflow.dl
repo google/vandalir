@@ -90,6 +90,36 @@ get_buffsize_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, IID
 is_heap_allocation_call(IID), get_size_of_heap_alloc(IID, SIZE),
 VAL = SIZE.
 
+//case user input (maximum length)
+get_buffsize_by_vreg(VAL, FID, VREG) :-
+memlocation(FID, VREG, TYPE, "userinput"),
+is_pointer(TYPE),
+VAL = 2147483647.
+
+//case user input (minimum length)
+get_buffsize_by_vreg(VAL, FID, VREG) :-
+memlocation(FID, VREG, TYPE, "userinput"),
+is_pointer(TYPE),
+VAL = 0.
+/*
+//case load from user input (maximum length)
+get_buffsize_by_vreg(VAL, FID, VREG) :-
+block(FID, BID, _),
+instruction(BID, IID, VREG, OPC), OPC = "load",
+get_third_operand(IID, LOADEDLOC),
+memequals(FID, LOADEDLOC, _, _, FID2, LOADEDLOC2, TYPE2, "userinput"),
+is_pointer(TYPE2),
+VAL = 2147483647.
+
+//case load from user input (minimum length)
+get_buffsize_by_vreg(VAL, FID, VREG) :-
+block(FID, BID, _),
+instruction(BID, IID, VREG, OPC), OPC = "load",
+get_third_operand(IID, LOADEDLOC),
+memequals(FID, LOADEDLOC, _, _, FID2, LOADEDLOC2, TYPE2, "userinput"),
+is_pointer(TYPE2),
+VAL = 0.
+*/
 
 //get possible integer values
 .decl get_int_by_vreg(value: number, functionid: _functionid, _vreg: symbol)
@@ -109,11 +139,21 @@ get_int_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, IID, VRE
 get_first_operand(IID, OV1), is_strlen_call_instruction(IID),
 get_buffsize_by_vreg(VAL, FID, OV1).
 
+//case call sizeof
+get_int_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, IID, VREG, OPC), OPC = "call",
+get_first_operand(IID, OV1), is_sizeof_call_instruction(IID),
+get_buffsize_by_vreg(VAL, FID, OV1).
+
 //case memequals
 get_int_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, _, VREG, _),
 memequals(FID, START_LOC, _, _, FID, END_LOC, _, _), 
 START_LOC = VREG,
 get_int_by_vreg(VAL, FID, END_LOC).
+
+//case is int
+get_int_by_vreg(VAL, FID, VREG) :- 
+is_numeric(VREG),
+VAL = to_number(VREG), block(FID, _, _).
 
 
 //TODO: case load integer
@@ -138,6 +178,17 @@ get_buffsize_by_vreg(DEST_SIZE, FID, OV1),
 is_numeric(N),
 MESSAGE = cat(cat(cat("strncpy: possible insufficient buffer size ", to_string(DEST_SIZE)), " for n of size "), N),
 DEST_SIZE < to_number(N).
+
+//strncpy vulnerable to out of bounds read
+is_vulnerable_strncpy_call_instruction(IID, MESSAGE) :- is_strncpy_call_instruction(IID),
+block(FID, BID, _), instruction(BID, IID, _, _),
+get_first_operand(IID, DEST), get_second_operand(IID, SRC), get_third_operand(IID, N), 
+get_int_by_vreg(COPY_SIZE, FID, N),
+get_buffsize_by_vreg(DEST_SIZE, FID, DEST), 
+get_buffsize_by_vreg(SRC_SIZE, FID, SRC), 
+DEST_SIZE = COPY_SIZE,
+MESSAGE = "strncpy: out of bounds read.",
+SRC_SIZE >= COPY_SIZE.
 
 //fgets vulnerable to bo
 .decl is_vulnerable_fgets_call_instruction(instructionid: _instructionid, message: symbol)
