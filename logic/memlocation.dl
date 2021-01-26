@@ -140,6 +140,12 @@ is_vreg(VAL),
 get_int_by_vreg(INDEX, FID, VAL)
 .
 
+.decl get_all_getelementptr_indices_str(index: symbol)
+get_all_getelementptr_indices_str(SYM) :- 
+is_numeric(SYM), 
+RES = to_number(SYM), 
+get_all_getelementptr_indices(RES).
+
 
 //recursive helper function to enumerate alloca arrays
 .decl memlocation_alloca_array_enumerator(functionid: _functionid, memlocation: symbol, enumerator: number, memtyp: symbol, memcategory: _memcategory)
