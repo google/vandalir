@@ -17,8 +17,9 @@ points_to(SFID, SLOC, E2FID, E2LOC).
 //case memequals: (s -> e && as <==> s && ae <==> e) ==> as -> ae
 points_to(SFID, SLOC, EFID, ELOC) :- 
 memequals(SFID, SLOC, S2FID, S2LOC), 
-memequals(EFID, ELOC, E2FID, E2LOC), 
-points_to(S2FID, S2LOC, E2FID, E2LOC).
+points_to(S2FID, S2LOC, E2FID, E2LOC),
+memequals(EFID, ELOC, E2FID, E2LOC) 
+.
 
 
 //case store address to integer
