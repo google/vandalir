@@ -1,0 +1,13 @@
+// introduce new functor f: number -> number
+.functor getStrEntry(symbol, number):symbol
+
+
+.decl INP(x:symbol)
+INP("blub").
+
+.decl A(x:symbol) 
+.output A
+
+A(X) :- X = "ja".
+A(X) :- X = @getStrEntry("blub,bla", 2).
+
