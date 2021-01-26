@@ -1,37 +1,28 @@
 //points-to analysis
-.decl points_to(functionid1: _functionid, memlocation1: symbol, memtyp1: symbol, memcategory1: _memcategory, 
-functionid2: _functionid, memlocation2: symbol, memtyp2: symbol, memcategory2: _memcategory)
+.decl points_to(functionid1: _functionid, memlocation1: symbol,
+functionid2: _functionid, memlocation2: symbol)
 //.output points_to(delimiter=",")
 
 //memequals cases
 //cases memequals: (s -> e && as <==> s) ==> as -> e
-points_to(SFID, SLOC, STYPE, SCAT, EFID, ELOC, ETYPE, ECAT) :- 
-memlocation(SFID, SLOC, STYPE, SCAT), 
-memlocation(EFID, ELOC, ETYPE, ECAT), 
+points_to(SFID, SLOC, EFID, ELOC) :- 
 memequals(SFID, SLOC, S2FID, S2LOC), 
-points_to(S2FID, S2LOC, S2TYPE, S2CAT, EFID, ELOC, ETYPE, ECAT).
+points_to(S2FID, S2LOC, EFID, ELOC).
 
 //cases memequals: (s -> e && ae <==> e) ==> s -> ae
-points_to(SFID, SLOC, STYPE, SCAT, EFID, ELOC, ETYPE, ECAT) :- 
-memlocation(SFID, SLOC, STYPE, SCAT), 
-memlocation(EFID, ELOC, ETYPE, ECAT), 
-memlocation(E2FID, E2LOC, E2TYPE, E2CAT), 
+points_to(SFID, SLOC, EFID, ELOC) :- 
 memequals(EFID, ELOC, E2FID, E2LOC), 
-points_to(SFID, SLOC, STYPE, SCAT, E2FID, E2LOC, E2TYPE, E2CAT).
+points_to(SFID, SLOC, E2FID, E2LOC).
 
 //case memequals: (s -> e && as <==> s && ae <==> e) ==> as -> ae
-points_to(SFID, SLOC, STYPE, SCAT, EFID, ELOC, ETYPE, ECAT) :- 
-memlocation(SFID, SLOC, STYPE, SCAT), 
-memlocation(EFID, ELOC, ETYPE, ECAT), 
-memlocation(S2FID, S2LOC, S2TYPE, S2CAT), 
-memlocation(E2FID, E2LOC, E2TYPE, E2CAT), 
+points_to(SFID, SLOC, EFID, ELOC) :- 
 memequals(SFID, SLOC, S2FID, S2LOC), 
 memequals(EFID, ELOC, E2FID, E2LOC), 
-points_to(S2FID, S2LOC, S2TYPE, S2CAT, E2FID, E2LOC, E2TYPE, E2CAT).
+points_to(S2FID, S2LOC, E2FID, E2LOC).
 
 
 //case store address to integer
-points_to(SFID, SLOC, STYPE, SCAT, EFID, ELOC, ETYPE, ECAT) :- 
+points_to(SFID, SLOC, EFID, ELOC) :- 
 block(FID, BID, _),
 instruction(BID, IID, _, OPC), OPC = "store",
 get_second_operand(IID, ELOC),
@@ -46,7 +37,7 @@ SFID = FID,
 EFID = FID.
 
 //case load 
-points_to(SFID, SLOC, STYPE, SCAT, EFID, ELOC, ETYPE, ECAT) :-
+points_to(SFID, SLOC, EFID, ELOC) :-
 memlocation(SFID, SLOC, STYPE, SCAT), 
 memlocation(EFID, ELOC, ETYPE, ECAT),
 instruction(BID, IID, VREG, OPC), block(FID, BID, _), OPC = "load",

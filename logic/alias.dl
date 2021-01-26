@@ -9,11 +9,8 @@ memequals(FID2, LOC2, FID1, LOC1).
 
 //case points-to: (x -> a && x -> b) ==> (a <==> b)
 memequals(FID1, LOC1, FID2, LOC2) :- 
-memlocation(PFID, PLOC, PTYPE, PCAT),
-memlocation(FID1, LOC1, TYPE1, CAT1),
-memlocation(FID1, LOC1, TYPE1, CAT2),
-points_to(PFID, PLOC, PTYPE, PCAT, FID1, LOC1, TYPE1, CAT1), 
-points_to(PFID, PLOC, PTYPE, PCAT, FID2, LOC2, TYPE2, CAT2).
+points_to(PFID, PLOC, FID1, LOC1), 
+points_to(PFID, PLOC, FID2, LOC2).
 
 //case load pointer
 memequals(FID1, LOC1, FID2, LOC2) :-
