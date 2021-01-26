@@ -45,27 +45,3 @@ memlocation(FID, LOC, _, "userinput").
 
 is_memloc_with_userinput(FID, LOC) :- 
 memequals(FID, LOC, _, _, _, _, _, "userinput").
-
-
-/*
-// getelementptr instruction via memequals
-memlocation(FID, LOC, TYPE, CAT) :- instruction(BID, IID, VREG, OPC), block(FID, BID, _),
-OPC = "getelementptr",
-LOC = VREG,
-CAT = "userinput", memcategory(CAT),
-TYPE = "unknown",
-//ensure it does contain user input:
-get_first_operand(IID, DATAOBJ),
-memequals(FID, DATAOBJ, _, _, _, _, _, "userinput").
-
-// load instruction via memequals
-memlocation(FID, LOC, TYPE, CAT) :- instruction(BID, IID, VREG, OPC), block(FID, BID, _),
-OPC = "load",
-VREG != "%-1",
-LOC = VREG,
-CAT = "userinput", memcategory(CAT),
-get_first_operand(IID, TYPE),
-//ensure it does contain user input:
-get_third_operand(IID, LOADEDLOC),
-memequals(FID, LOADEDLOC, _, _, _, _, _, "userinput").
-*/

@@ -103,25 +103,7 @@ memlocation(FID, VREG, TYPE, _),
 is_memloc_with_userinput(FID, VREG),
 is_pointer(TYPE),
 VAL = 0.
-/*
-//case load from user input (maximum length)
-get_buffsize_by_vreg(VAL, FID, VREG) :-
-block(FID, BID, _),
-instruction(BID, IID, VREG, OPC), OPC = "load",
-get_third_operand(IID, LOADEDLOC),
-memequals(FID, LOADEDLOC, _, _, FID2, LOADEDLOC2, TYPE2, "userinput"),
-is_pointer(TYPE2),
-VAL = 2147483647.
 
-//case load from user input (minimum length)
-get_buffsize_by_vreg(VAL, FID, VREG) :-
-block(FID, BID, _),
-instruction(BID, IID, VREG, OPC), OPC = "load",
-get_third_operand(IID, LOADEDLOC),
-memequals(FID, LOADEDLOC, _, _, FID2, LOADEDLOC2, TYPE2, "userinput"),
-is_pointer(TYPE2),
-VAL = 0.
-*/
 
 //get possible integer values
 .decl get_int_by_vreg(value: number, functionid: _functionid, _vreg: symbol)
