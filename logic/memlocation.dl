@@ -38,6 +38,7 @@ memlocation(FID, LOCATION, TYPE, CAT) :-
 memlocation_alloca_array_enumerator(FID, LOC, NUM, BASETYPE, CAT),
 TYPE = cat(BASETYPE,"*"),
 !is_struct(BASETYPE),
+get_all_getelementptr_indices(NUM), //limit evaluated indices to thouse used by getelemeptr
 LOCATION = cat(cat(LOC, "."), to_string(NUM)).
 
 
@@ -144,6 +145,7 @@ TYPE = cat(BASETYPE, "*"),
 SIZE > 1,
 memlocation_global_array_enumerator(FID, LOC, NUM, BASETYPE, CAT),
 //NUM = SIZE-1,
+get_all_getelementptr_indices(NUM), //limit evaluated indices to thouse used by getelemeptr
 LOCATION = cat(cat(LOC, "."), to_string(NUM)).
 
 //vreg function call
@@ -234,6 +236,28 @@ get_first_operand(IID, DATAOBJ),
 memequals(FID, DATAOBJ, _, _, _, _, _, "userinput").
 
 
+
+//helper relations
+
+//helper function that enumerates all getelementptr indices
+.decl get_all_getelementptr_indices(index: number)
+get_all_getelementptr_indices(INDEX) :-
+instruction(BID, IID, _, OPC), block(_, BID, _),
+OPC = "getelementptr",
+get_ith_operand(IID, I, VAL), I>1,
+is_numeric(VAL),
+INDEX = to_number(VAL).
+
+get_all_getelementptr_indices(INDEX) :-
+instruction(BID, IID, _, OPC), block(FID, BID, _),
+OPC = "getelementptr",
+get_ith_operand(IID, I, VAL), I>1,
+!is_numeric(VAL),
+is_vreg(VAL),
+get_int_by_vreg(INDEX, FID, VAL)
+.
+
+
 //recursive helper function to enumerate alloca arrays
 .decl memlocation_alloca_array_enumerator(functionid: _functionid, memlocation: symbol, enumerator: number, memtyp: symbol, memcategory: _memcategory)
 memlocation_alloca_array_enumerator(FID, LOC, NUM, TYPE, CAT) :- 
@@ -276,6 +300,7 @@ memlocation_multidim_array_enumerator(IID, LEVEL, LOC, STARTLOC) :-
 instruction(_, IID, STARTLOC, OPC), OPC = "alloca",
 get_alloca_arraylevel(IID, ARRAYLEVEL), ARRAYLEVEL > 1,
 LEVEL = 0, 
+get_all_getelementptr_indices(I), //limit evaluated indices to thouse used by getelemeptr
 LOC = cat(cat(STARTLOC, "."), to_string(I)),
 get_ith_operand(IID, LEVEL+2, ELEMENTS_IN_LEVEL),
 I>=0, I<to_number(ELEMENTS_IN_LEVEL), anumber(I).
@@ -286,6 +311,7 @@ get_alloca_arraylevel(IID, ARRAYLEVEL), ARRAYLEVEL > 1,
 get_num_operands(IID, NUMOPERANDS),
 LEVEL < NUMOPERANDS-1,
 anumber(LEVEL), 
+get_all_getelementptr_indices(I), //limit evaluated indices to thouse used by getelemeptr
 LOC = cat(cat(STARTLOC, "."), to_string(I)),
 get_ith_operand(IID, LEVEL+2, ELEMENTS_IN_LEVEL),
 I>=0, I<to_number(ELEMENTS_IN_LEVEL), anumber(I),
@@ -321,6 +347,7 @@ structoperand(SID, OPID, OPTYPE, OPSIZE),
 !is_struct(OPTYPE),
 !is_multidimensional(OPSIZE),
 to_number(OPSIZE) = 1,
+get_all_getelementptr_indices(OPID), //limit evaluated indices to thouse used by getelemeptr
 OUTPUT = cat(cat(STARTLOC, "."), to_string(OPID)),
 TYPE = OPTYPE,
 CAT = "structIndex",
@@ -333,6 +360,7 @@ is_struct(OPTYPE),
 !is_multidimensional(OPSIZE),
 is_numeric(OPSIZE),
 to_number(OPSIZE) = 1,
+get_all_getelementptr_indices(OPID), //limit evaluated indices to thouse used by getelemeptr
 OUTPUT = cat(cat(STARTLOC, "."), to_string(OPID)),
 TYPE = OPTYPE,
 CAT = "structAll",
@@ -345,6 +373,7 @@ is_struct(OPTYPE),
 !is_multidimensional(OPSIZE),
 is_numeric(OPSIZE),
 to_number(OPSIZE) = 1,
+get_all_getelementptr_indices(OPID), //limit evaluated indices to thouse used by getelemeptr
 STARTLOCINNERSTRUCT = cat(cat(STARTLOC, "."), to_string(OPID)),
 memlocation_alloca_struct_subelements(FID, OUTPUT, STARTLOCINNERSTRUCT, OPTYPE, TYPE, CAT),
 concatenated(FID, STARTLOC).
@@ -356,6 +385,7 @@ struct(SID, STRUCTNAME, _),
 structoperand(SID, OPID, OPTYPE, OPSIZE),
 !is_multidimensional(OPSIZE),
 to_number(OPSIZE) > 1,
+get_all_getelementptr_indices(OPID), //limit evaluated indices to thouse used by getelemeptr
 OUTPUT = cat(cat(STARTLOC, "."), to_string(OPID)),
 TYPE = OPTYPE,
 CAT = "arrayAll",
@@ -367,6 +397,8 @@ structoperand(SID, OPID, OPTYPE, OPSIZE),
 !is_struct(OPTYPE),
 !is_multidimensional(OPSIZE),
 to_number(OPSIZE) > 1,
+get_all_getelementptr_indices(OPID), //limit evaluated indices to thouse used by getelemeptr
+get_all_getelementptr_indices(NUM), //limit evaluated indices to thouse used by getelemeptr
 OUTPUT = cat(cat(cat(cat(STARTLOC, "."), to_string(OPID)), "."), to_string(NUM)),
 NUM >= 0, NUM < to_number(OPSIZE), anumber(NUM),
 TYPE = OPTYPE,
@@ -379,6 +411,8 @@ structoperand(SID, OPID, OPTYPE, OPSIZE),
 is_struct(OPTYPE),
 !is_multidimensional(OPSIZE),
 to_number(OPSIZE) > 1,
+get_all_getelementptr_indices(OPID), //limit evaluated indices to thouse used by getelemeptr
+get_all_getelementptr_indices(NUM), //limit evaluated indices to thouse used by getelemeptr
 OUTPUT = cat(cat(cat(cat(STARTLOC, "."), to_string(OPID)), "."), to_string(NUM)),
 NUM >= 0, NUM < to_number(OPSIZE), anumber(NUM),
 TYPE = OPTYPE,
@@ -391,6 +425,8 @@ structoperand(SID, OPID, OPTYPE, OPSIZE),
 is_struct(OPTYPE),
 !is_multidimensional(OPSIZE),
 to_number(OPSIZE) > 1,
+get_all_getelementptr_indices(OPID), //limit evaluated indices to thouse used by getelemeptr
+get_all_getelementptr_indices(NUM), //limit evaluated indices to thouse used by getelemeptr
 STARTLOCINNERSTRUCT = cat(cat(cat(cat(STARTLOC, "."), to_string(OPID)), "."), to_string(NUM)),
 NUM >= 0, NUM < to_number(OPSIZE), anumber(NUM),
 memlocation_alloca_struct_subelements(FID, OUTPUT, STARTLOCINNERSTRUCT, OPTYPE, TYPE, CAT),
