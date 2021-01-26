@@ -128,8 +128,9 @@ is_numeric(OPSIZE),
 to_number(OPSIZE) = 1,
 get_all_getelementptr_indices(OPID), //limit evaluated indices to thouse used by getelemeptr
 STARTLOCINNERSTRUCT = cat(cat(STARTLOC, "."), to_string(OPID)),
-memlocation_alloca_struct_subelements(FID, OUTPUT, STARTLOCINNERSTRUCT, OPTYPE, TYPE, CAT),
-concatenated(FID, STARTLOC).
+concatenated(FID, STARTLOC),
+memlocation_alloca_struct_subelements(FID, OUTPUT, STARTLOCINNERSTRUCT, OPTYPE, TYPE, CAT)
+.
 
 //struct elements which are 1-dim arrays
 //case All Element for 1-dim arrays as sub element

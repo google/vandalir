@@ -3,7 +3,7 @@
 functionid2: _functionid, memlocation2: symbol)
 //.output points_to(delimiter=",")
 
-//memequals cases
+//memequals cases (not strictly necessary?)
 //cases memequals: (s -> e && as <==> s) ==> as -> e
 points_to(SFID, SLOC, EFID, ELOC) :- 
 memequals(SFID, SLOC, S2FID, S2LOC), 
@@ -14,12 +14,14 @@ points_to(SFID, SLOC, EFID, ELOC) :-
 memequals(EFID, ELOC, E2FID, E2LOC), 
 points_to(SFID, SLOC, E2FID, E2LOC).
 
+/*
 //case memequals: (s -> e && as <==> s && ae <==> e) ==> as -> ae
 points_to(SFID, SLOC, EFID, ELOC) :- 
 memequals(SFID, SLOC, S2FID, S2LOC), 
 points_to(S2FID, S2LOC, E2FID, E2LOC),
 memequals(EFID, ELOC, E2FID, E2LOC) 
 .
+*/
 
 
 //case store address to integer
