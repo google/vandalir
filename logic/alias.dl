@@ -136,7 +136,6 @@ iterate_gep_indices(FID, STARTLOC, RESULT, IID, LEVEL) :-
 block(FID, BID, _), instruction(BID, IID, _, OPC), OPC = "getelementptr",
 concatenated(FID, STARTLOC),
 get_ith_operand(IID, LEVEL, NEWINDEX),
-//is_numeric(NEWINDEX),
 get_all_getelementptr_indices_str(NEWINDEX), //limit evaluated indices to thouse used by getelemeptr
 NEWINDEX = to_string(0),
 LEVEL = 2,
@@ -146,7 +145,6 @@ iterate_gep_indices(FID, STARTLOC, RESULT, IID, LEVEL) :-
 block(FID, BID, _), instruction(BID, IID, _, OPC), OPC = "getelementptr",
 concatenated(FID, STARTLOC),
 get_ith_operand(IID, LEVEL, NEWINDEX),
-//is_numeric(NEWINDEX),
 get_all_getelementptr_indices_str(NEWINDEX), //limit evaluated indices to thouse used by getelemeptr
 NEWSTARTLOC = cat(cat(STARTLOC, "."), NEWINDEX),
 get_num_operands(IID, NUMOPERANDS),
