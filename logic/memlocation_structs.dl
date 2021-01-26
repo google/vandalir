@@ -1,0 +1,186 @@
+//structs (not contained within multidim arrays)
+//stack allocations of struct (all element), when a single struct is allocated
+memlocation(FID, LOC, TYPE, CAT) :- 
+instruction(BID, IID, LOC, OPC), block(FID, BID, _),
+!is_alloca_multidimensional(IID),
+OPC = "alloca", 
+get_first_operand(IID, BASETYPE), TYPE = cat(BASETYPE,"*"), 
+get_second_operand(IID, SIZE),
+is_numeric(SIZE), to_number(SIZE) = 1,
+is_struct(BASETYPE),
+CAT = "structAll".
+//stack allocations of struct (all element) when an array of structs is allocated
+memlocation(FID, LOCATION, TYPE, CAT) :- 
+instruction(BID, IID, LOC, OPC), block(FID, BID, _),
+!is_alloca_multidimensional(IID),
+OPC = "alloca", 
+get_first_operand(IID, BASETYPE), TYPE = cat(BASETYPE,"*"), 
+get_second_operand(IID, SIZE),
+is_numeric(SIZE), to_number(SIZE) > 1,
+is_struct(BASETYPE),
+CAT = "structAll",
+NUM >= 0, NUM < to_number(SIZE), anumber(NUM),
+LOCATION = cat(cat(LOC, "."), to_string(NUM)).
+
+//parse subelements of struct
+//stack allocations of subelements of a struct (index elements) when a single struct is allocated
+memlocation(FID, LOCATION, TYPE, CAT) :- 
+instruction(BID, IID, LOC, OPC), block(FID, BID, _),
+!is_alloca_multidimensional(IID),
+OPC = "alloca", get_first_operand(IID, ALLOCTYPE), get_second_operand(IID, ALLOCSIZE),
+is_numeric(ALLOCSIZE), to_number(ALLOCSIZE) = 1,
+struct(_, STRUCTNAME, _),
+STRUCTNAME = ALLOCTYPE,
+TYPE = cat(BASETYPE,"*"), 
+memlocation_alloca_struct_subelements(FID, LOCATION, LOC, STRUCTNAME, BASETYPE, CAT).
+//stack allocations of subelements of a struct (index elements) when a 1-dim array of structs is allocated
+memlocation(FID, LOCATION, TYPE, CAT) :- 
+instruction(BID, IID, LOC, OPC), block(FID, BID, _),
+!is_alloca_multidimensional(IID),
+OPC = "alloca", get_first_operand(IID, STRUCTNAME), get_second_operand(IID, SIZE),
+is_numeric(SIZE), to_number(SIZE) > 1,
+is_struct(STRUCTNAME),
+NUM >= 0, NUM < to_number(SIZE), anumber(NUM),
+STARTLOCATION = cat(cat(LOC, "."), to_string(NUM)),
+TYPE = cat(BASETYPE,"*"),
+memlocation_alloca_struct_subelements(FID, LOCATION, STARTLOCATION, STRUCTNAME, BASETYPE, CAT).
+
+
+//structs within arrays
+
+//stack allocations of array (index elements), which are structs (struct All elements)
+memlocation(FID, LOC, TYPE, CAT) :- instruction(BID, IID, _, OPC), block(FID, BID, _),
+OPC = "alloca", CAT = "structAll", memcategory(CAT), is_alloca_multidimensional(IID),
+get_first_operand(IID, BASETYPE), TYPE = cat(BASETYPE,"*"), 
+is_struct(BASETYPE),
+get_num_operands(IID, NUMOPERANDS),
+LEVEL = NUMOPERANDS-2,
+memlocation_multidim_array_enumerator(IID, LEVEL, LOC, _).
+//stack allocations of array (index elements), which are structs (struct subelements)
+memlocation(FID, LOCATION, TYPE, CAT) :- instruction(BID, IID, _, OPC), block(FID, BID, _),
+OPC = "alloca", memcategory(CAT), is_alloca_multidimensional(IID),
+get_first_operand(IID, ALLOCTYPE),
+is_struct(ALLOCTYPE),
+get_num_operands(IID, NUMOPERANDS),
+LEVEL = NUMOPERANDS-2,
+memlocation_multidim_array_enumerator(IID, LEVEL, STARTLOC, _),
+TYPE = cat(BASETYPE,"*"), 
+memlocation_alloca_struct_subelements(FID, LOCATION, STARTLOC, ALLOCTYPE, BASETYPE, CAT).
+
+
+
+//helper relations
+
+//recursive helper to enumerate struct allocations (all element)
+.decl memlocation_alloca_struct_enumerator(functionid: _functionid, memlocation: symbol, enumerator: number, memtyp: symbol, memcategory: _memcategory)
+memlocation_alloca_struct_enumerator(FID, LOC, NUM, TYPE, CAT) :- 
+instruction(BID, IID, LOC, OPC), block(FID, BID, _),
+OPC = "alloca", memcategory(CAT), 
+get_second_operand(IID, SIZE), is_numeric(SIZE), to_number(SIZE) > 1,
+NUM = 0, NUM<to_number(SIZE),
+get_first_operand(IID, TYPE).
+
+memlocation_alloca_struct_enumerator(FID, LOC, NUM, TYPE, CAT) :- 
+instruction(BID, IID, LOC, OPC), block(FID, BID, _),
+OPC = "alloca", memcategory(CAT), 
+get_first_operand(IID, TYPE),
+get_second_operand(IID, SIZE), is_numeric(SIZE), to_number(SIZE) > 1,
+NUM > 0, NUM<to_number(SIZE), NUM<to_number(SIZE), NUM = NUM2+1,
+memlocation_alloca_struct_enumerator(FID, LOC, NUM2, TYPE, CAT).
+
+//recursive helpter to enumerate struct sub elements (index elements)
+.decl memlocation_alloca_struct_subelements(functionid: _functionid, outputmemlocation: symbol, startmemlocation: symbol, structname: symbol, memtype: symbol, memcategory: _memcategory)
+//.output memlocation_alloca_struct_subelements(delimiter=",")
+
+//normal struct element, which is not an array
+//case: normal struct element, which is neither an array not another struct
+memlocation_alloca_struct_subelements(FID, OUTPUT, STARTLOC, STRUCTNAME, TYPE, CAT) :-
+struct(SID, STRUCTNAME, _),
+structoperand(SID, OPID, OPTYPE, OPSIZE),
+!is_struct(OPTYPE),
+!is_multidimensional(OPSIZE),
+to_number(OPSIZE) = 1,
+get_all_getelementptr_indices(OPID), //limit evaluated indices to thouse used by getelemeptr
+OUTPUT = cat(cat(STARTLOC, "."), to_string(OPID)),
+TYPE = OPTYPE,
+CAT = "structIndex",
+concatenated(FID, STARTLOC).
+//case: subelement is a struct -> AllElement
+memlocation_alloca_struct_subelements(FID, OUTPUT, STARTLOC, STRUCTNAME, TYPE, CAT) :-
+struct(SID, STRUCTNAME, _),
+structoperand(SID, OPID, OPTYPE, OPSIZE),
+is_struct(OPTYPE),
+!is_multidimensional(OPSIZE),
+is_numeric(OPSIZE),
+to_number(OPSIZE) = 1,
+get_all_getelementptr_indices(OPID), //limit evaluated indices to thouse used by getelemeptr
+OUTPUT = cat(cat(STARTLOC, "."), to_string(OPID)),
+TYPE = OPTYPE,
+CAT = "structAll",
+concatenated(FID, STARTLOC).
+//case: subelement is a struct -> Parse actual struct recursively (This one is very time consuming)
+memlocation_alloca_struct_subelements(FID, OUTPUT, STARTLOC, STRUCTNAME, TYPE, CAT) :-
+struct(SID, STRUCTNAME, _),
+structoperand(SID, OPID, OPTYPE, OPSIZE),
+is_struct(OPTYPE),
+!is_multidimensional(OPSIZE),
+is_numeric(OPSIZE),
+to_number(OPSIZE) = 1,
+get_all_getelementptr_indices(OPID), //limit evaluated indices to thouse used by getelemeptr
+STARTLOCINNERSTRUCT = cat(cat(STARTLOC, "."), to_string(OPID)),
+memlocation_alloca_struct_subelements(FID, OUTPUT, STARTLOCINNERSTRUCT, OPTYPE, TYPE, CAT),
+concatenated(FID, STARTLOC).
+
+//struct elements which are 1-dim arrays
+//case All Element for 1-dim arrays as sub element
+memlocation_alloca_struct_subelements(FID, OUTPUT, STARTLOC, STRUCTNAME, TYPE, CAT) :-
+struct(SID, STRUCTNAME, _),
+structoperand(SID, OPID, OPTYPE, OPSIZE),
+!is_multidimensional(OPSIZE),
+to_number(OPSIZE) > 1,
+get_all_getelementptr_indices(OPID), //limit evaluated indices to thouse used by getelemeptr
+OUTPUT = cat(cat(STARTLOC, "."), to_string(OPID)),
+TYPE = OPTYPE,
+CAT = "arrayAll",
+concatenated(FID, STARTLOC).
+//case Index Element for 1-dim arrays as sub element, the 1-dim array is not a struct element
+memlocation_alloca_struct_subelements(FID, OUTPUT, STARTLOC, STRUCTNAME, TYPE, CAT) :-
+struct(SID, STRUCTNAME, _),
+structoperand(SID, OPID, OPTYPE, OPSIZE),
+!is_struct(OPTYPE),
+!is_multidimensional(OPSIZE),
+to_number(OPSIZE) > 1,
+get_all_getelementptr_indices(OPID), //limit evaluated indices to thouse used by getelemeptr
+get_all_getelementptr_indices(NUM), //limit evaluated indices to thouse used by getelemeptr
+OUTPUT = cat(cat(cat(cat(STARTLOC, "."), to_string(OPID)), "."), to_string(NUM)),
+NUM >= 0, NUM < to_number(OPSIZE), anumber(NUM),
+TYPE = OPTYPE,
+CAT = "arrayIndex",
+concatenated(FID, STARTLOC).
+//case Index Element for 1-dim arrays as sub element, the 1-dim array is not a struct element
+memlocation_alloca_struct_subelements(FID, OUTPUT, STARTLOC, STRUCTNAME, TYPE, CAT) :-
+struct(SID, STRUCTNAME, _),
+structoperand(SID, OPID, OPTYPE, OPSIZE),
+is_struct(OPTYPE),
+!is_multidimensional(OPSIZE),
+to_number(OPSIZE) > 1,
+get_all_getelementptr_indices(OPID), //limit evaluated indices to thouse used by getelemeptr
+get_all_getelementptr_indices(NUM), //limit evaluated indices to thouse used by getelemeptr
+OUTPUT = cat(cat(cat(cat(STARTLOC, "."), to_string(OPID)), "."), to_string(NUM)),
+NUM >= 0, NUM < to_number(OPSIZE), anumber(NUM),
+TYPE = OPTYPE,
+CAT = "structAll",
+concatenated(FID, STARTLOC).
+//case Index Element for 1-dim arrays as sub element, the 1-dim array is a struct element
+memlocation_alloca_struct_subelements(FID, OUTPUT, STARTLOC, STRUCTNAME, TYPE, CAT) :-
+struct(SID, STRUCTNAME, _),
+structoperand(SID, OPID, OPTYPE, OPSIZE),
+is_struct(OPTYPE),
+!is_multidimensional(OPSIZE),
+to_number(OPSIZE) > 1,
+get_all_getelementptr_indices(OPID), //limit evaluated indices to thouse used by getelemeptr
+get_all_getelementptr_indices(NUM), //limit evaluated indices to thouse used by getelemeptr
+STARTLOCINNERSTRUCT = cat(cat(cat(cat(STARTLOC, "."), to_string(OPID)), "."), to_string(NUM)),
+NUM >= 0, NUM < to_number(OPSIZE), anumber(NUM),
+memlocation_alloca_struct_subelements(FID, OUTPUT, STARTLOCINNERSTRUCT, OPTYPE, TYPE, CAT),
+concatenated(FID, STARTLOC).

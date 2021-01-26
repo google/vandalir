@@ -7,6 +7,7 @@
 #include "operands.dl"
 #include "control-flow.dl"
 #include "memlocation.dl"
+#include "memlocation_structs.dl"
 
 //rules & analysis 
 #include "alias.dl"
