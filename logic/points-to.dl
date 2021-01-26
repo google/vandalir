@@ -28,8 +28,8 @@ instruction(BID, IID, _, OPC), OPC = "store",
 get_second_operand(IID, ELOC),
 get_fourth_operand(IID, SLOC),
 pointer_level(STYPE, STYPE_PLVL),
-memlocation(SFID, SLOC, STYPE, SCAT), 
-memlocation(EFID, ELOC, ETYPE, ECAT),
+memlocation(SFID, SLOC, STYPE, _), 
+memlocation(EFID, ELOC, ETYPE, _),
 pointer_level(ETYPE, ETYPE_PLVL),
 ETYPE_PLVL < STYPE_PLVL,
 ETYPE != "unknown", //TODO: fix parser to include types
@@ -38,8 +38,8 @@ EFID = FID.
 
 //case load 
 points_to(SFID, SLOC, EFID, ELOC) :-
-memlocation(SFID, SLOC, STYPE, SCAT), 
-memlocation(EFID, ELOC, ETYPE, ECAT),
+memlocation(SFID, SLOC, STYPE, _), 
+memlocation(EFID, ELOC, ETYPE, _),
 instruction(BID, IID, VREG, OPC), block(FID, BID, _), OPC = "load",
 pointer_level(STYPE, STYPE_PLVL),
 pointer_level(ETYPE, ETYPE_PLVL),
