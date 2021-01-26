@@ -81,7 +81,7 @@ get_first_operand(IID, OV1), get_buffsize_by_vreg(VAL, FID, OV1).
 
 //case memequals
 get_buffsize_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, _, VREG, _),
-memequals(FID, START_LOC, _, _, END_FID, END_LOC, _, _), 
+memequals(FID, START_LOC, END_FID, END_LOC), 
 START_LOC = VREG,
 get_buffsize_by_vreg(VAL, END_FID, END_LOC).
 
@@ -130,7 +130,7 @@ get_buffsize_by_vreg(VAL, FID, OV1).
 
 //case memequals
 get_int_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, _, VREG, _),
-memequals(FID, START_LOC, _, _, FID, END_LOC, _, _), 
+memequals(FID, START_LOC, FID, END_LOC), 
 START_LOC = VREG,
 get_int_by_vreg(VAL, FID, END_LOC).
 

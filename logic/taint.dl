@@ -44,4 +44,6 @@ is_memloc_with_userinput(FID, LOC) :-
 memlocation(FID, LOC, _, "userinput").
 
 is_memloc_with_userinput(FID, LOC) :- 
-memequals(FID, LOC, _, _, _, _, _, "userinput").
+memequals(FID, LOC, FID2, LOC2),
+memlocation(FID2, LOC2, _, "userinput")
+.

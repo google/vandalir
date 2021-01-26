@@ -1,19 +1,22 @@
 //find equal memory location (alias analysis)
-.decl memequals(functionid1: _functionid, memlocation1: symbol, memtyp1: symbol, memcategory1: _memcategory, 
-functionid2: _functionid, memlocation2: symbol, memtyp2: symbol, memcategory2: _memcategory)
-.output memequals(delimiter=",")
+.decl memequals(functionid1: _functionid, memlocation1: symbol, 
+functionid2: _functionid, memlocation2: symbol)
+//.output memequals(delimiter=",")
 
 //case: (a <==> b) ==> (b <==> a)
-memequals(FID1, LOC1, TYPE1, CAT1, FID2, LOC2, TYPE2, CAT2) :- 
-memequals(FID2, LOC2, TYPE2, CAT2, FID1, LOC1, TYPE1, CAT1).
+memequals(FID1, LOC1, FID2, LOC2) :- 
+memequals(FID2, LOC2, FID1, LOC1).
 
 //case points-to: (x -> a && x -> b) ==> (a <==> b)
-memequals(FID1, LOC1, TYPE1, CAT1, FID2, LOC2, TYPE2, CAT2) :- 
+memequals(FID1, LOC1, FID2, LOC2) :- 
+memlocation(PFID, PLOC, PTYPE, PCAT),
+memlocation(FID1, LOC1, TYPE1, CAT1),
+memlocation(FID1, LOC1, TYPE1, CAT2),
 points_to(PFID, PLOC, PTYPE, PCAT, FID1, LOC1, TYPE1, CAT1), 
 points_to(PFID, PLOC, PTYPE, PCAT, FID2, LOC2, TYPE2, CAT2).
 
 //case load pointer
-memequals(FID1, LOC1, TYPE1, CAT1, FID2, LOC2, TYPE2, CAT2) :-
+memequals(FID1, LOC1, FID2, LOC2) :-
 memlocation(FID1, LOC1, TYPE1, CAT1), 
 memlocation(FID2, LOC2, TYPE2, CAT2),
 instruction(BID, IID, VREG, OPC), block(FID, BID, _), OPC = "load",
@@ -28,12 +31,13 @@ get_third_operand(IID, LOADADDR),
 LOADADDR = LOC2.
 
 //case store a pointer
-memequals(FID1, LOC1, TYPE1, CAT1, FID2, LOC2, TYPE2, CAT2) :- 
+memequals(FID1, LOC1, FID2, LOC2) :- 
+memlocation(FID1, LOC1, TYPE1, CAT1),
+memlocation(FID2, LOC2, TYPE2, CAT2),
 block(FID, BID, _),
 instruction(BID, IID, _, OPC), OPC = "store",
 get_second_operand(IID, LOC2),
 get_fourth_operand(IID, LOC1),
-memlocation(FID1, LOC1, TYPE1, CAT1), memlocation(FID2, LOC2, TYPE2, CAT2),
 pointer_level(TYPE1, TYPE1_PLVL),
 pointer_level(TYPE2, TYPE2_PLVL),
 TYPE1_PLVL = TYPE2_PLVL,
@@ -41,7 +45,7 @@ FID1 = FID,
 FID2 = FID.
 
 //case conversion instruction
-memequals(FID1, LOC1, TYPE1, CAT1, FID2, LOC2, TYPE2, CAT2) :-
+memequals(FID1, LOC1, FID2, LOC2) :-
 memlocation(FID1, LOC1, TYPE1, CAT1), 
 memlocation(FID2, LOC2, TYPE2, CAT2),
 instruction(BID, IID, VREG, _), block(FID, BID, _), 
@@ -53,7 +57,7 @@ FID1 = FID,
 FID2 = FID.
 
 //case function return
-memequals(FID1, LOC1, TYPE1, CAT1, FID2, LOC2, TYPE2, CAT2) :-
+memequals(FID1, LOC1, FID2, LOC2) :-
 memlocation(FID1, LOC1, TYPE1, CAT1), 
 memlocation(FID2, LOC2, TYPE2, CAT2),
 get_fid_for_call_instruction(FID, IID),
@@ -70,7 +74,7 @@ FID1 = FID,
 FID2 = FID_CALL.
 
 //case function arguments
-memequals(FID1, LOC1, TYPE1, CAT1, FID2, LOC2, TYPE2, CAT2) :-
+memequals(FID1, LOC1, FID2, LOC2) :-
 memlocation(FID1, LOC1, TYPE1, CAT1), 
 memlocation(FID2, LOC2, TYPE2, CAT2),
 get_call_argument_and_function_register(_, CFID, CARG, FID, VREG, ARGTYPE),
@@ -82,7 +86,7 @@ FID2 = FID, LOC2=VREG, TYPE1 =  ARGTYPE, memcategory(CAT2).
 
 //first cases, where specific element of array could be located
 //case getelementptr
-memequals(FID1, LOC1, TYPE1, CAT1, FID2, LOC2, TYPE2, CAT2) :-
+memequals(FID1, LOC1, FID2, LOC2) :-
 memlocation(FID1, LOC1, TYPE1, CAT1), //LOC1 = GEP instruction
 memlocation(FID2, LOC2, TYPE2, CAT2),
 block(FID1, BID, _), 
@@ -92,8 +96,9 @@ instruction(BID, IID, LOC1, OPC), OPC = "getelementptr", //LOC 1 is GEP instruct
 get_first_operand(IID, DATAOBJ), 
 iterate_gep_indices(FID1, DATAOBJ, RESULTLOC, IID, _),
 LOC2 = RESULTLOC.
+
 //case getelementptr, MEMLOC2 is global
-memequals(FID1, LOC1, TYPE1, CAT1, FID2, LOC2, TYPE2, CAT2) :-
+memequals(FID1, LOC1, FID2, LOC2) :-
 memlocation(FID1, LOC1, TYPE1, CAT1), //LOC1 = GEP instruction
 memlocation(FID2, LOC2, TYPE2, CAT2),
 block(FID1, BID, _), 
@@ -153,7 +158,7 @@ LEVEL > 2,
 iterate_gep_indices(FID, NEWSTARTLOC, RESULT, IID, LEVEL+1).
 //case memequals to get GEPs that do not directly reference allocations, but e.g. other GEPs
 iterate_gep_indices(FID, STARTLOC, RESULT, IID, LEVEL) :-
-memequals(FID,STARTLOC,_,_,FID,ALTSTART,_,_),
+memequals(FID,STARTLOC,FID,ALTSTART),
 iterate_gep_indices(FID, ALTSTART, RESULT, IID, LEVEL).
 
 
