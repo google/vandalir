@@ -11,7 +11,9 @@
 //rules & analysis 
 #include "alias.dl"
 #include "points-to.dl"
+#include "taint.dl"
 #include "memops.dl"
+
 
 //vulnerable detection
 #include "vulnerabilities.dl"

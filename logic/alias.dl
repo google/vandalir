@@ -1,7 +1,7 @@
 //find equal memory location (alias analysis)
 .decl memequals(functionid1: _functionid, memlocation1: symbol, memtyp1: symbol, memcategory1: _memcategory, 
 functionid2: _functionid, memlocation2: symbol, memtyp2: symbol, memcategory2: _memcategory)
-//.output memequals(delimiter=",")
+.output memequals(delimiter=",")
 
 //case: (a <==> b) ==> (b <==> a)
 memequals(FID1, LOC1, TYPE1, CAT1, FID2, LOC2, TYPE2, CAT2) :- 
@@ -11,11 +11,6 @@ memequals(FID2, LOC2, TYPE2, CAT2, FID1, LOC1, TYPE1, CAT1).
 memequals(FID1, LOC1, TYPE1, CAT1, FID2, LOC2, TYPE2, CAT2) :- 
 points_to(PFID, PLOC, PTYPE, PCAT, FID1, LOC1, TYPE1, CAT1), 
 points_to(PFID, PLOC, PTYPE, PCAT, FID2, LOC2, TYPE2, CAT2).
-
-//case (a <==> b), (b <==> c) ==> (a <==> c)
-memequals(FID1, LOC1, TYPE1, CAT1, FID3, LOC3, TYPE3, CAT3) :-
-memequals(FID1, LOC1, TYPE1, CAT1, FID2, LOC2, TYPE2, CAT2),
-memequals(FID2, LOC2, TYPE2, CAT2, FID3, LOC3, TYPE3, CAT3).
 
 //case load pointer
 memequals(FID1, LOC1, TYPE1, CAT1, FID2, LOC2, TYPE2, CAT2) :-

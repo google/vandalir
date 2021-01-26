@@ -13,7 +13,6 @@ memcategory(MEM) :- MEM = "arrayIndex".
 memcategory(MEM) :- MEM = "structAll".
 memcategory(MEM) :- MEM = "structIndex".
 memcategory(MEM) :- MEM = "vreg".
-memcategory(MEM) :- MEM = "userinput".
 
 .decl memlocation(functionid: _functionid, memlocation: symbol, memtyp: symbol, memcategory: _memcategory)
 .output memlocation(delimiter=",")
@@ -175,8 +174,6 @@ LOC = VREG,
 CAT = "vreg", memcategory(CAT),
 TYPE = "unknown".
 
-//user input "tainting":
-
 //function arguments
 //function arguments (not containing userinput)
 memlocation(FID, LOC, TYPE, CAT) :- 
@@ -185,55 +182,6 @@ CAT = "stack",
 get_relative_argid(FID, ARGID, ARGID_REL),
 function(FID, FNAME, _, _),
 !userinput(FNAME, ARGID_REL).
-//function arguments containing userinput
-memlocation(FID, LOC, TYPE, CAT) :- 
-argument(FID, ARGID, LOC, TYPE), 
-CAT = "userinput",
-get_relative_argid(FID, ARGID, ARGID_REL),
-function(FID, FNAME, _, _),
-userinput(FNAME, ARGID_REL).
-
-// load instruction
-memlocation(FID, LOC, TYPE, CAT) :- instruction(BID, IID, VREG, OPC), block(FID, BID, _),
-OPC = "load",
-VREG != "%-1",
-LOC = VREG,
-CAT = "userinput", memcategory(CAT),
-get_first_operand(IID, TYPE),
-//ensure it does contain user input:
-get_third_operand(IID, LOADEDLOC),
-memlocation(FID, LOADEDLOC, _, "userinput").
-
-// load instruction via memequals
-memlocation(FID, LOC, TYPE, CAT) :- instruction(BID, IID, VREG, OPC), block(FID, BID, _),
-OPC = "load",
-VREG != "%-1",
-LOC = VREG,
-CAT = "userinput", memcategory(CAT),
-get_first_operand(IID, TYPE),
-//ensure it does contain user input:
-get_third_operand(IID, LOADEDLOC),
-memequals(FID, LOADEDLOC, _, _, _, _, _, "userinput").
-
-// getelementptr instruction
-memlocation(FID, LOC, TYPE, CAT) :- instruction(BID, IID, VREG, OPC), block(FID, BID, _),
-OPC = "getelementptr",
-LOC = VREG,
-CAT = "userinput", memcategory(CAT),
-TYPE = "unknown",
-//ensure it does not contain user input:
-get_first_operand(IID, DATAOBJ),
-memlocation(FID, DATAOBJ, _, "userinput").
-
-// getelementptr instruction via memequals
-memlocation(FID, LOC, TYPE, CAT) :- instruction(BID, IID, VREG, OPC), block(FID, BID, _),
-OPC = "getelementptr",
-LOC = VREG,
-CAT = "userinput", memcategory(CAT),
-TYPE = "unknown",
-//ensure it does not contain user input:
-get_first_operand(IID, DATAOBJ),
-memequals(FID, DATAOBJ, _, _, _, _, _, "userinput").
 
 
 

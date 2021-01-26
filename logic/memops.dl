@@ -92,13 +92,15 @@ VAL = SIZE.
 
 //case user input (maximum length)
 get_buffsize_by_vreg(VAL, FID, VREG) :-
-memlocation(FID, VREG, TYPE, "userinput"),
+memlocation(FID, VREG, TYPE, _),
+is_memloc_with_userinput(FID, VREG),
 is_pointer(TYPE),
 VAL = 2147483647.
 
 //case user input (minimum length)
 get_buffsize_by_vreg(VAL, FID, VREG) :-
-memlocation(FID, VREG, TYPE, "userinput"),
+memlocation(FID, VREG, TYPE, _),
+is_memloc_with_userinput(FID, VREG),
 is_pointer(TYPE),
 VAL = 0.
 /*
