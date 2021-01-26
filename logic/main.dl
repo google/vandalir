@@ -7,12 +7,11 @@
 #include "operands.dl"
 #include "control-flow.dl"
 #include "memlocation.dl"
-#include "alias.dl"
-#include "points-to.dl"
-
 
 //rules & analysis 
-#include "buffer-overflow.dl"
-//output
+#include "alias.dl"
+#include "points-to.dl"
+#include "memops.dl"
 
 //vulnerable detection
+#include "vulnerabilities.dl"
