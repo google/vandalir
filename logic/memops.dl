@@ -6,6 +6,7 @@ get_size_of_heap_alloc(IID, SIZE) :- is_heap_allocation_call(IID), is_realloc_ca
 
 
 //get size of malloc
+//TODO: rewrite as hardcoded and vreg can no be implemented in one rule
 .decl get_size_of_malloc(instructionid: _instructionid, size: number)
 //case hard coded size
 get_size_of_malloc(IID, SIZE) :- is_malloc_call_instruction(IID),
@@ -20,7 +21,8 @@ is_vreg(OV1),
 get_int_by_vreg(SIZE, FID, OV1).
 
 //get size of calloc
-//case both hardcoaded
+//TODO: rewrite as hardcoded and vreg can no be implemented in one rule
+//case both hardcoded
 .decl get_size_of_calloc(instructionid: _instructionid, size: number)
 get_size_of_calloc(IID, SIZE) :- is_calloc_call_instruction(IID),
 get_first_operand(IID, OV1), get_second_operand(IID, OV2),
@@ -52,6 +54,7 @@ is_vreg(OV1), is_vreg(OV2),
 SIZE = SIZE1*SIZE2.
 
 //get size of realloc
+//TODO: rewrite as hardcoded and vreg can no be implemented in one rule
 //case hard coded size
 .decl get_size_of_realloc(instructionid: _instructionid, size: number)
 get_size_of_realloc(IID, SIZE) :- is_realloc_call_instruction(IID),

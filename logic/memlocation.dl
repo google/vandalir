@@ -13,9 +13,10 @@ memcategory(MEM) :- MEM = "arrayIndex".
 memcategory(MEM) :- MEM = "structAll".
 memcategory(MEM) :- MEM = "structIndex".
 memcategory(MEM) :- MEM = "vreg".
+memcategory(MEM) :- MEM = "debug".
 
 .decl memlocation(functionid: _functionid, memlocation: symbol, memtyp: symbol, memcategory: _memcategory)
-//.output memlocation(delimiter=",")
+.output memlocation(delimiter=",")
 //stack allocations
 
 //stack allocations of one element.
@@ -110,13 +111,14 @@ CAT = "vreg", memcategory(CAT),
 TYPE = "unknown".
 
 //function arguments
-//function arguments (not containing userinput)
+//function arguments (not containing equal userinput)
+//TODO: might be a good idea to exclude userinput ==> no duplicates?
 memlocation(FID, LOC, TYPE, CAT) :- 
-argument(FID, ARGID, LOC, TYPE), 
-CAT = "stack",
-get_relative_argid(FID, ARGID, ARGID_REL),
-function(FID, FNAME, _, _),
-!userinput(FNAME, ARGID_REL).
+argument(FID, _, LOC, TYPE), 
+CAT = "stack"
+//get_relative_argid(FID, ARGID, ARGID_REL),
+//function(FID, FNAME, _, _)
+.
 
 
 

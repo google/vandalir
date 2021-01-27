@@ -12,8 +12,11 @@ LLVM_VER = "10"
 CONV_INSTRUCTIONS = ["trunc", "zext", "sext", "fptrunc", "fpext", "fptoui", "fptosi",
                      "uitofp", "sitofp", "ptrtoint", "inttoptr", "bitcast", "addrspacecast"]
 
-USER_INPUT = [["main", "1"], ["main", "2"], ["main", "3"], ["main", "4"], ["main", "5"],
-              ["main", "6"], ["main", "7"], ["main", "8"], ["main", "9"], ["main", "10"]]
+USER_INPUT = [["main", "1", "+", "0"], ["scanf", "2", "+", "1"], ["fscanf", "3", "+", "1"],
+              ["sscanf", "2", "+", "1"], ["vscanf", "2", "+", "1"],
+              ["vsscanf", "3", "+", "1"], ["vfscanf", "2", "+", "1"],
+              ["fgets", "1", "=", "1"], ["fgetc", "0", "=", "1"], ["getc", "0", "=", "1"],
+              ["gets", "1", "=", "0"]]
 
 # this limit describes the maximum number of elements in one array, that are used by the analysis
 LIMIT = 1000
@@ -308,8 +311,8 @@ class Parser:
                 operandsList.append(elementType)
                 struct_operands_str = "structoperand("+str(structId)+";" + \
                     str(structTypeId)+";"+elementType[0]+";"+str(elementType[1])+")"
-                #print(name)
-                #print(struct_operands_str)
+                # print(name)
+                # print(struct_operands_str)
                 self.output(struct_operands_str)
                 structTypeId += 1
 
