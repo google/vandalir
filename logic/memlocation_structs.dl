@@ -50,7 +50,7 @@ memlocation_alloca_struct_subelements(FID, LOCATION, STARTLOCATION, STRUCTNAME, 
 
 //stack allocations of array (index elements), which are structs (struct All elements)
 memlocation(FID, LOC, TYPE, CAT) :- instruction(BID, IID, _, OPC), block(FID, BID, _),
-OPC = "alloca", CAT = "structAll", memcategory(CAT), is_alloca_multidimensional(IID),
+OPC = "alloca", CAT = "structAll", is_alloca_multidimensional(IID),
 get_first_operand(IID, BASETYPE), TYPE = cat(BASETYPE,"*"), 
 is_struct(BASETYPE),
 get_num_operands(IID, NUMOPERANDS),
@@ -58,7 +58,7 @@ LEVEL = NUMOPERANDS-2,
 memlocation_multidim_array_enumerator(IID, LEVEL, LOC, _).
 //stack allocations of array (index elements), which are structs (struct subelements)
 memlocation(FID, LOCATION, TYPE, CAT) :- instruction(BID, IID, _, OPC), block(FID, BID, _),
-OPC = "alloca", memcategory(CAT), is_alloca_multidimensional(IID),
+OPC = "alloca", is_alloca_multidimensional(IID),
 get_first_operand(IID, ALLOCTYPE),
 is_struct(ALLOCTYPE),
 get_num_operands(IID, NUMOPERANDS),
@@ -75,14 +75,14 @@ memlocation_alloca_struct_subelements(FID, LOCATION, STARTLOC, ALLOCTYPE, BASETY
 .decl memlocation_alloca_struct_enumerator(functionid: _functionid, memlocation: symbol, enumerator: number, memtyp: symbol, memcategory: _memcategory)
 memlocation_alloca_struct_enumerator(FID, LOC, NUM, TYPE, CAT) :- 
 instruction(BID, IID, LOC, OPC), block(FID, BID, _),
-OPC = "alloca", memcategory(CAT), 
+OPC = "alloca", CAT = "structAll",
 get_second_operand(IID, SIZE), is_numeric(SIZE), to_number(SIZE) > 1,
 NUM = 0, NUM<to_number(SIZE),
 get_first_operand(IID, TYPE).
 
 memlocation_alloca_struct_enumerator(FID, LOC, NUM, TYPE, CAT) :- 
 instruction(BID, IID, LOC, OPC), block(FID, BID, _),
-OPC = "alloca", memcategory(CAT), 
+OPC = "alloca", 
 get_first_operand(IID, TYPE),
 get_second_operand(IID, SIZE), is_numeric(SIZE), to_number(SIZE) > 1,
 NUM > 0, NUM<to_number(SIZE), NUM<to_number(SIZE), NUM = NUM2+1,

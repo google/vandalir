@@ -3,17 +3,6 @@
 memtype(MEM) :- MEM = "unknown". //unkown type
 memtype(MEM) :- type(MEM).
 
-//memcategory
-.decl memcategory(memcategory: _memcategory)
-memcategory(MEM) :- MEM = "stack".
-memcategory(MEM) :- MEM = "heap".
-memcategory(MEM) :- MEM = "global".
-memcategory(MEM) :- MEM = "arrayAll".
-memcategory(MEM) :- MEM = "arrayIndex".
-memcategory(MEM) :- MEM = "structAll".
-memcategory(MEM) :- MEM = "structIndex".
-memcategory(MEM) :- MEM = "vreg".
-memcategory(MEM) :- MEM = "debug".
 
 .decl memlocation(functionid: _functionid, memlocation: symbol, memtyp: symbol, memcategory: _memcategory)
 .output memlocation(delimiter=",")
@@ -21,7 +10,7 @@ memcategory(MEM) :- MEM = "debug".
 
 //stack allocations of one element.
 memlocation(FID, LOC, TYPE, CAT) :- instruction(BID, IID, LOC, OPC), block(FID, BID, _),
-OPC = "alloca", CAT = "stack", memcategory(CAT), 
+OPC = "alloca", CAT = "stack",  
 get_first_operand(IID, TYPE), is_numeric(SIZE), to_number(SIZE) = 1,
 !is_struct(TYPE),
 get_second_operand(IID, SIZE).
@@ -29,7 +18,7 @@ get_second_operand(IID, SIZE).
 //1-dim arrays
 //stack allocations of array (all element).
 memlocation(FID, LOC, TYPE, CAT) :- instruction(BID, IID, LOC, OPC), block(FID, BID, _),
-OPC = "alloca", CAT = "arrayAll", memcategory(CAT), !is_alloca_multidimensional(IID),
+OPC = "alloca", CAT = "arrayAll",  !is_alloca_multidimensional(IID),
 get_first_operand(IID, BASETYPE), TYPE = cat(BASETYPE,"*"), 
 is_numeric(SIZE), to_number(SIZE) > 1,
 get_second_operand(IID, SIZE).
@@ -46,13 +35,13 @@ LOCATION = cat(cat(LOC, "."), to_string(NUM)).
 //stack allocations of array (all element).
 
 memlocation(FID, LOC, TYPE, CAT) :- instruction(BID, IID, _, OPC), block(FID, BID, _),
-OPC = "alloca", CAT = "arrayAll", memcategory(CAT), is_alloca_multidimensional(IID),
+OPC = "alloca", CAT = "arrayAll",  is_alloca_multidimensional(IID),
 get_first_operand(IID, BASETYPE), TYPE = cat(BASETYPE,"*"),  
 memlocation_multidim_array_enumerator(IID, _, _, LOC).
 //stack allocations of array (index elements), which are no structs
 memlocation(FID, LOC, TYPE, CAT) :- instruction(BID, IID, _, OPC), block(FID, BID, _),
 !is_struct(TYPE),
-OPC = "alloca", CAT = "arrayIndex", memcategory(CAT), is_alloca_multidimensional(IID),
+OPC = "alloca", CAT = "arrayIndex",  is_alloca_multidimensional(IID),
 get_first_operand(IID, BASETYPE), TYPE = cat(BASETYPE,"*"), 
 get_num_operands(IID, NUMOPERANDS),
 LEVEL = NUMOPERANDS-2,
@@ -61,18 +50,18 @@ memlocation_multidim_array_enumerator(IID, LEVEL, LOC, _).
 
 //heap allocations
 memlocation(FID, LOC, TYPE, CAT) :- instruction(BID, IID, LOC, _), block(FID, BID, _),
-is_heap_allocation_call(IID), CAT = "heap", memcategory(CAT),
+is_heap_allocation_call(IID), CAT = "heap", 
 TYPE = "i8*".
 //global allocations of one element
 memlocation(FID, LOC, TYPE, CAT) :- 
 global(LOC, TYPE, SIZE),
 SIZE = 1,
-FID = -1, CAT = "global", memcategory(CAT).
+FID = -1, CAT = "global".
 //global allocations of array (all element).
 memlocation(FID, LOC, TYPE, CAT) :- 
 global(LOC, BASETYPE, SIZE), TYPE = cat(BASETYPE, "*"),
 SIZE > 1,
-FID = -1, CAT = "arrayAll", memcategory(CAT).
+FID = -1, CAT = "arrayAll".
 //global allocations of array (index elements).
 memlocation(FID, LOCATION, TYPE, CAT) :- 
 global(LOC, BASETYPE, SIZE), 
@@ -94,20 +83,20 @@ memlocation(FID, LOC, TYPE, CAT) :- instruction(BID, IID, VREG, OPC), block(FID,
 OPC != "load", OPC != "alloca", OPC != "getelementptr", !is_heap_allocation_call(IID),
 VREG != "%-1",
 LOC = VREG,
-CAT = "vreg", memcategory(CAT),
+CAT = "vreg", 
 TYPE = "unknown". 
 //vreg load
 memlocation(FID, LOC, TYPE, CAT) :- instruction(BID, IID, VREG, OPC), block(FID, BID, _),
 OPC = "load",
 VREG != "%-1",
 LOC = VREG,
-CAT = "vreg", memcategory(CAT),
+CAT = "vreg", 
 get_first_operand(IID, TYPE).
 //vreg getelementptr
 memlocation(FID, LOC, TYPE, CAT) :- instruction(BID, _, VREG, OPC), block(FID, BID, _),
 OPC = "getelementptr",
 LOC = VREG,
-CAT = "vreg", memcategory(CAT),
+CAT = "vreg", 
 TYPE = "unknown".
 
 //function arguments
@@ -154,14 +143,14 @@ get_all_getelementptr_indices(RES).
 memlocation_alloca_array_enumerator(FID, LOC, NUM, TYPE, CAT) :- 
 instruction(BID, IID, LOC, OPC), block(FID, BID, _),
 !is_alloca_multidimensional(IID),
-OPC = "alloca", CAT = "arrayIndex", memcategory(CAT), 
+OPC = "alloca", CAT = "arrayIndex",  
 get_second_operand(IID, SIZE), is_numeric(SIZE), to_number(SIZE) > 1,
 get_first_operand(IID, TYPE), NUM = 0, NUM<to_number(SIZE).
 
 memlocation_alloca_array_enumerator(FID, LOC, NUM, TYPE, CAT) :- 
 instruction(BID, IID, LOC, OPC), block(FID, BID, _),
 !is_alloca_multidimensional(IID),
-OPC = "alloca", CAT = "arrayIndex", memcategory(CAT), 
+OPC = "alloca", CAT = "arrayIndex",  
 get_second_operand(IID, SIZE), is_numeric(SIZE), to_number(SIZE) > 1,
 get_first_operand(IID, TYPE), NUM > 0, NUM<to_number(SIZE), NUM = NUM2+1,
 memlocation_alloca_array_enumerator(FID, LOC, NUM2, TYPE, CAT).
@@ -175,13 +164,13 @@ memlocation_global_array_enumerator(FID, LOC, NUM, TYPE, CAT) :-
 global(LOC, TYPE, SIZE),
 NUM = 0, NUM<SIZE,
 SIZE > 1,
-FID = -1, CAT = "arrayIndex", memcategory(CAT).
+FID = -1, CAT = "arrayIndex".
 memlocation_global_array_enumerator(FID, LOC, NUM, TYPE, CAT) :-
 global(LOC, TYPE, SIZE),
 NUM > 0, NUM<SIZE, NUM = NUM2+1,
 SIZE > 1,
 memlocation_global_array_enumerator(FID, LOC, NUM2, TYPE, CAT),
-FID = -1, CAT = "arrayIndex", memcategory(CAT).
+FID = -1, CAT = "arrayIndex".
 
 //recursive helper to enumerate multidimensional arrays
 .decl memlocation_multidim_array_enumerator(instructionid: _instructionid, level: number, location: symbol, startlocation: symbol)
