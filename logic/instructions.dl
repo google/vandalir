@@ -164,15 +164,16 @@ heap_allocation_instruction(INS) :- INS = "realloc".
 //argument relations
 
 .decl get_relative_argid(functionid: _functionid, argid: _argumentid, argid_relative: number)
+.output get_relative_argid
 get_relative_argid(FID, ARGID, ARGID_REL) :- 
 argument(FID, ARGID, _, _), 
-argument(FID, ARGID2, _, _), 
-!ARGID2<ARGID, 
+ARGID2=ARGID-1, 
+!argument(FID, ARGID2, _, _), 
 ARGID_REL = 1.
 
 get_relative_argid(FID, ARGID, ARGID_REL) :- 
 argument(FID, ARGID, _, _), 
 argument(FID, ARGID2, _, _), 
-ARGID2<ARGID, 
+ARGID2+1=ARGID, 
 get_relative_argid(FID, ARGID2, ARGID2_REL),
-ARGID_REL = ARGID2_REL+(ARGID-ARGID2).
+ARGID_REL = ARGID2_REL+1.
