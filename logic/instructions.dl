@@ -163,6 +163,7 @@ heap_allocation_instruction(INS) :- INS = "realloc".
 
 //argument relations
 
+//calculate relative argument id from fid and absolute argument id
 .decl get_relative_argid(functionid: _functionid, argid: _argumentid, argid_relative: number)
 .output get_relative_argid
 get_relative_argid(FID, ARGID, ARGID_REL) :- 
@@ -177,3 +178,11 @@ argument(FID, ARGID2, _, _),
 ARGID2+1=ARGID, 
 get_relative_argid(FID, ARGID2, ARGID2_REL),
 ARGID_REL = ARGID2_REL+1.
+
+//get number of arguments by fid
+.decl get_num_of_arguments_by_fid(argnum: number, functionid: _functionid)
+get_num_of_arguments_by_fid(NUM, FID) :- NUM = count : {argument(FID, _, _, _)}, function(FID, _, _, _).
+
+//get number of arguments by function name
+.decl get_num_of_arguments_by_fname(argnum: number, functionname: symbol)
+get_num_of_arguments_by_fname(NUM, FNAME) :- NUM = count : {argument(FID, _, _, _)}, function(FID, FNAME, _, _).

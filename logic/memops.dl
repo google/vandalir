@@ -93,17 +93,18 @@ get_buffsize_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, IID
 is_heap_allocation_call(IID), get_size_of_heap_alloc(IID, SIZE),
 VAL = SIZE.
 
-//case user input (maximum length)
+//case unlimited user input (maximum length)
 get_buffsize_by_vreg(VAL, FID, VREG) :-
 memlocation(FID, VREG, TYPE, _),
-is_memloc_with_userinput(FID, VREG),
+CAT = cat("userinput_",to_string(MAXINT)),
+is_memloc_with_userinput(FID, VREG, CAT),
 is_pointer(TYPE),
-VAL = 2147483647.
+VAL = MAXINT.
 
 //case user input (minimum length)
 get_buffsize_by_vreg(VAL, FID, VREG) :-
 memlocation(FID, VREG, TYPE, _),
-is_memloc_with_userinput(FID, VREG),
+is_memloc_with_userinput(FID, VREG, _),
 is_pointer(TYPE),
 VAL = 0.
 

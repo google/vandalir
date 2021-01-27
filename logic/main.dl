@@ -1,6 +1,8 @@
 //types
 #include "types.dl"
 
+#define MAXINT 2147483647
+
 //framework
 #include "util.dl"
 #include "instructions.dl"

@@ -1,28 +1,36 @@
 //user input "tainting":
 
+//additional memlocations
+
 //function arguments containing userinput
 
 //mode equal
 memlocation(FID, LOC, TYPE, CAT) :- 
 argument(FID, ARGID, LOC, TYPE), 
-CAT = "userinput",
 get_relative_argid(FID, ARGID, ARGID_REL),
 function(FID, FNAME, _, _),
-userinput(FNAME, ARGID_REL, "=", _)
+userinput(FNAME, ARGID_REL, "=", _),
+get_size_of_userinput(SIZE, _, FNAME, ARGID_REL),
+CAT = cat("userinput_", to_string(SIZE))
 .
 
 //mode following
 memlocation(FID, LOC, TYPE, CAT) :- 
 argument(FID, ARGID, LOC, TYPE), 
-CAT = "userinput",
 get_relative_argid(FID, ARGID, ARGID_REL),
 function(FID, FNAME, _, _),
 userinput(FNAME, INPUT_ID, "+", _),
+get_size_of_userinput(SIZE, _, FNAME, ARGID_REL),
+CAT = cat("userinput_", to_string(SIZE)),
 ARGID_REL >= INPUT_ID 
 .
 
+
+
 //TODO: add return value as userinput
 
+
+//load or getelementptr from userinput ==> is also userinput
 
 // load instruction
 memlocation(FID, LOC, TYPE, CAT) :- 
@@ -30,40 +38,81 @@ instruction(BID, IID, VREG, OPC), block(FID, BID, _),
 OPC = "load",
 VREG != "%-1",
 LOC = VREG,
-CAT = "userinput",
 get_first_operand(IID, TYPE),
 //ensure it does contain user input:
 get_third_operand(IID, LOADEDLOC),
-is_memloc_with_userinput(FID, LOADEDLOC).
+is_memloc_with_userinput(FID, LOADEDLOC, CAT).
 
 // getelementptr instruction
 memlocation(FID, LOC, TYPE, CAT) :- 
 instruction(BID, IID, VREG, OPC), block(FID, BID, _),
 OPC = "getelementptr",
 LOC = VREG,
-CAT = "userinput",
 TYPE = "unknown",
 //ensure it does contain user input:
 get_first_operand(IID, DATAOBJ),
-is_memloc_with_userinput(FID, DATAOBJ)
+is_memloc_with_userinput(FID, DATAOBJ, CAT)
 .
 
-/*
-.decl userinput_memlocation(functionid: _functionid, location: symbol, type: symbol, limit: number)
-userinput_memlocation(FID, LOC, TYPE, LIMIT) :-
-memlocation(FID, LOC, TYPE, "userinput"),
+
+.decl get_size_of_userinput(size: number, instructionid: _instructionid, fname: symbol, argid_relative: number)
+.output get_size_of_userinput
+//case unlimited
+get_size_of_userinput(SIZE, IID, FNAME, ARGID_REL) :-
+userinput(FNAME, ARGID_REL, _, LIMIT),
+get_function_for_call_instruction(FNAME, IID),
+LIMIT = 0,
+SIZE = MAXINT
+.
+
+//case unlimited main (which is never called)
+get_size_of_userinput(SIZE, IID, FNAME, ARGID_REL) :-
+SIZE = MAXINT,
+FNAME = "main",
+anumber(ARGID_REL),
+get_num_of_arguments_by_fname(ARGNUM, FNAME),
+ARGID_REL < ARGNUM+1,
+ARGID_REL > 0,
+IID = -1
+.
+
+//case limited: fgets
+get_size_of_userinput(SIZE, IID, FNAME, ARGID_REL) :-
+userinput(FNAME, ARGID_REL, _, LIMIT),
 block(FID, BID, _),
-instruction(BID, IID, VREG, OPC),
-*/
+instruction(BID, IID, _, _),
+LIMIT = 1,
+is_call_instruction(IID),
+get_function_for_call_instruction(CALLEDFNAME, IID),
+CALLEDFNAME = FNAME, FNAME = "fgets",
+get_second_operand(IID, N),
+get_int_by_vreg(SIZE, FID, N)
+. 
 
-
-
-//determine if memlocation may contain userinput
-.decl is_memloc_with_userinput(functionid: _functionid, location: symbol)
-is_memloc_with_userinput(FID, LOC) :- 
-memlocation(FID, LOC, _, "userinput").
-
-is_memloc_with_userinput(FID, LOC) :- 
-memequals(FID, LOC, FID2, LOC2),
-memlocation(FID2, LOC2, _, "userinput")
+//case limited: default
+get_size_of_userinput(SIZE, IID, FNAME, ARGID_REL) :-
+userinput(FNAME, ARGID_REL, _, LIMIT),
+get_function_for_call_instruction(FNAME, IID),
+LIMIT = 1,
+SIZE = -1,
+FNAME != "fgets"
 .
+
+
+//determine if memlocation may contain userinput and if so also return category
+.decl is_memloc_with_userinput(functionid: _functionid, location: symbol, memcategory: _memcategory)
+is_memloc_with_userinput(FID, LOC, CAT) :- 
+memlocation(FID, LOC, _, CAT),
+is_memcat_userinput_str(CAT)
+.
+
+is_memloc_with_userinput(FID, LOC, CAT) :- 
+memequals(FID, LOC, FID2, LOC2),
+memlocation(FID2, LOC2, _, CAT),
+is_memcat_userinput_str(CAT)
+.
+
+//determine if given string is a valid userinput memlocation of the type "userinput_X"
+.decl is_memcat_userinput_str(inp: symbol)
+.output is_memcat_userinput_str
+is_memcat_userinput_str(STR) :- memlocation(_, _, _, STR), match("userinput_.*", STR).
