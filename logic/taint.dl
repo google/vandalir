@@ -56,7 +56,7 @@ is_memloc_with_userinput(FID, DATAOBJ, CAT)
 
 
 .decl get_size_of_userinput(size: number, instructionid: _instructionid, fname: symbol, argid_relative: number)
-.output get_size_of_userinput
+//.output get_size_of_userinput
 //case unlimited
 get_size_of_userinput(SIZE, IID, FNAME, ARGID_REL) :-
 userinput(FNAME, ARGID_REL, _, LIMIT),
@@ -114,5 +114,5 @@ is_memcat_userinput_str(CAT)
 
 //determine if given string is a valid userinput memlocation of the type "userinput_X"
 .decl is_memcat_userinput_str(inp: symbol)
-.output is_memcat_userinput_str
+//.output is_memcat_userinput_str
 is_memcat_userinput_str(STR) :- memlocation(_, _, _, STR), match("userinput_.*", STR).

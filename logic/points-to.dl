@@ -1,7 +1,7 @@
 //points-to analysis
 .decl points_to(functionid1: _functionid, memlocation1: symbol,
 functionid2: _functionid, memlocation2: symbol)
-.output points_to(delimiter=",")
+//.output points_to(delimiter=",")
 
 //memequals cases (not strictly necessary?)
 //cases memequals: (s -> e && as <==> s) ==> as -> e
