@@ -1,7 +1,7 @@
 //points-to analysis
 .decl points_to(functionid1: _functionid, memlocation1: symbol,
 functionid2: _functionid, memlocation2: symbol)
-//.output points_to(delimiter=",")
+.output points_to(delimiter=",")
 
 //memequals cases (not strictly necessary?)
 //cases memequals: (s -> e && as <==> s) ==> as -> e
@@ -47,6 +47,19 @@ instruction(BID, IID, VREG, OPC), block(FID, BID, _), OPC = "load",
 pointer_level(STYPE, STYPE_PLVL),
 pointer_level(ETYPE, ETYPE_PLVL),
 ETYPE_PLVL < STYPE_PLVL,
+ETYPE_PLVL >= 1,
+VREG = ELOC, 
+get_third_operand(IID, SLOC), 
+SFID = FID,
+EFID = FID.
+
+//case load with STYPE="unknown"
+points_to(SFID, SLOC, EFID, ELOC) :-
+memlocation(SFID, SLOC, STYPE, _), 
+memlocation(EFID, ELOC, ETYPE, _),
+instruction(BID, IID, VREG, OPC), block(FID, BID, _), OPC = "load",
+STYPE = "unknown",
+pointer_level(ETYPE, ETYPE_PLVL),
 ETYPE_PLVL >= 1,
 VREG = ELOC, 
 get_third_operand(IID, SLOC), 
