@@ -203,9 +203,9 @@ class Parser:
 
         datatype = instr[0].strip()
 
-        firstVal = instr[2].strip()
+        firstVal = instr[2].replace(",","").strip()
         firstCondBlock = instr[3].strip()[1:]+":"
-        secondVal = instr[6].strip()
+        secondVal = instr[6].replace(",","").strip()
         secondCondBlock = instr[7].strip()[1:]+":"
 
         operands = [datatype, firstVal, firstCondBlock, secondVal, secondCondBlock]
