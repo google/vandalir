@@ -113,6 +113,10 @@ is_calloc_call_instruction(IID) :- is_call_instruction(IID), get_last_operand(II
 .decl is_realloc_call_instruction(instructionid: _instructionid)
 is_realloc_call_instruction(IID) :- is_call_instruction(IID), get_last_operand(IID, OV), OV = "realloc".
 
+//alias of get_function_for_call_instruction
+.decl is_X_call_instruction(functionname: symbol, instructionid: _instructionid)
+is_X_call_instruction(FNAME, IID) :- get_function_for_call_instruction(FNAME, IID).
+
 //if call instruction give called function name
 .decl get_function_for_call_instruction(functionname: symbol, instructionid: _instructionid)
 //a call instruction
@@ -165,7 +169,7 @@ heap_allocation_instruction(INS) :- INS = "realloc".
 
 //calculate relative argument id from fid and absolute argument id
 .decl get_relative_argid(functionid: _functionid, argid: _argumentid, argid_relative: number)
-.output get_relative_argid
+//.output get_relative_argid
 get_relative_argid(FID, ARGID, ARGID_REL) :- 
 argument(FID, ARGID, _, _), 
 ARGID2=ARGID-1, 
