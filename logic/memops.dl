@@ -74,6 +74,7 @@ get_int_by_vreg(SIZE, FID, OV2).
 .decl get_buffsize_by_vreg(size: number, functionid: _functionid, _vreg: symbol)
 //.output get_buffsize_by_vreg(delimiter=",")
 //case alloca (end recursion)
+
 get_buffsize_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, IID, VREG, OPC), OPC = "alloca",
 get_size_of_alloca(IID, VAL), get_second_operand(IID, ALLOCATYPE),
 !is_pointer(ALLOCATYPE).
@@ -127,16 +128,24 @@ get_int_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, IID, VRE
 get_first_operand(IID, OV1), is_strlen_call_instruction(IID),
 get_buffsize_by_vreg(VAL, FID, OV1).
 
-//case call sizeof
-get_int_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, IID, VREG, OPC), OPC = "call",
-get_first_operand(IID, OV1), is_sizeof_call_instruction(IID),
-get_buffsize_by_vreg(VAL, FID, OV1).
-
 //case memequals
 get_int_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, _, VREG, _),
 memequals(FID, START_LOC, FID, END_LOC), 
 START_LOC = VREG,
 get_int_by_vreg(VAL, FID, END_LOC).
+
+//case phi instruction
+get_int_by_vreg(VAL, FID, VREG) :-
+block(FID, BID, _),
+instruction(BID, IID, VREG, "phi"),
+is_even(I),
+get_ith_operand(IID, I, LOC2),
+get_num_operands(IID, OPCOUNT),
+I<=OPCOUNT,
+!is_vreg(LOC2),
+is_numeric(LOC2),
+VAL = to_number(LOC2)
+.
 
 //case is int
 get_int_by_vreg(VAL, FID, VREG) :- 
@@ -144,5 +153,13 @@ is_numeric(VREG),
 VAL = to_number(VREG), block(FID, _, _).
 
 
+//case store integer
+get_int_by_vreg(VAL, FID, VREG) :- 
+block(FID, BID, _), 
+instruction(BID, IID, _, OPC), OPC = "store",
+get_second_operand(IID, NEWINT), 
+get_fourth_operand(IID, VREG), 
+get_int_by_vreg(VAL, FID, NEWINT)
+.
+
 //TODO: case load integer
-//TODO: case store integer ?
