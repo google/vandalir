@@ -68,6 +68,17 @@ FID1 = CFID, LOC1=CARG,
 FID2 = FID, LOC2=VREG.
 
 
+//case phi instruction first case
+memequals(FID1, LOC1, FID2, LOC2) :-
+block(FID1, BID, _),
+instruction(BID, IID, LOC1, "phi"),
+FID2 = FID1,
+is_even(I),
+get_ith_operand(IID, I, LOC2),
+get_num_operands(IID, OPCOUNT),
+I<=OPCOUNT,
+is_vreg(LOC2).
+
 //from here on the cases for array handling
 
 //first cases, where specific element of array could be located

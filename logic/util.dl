@@ -5,3 +5,11 @@
 .decl enumerate(number: number, limit: number)
 enumerate(NUM, LIM) :- NUM=0, anumber(LIM).
 enumerate(NUM, LIM) :- NUM>0, NUM<LIM, anumber(LIM), anumber(NUM).
+
+//enforces number is even (use only for small numbers, due to anumber usage)
+.decl is_even(number: number)
+is_even(NUM) :- NUM%2=0, anumber(NUM).
+
+//enforces number is uneven (use only for small numbers, due to anumber usage)
+.decl is_uneven(number: number)
+is_uneven(NUM) :- NUM%2=1, anumber(NUM).
