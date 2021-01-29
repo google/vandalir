@@ -1,19 +1,19 @@
 #include "vulnerabilities/buffer-overflow.dl"
 #include "vulnerabilities/out-of-bounds-read.dl"
 #include "vulnerabilities/integer-overflow.dl"
+#include "vulnerabilities/format-string.dl"
 
 //print results
 .decl print_vulnerable(functionname: symbol, label: symbol, virtualregister: symbol, message: symbol)
 .output print_vulnerable(delimiter=",")
+
 print_vulnerable(NAME, LAB, VREG, MESSAGE) :- instruction(BID, IID, VREG, _), 
-is_vulnerable_strncpy_call_instruction(IID, MESSAGE), block(FID, BID, LAB), function(FID, NAME, _, _).
-
-print_vulnerable(NAME, LAB, VREG, MESSAGE) :- instruction(BID, IID, VREG, _),
-is_vulnerable_fgets_call_instruction(IID, MESSAGE), block(FID, BID, LAB), function(FID, NAME, _, _).
+get_vulnerable(IID, MESSAGE), block(FID, BID, LAB), function(FID, NAME, _, _).
 
 
-print_vulnerable(NAME, LAB, VREG, MESSAGE) :- instruction(BID, IID, VREG, _),
-is_vulnerable_sprintf_call_instruction(IID, MESSAGE), block(FID, BID, LAB), function(FID, NAME, _, _).
 
-print_vulnerable(NAME, LAB, VREG, MESSAGE) :-instruction(BID, IID, VREG, _),
-is_vulnerable_atoi_call_instruction(IID, MESSAGE), block(FID, BID, LAB), function(FID, NAME, _, _).
+.decl get_vulnerable(instructionid: _instructionid, message: symbol)
+get_vulnerable(IID, MESSAGE) :- is_vulnerable_strncpy_call_instruction(IID, MESSAGE).
+get_vulnerable(IID, MESSAGE) :- is_vulnerable_fgets_call_instruction(IID, MESSAGE).
+get_vulnerable(IID, MESSAGE) :- is_vulnerable_sprintf_call_instruction(IID, MESSAGE).
+get_vulnerable(IID, MESSAGE) :- is_vulnerable_atoi_family_instruction(IID, MESSAGE).
