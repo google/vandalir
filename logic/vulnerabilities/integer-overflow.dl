@@ -1,6 +1,6 @@
 //atoi family used with userinput
 .decl is_vulnerable_atoi_family_instruction(instructionid: _instructionid, message: symbol)
-is_vulnerable_atoi_family_call_instruction(IID, MESSAGE) :- 
+is_vulnerable_atoi_family_instruction(IID, MESSAGE) :- 
 is_atoi_family_call_instruction(IID),
 block(FID, BID, _), instruction(BID, IID, _, _),
 get_first_operand(IID, SRC),

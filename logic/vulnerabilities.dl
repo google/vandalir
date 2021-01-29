@@ -17,3 +17,4 @@ get_vulnerable(IID, MESSAGE) :- is_vulnerable_strncpy_call_instruction(IID, MESS
 get_vulnerable(IID, MESSAGE) :- is_vulnerable_fgets_call_instruction(IID, MESSAGE).
 get_vulnerable(IID, MESSAGE) :- is_vulnerable_sprintf_call_instruction(IID, MESSAGE).
 get_vulnerable(IID, MESSAGE) :- is_vulnerable_atoi_family_instruction(IID, MESSAGE).
+get_vulnerable(IID, MESSAGE) :- is_vulnerable_format_string_instruction(IID, MESSAGE).
