@@ -286,10 +286,14 @@ class Parser:
         globals.extend(list(module.functions))
         for glob in globals:
             globalName = "@"+str(glob.name).replace(".", "_")  # avoid globals name conflicts
-            # print(globalName)
             globType = str(glob.type)
             (globType, globTypeArraySize) = self.parseType(globType)
-            glob_str = "global("+globalName+";"+globType+";"+str(globTypeArraySize)+")"
+            globValue = "unknown"
+            if(globType == "i8"):
+                glob = str(glob)
+                # print(glob)
+                globValue = str(glob)[glob.find("c\"")+2:glob.rfind("\"")]
+            glob_str = "global("+globalName+";"+globType+";"+str(globTypeArraySize)+";"+globValue+")"
             self.output(glob_str)
 
     def parseStructs(self, module):
