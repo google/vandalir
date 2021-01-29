@@ -32,17 +32,31 @@ MESSAGE = cat(cat(cat("snprintf: possible insufficient buffer size ", to_string(
 .
 
 
-/*
 //sprintf vulnerable to bo
 .decl is_vulnerable_sprintf_call_instruction(instructionid: _instructionid, message: symbol)
+//.output is_vulnerable_sprintf_call_instruction
+//case simple %str
 is_vulnerable_sprintf_call_instruction(IID, MESSAGE) :- 
 is_X_call_instruction("sprintf", IID),
 block(FID, BID, _), instruction(BID, IID, _, _), 
 get_first_operand(IID, DEST), 
-get_second_operand(IID, FORMATSTR),
-get_third_operand(IID, I, SRC),
+get_third_operand(IID, SRC),
+
+get_second_operand(IID, FORMATSTR_GEP),
+instruction(_, IID_GEP, FORMATSTR_GEP, "getelementptr"),
+get_first_operand(IID_GEP, FORMATSTR_GLOB),
+is_global(FORMATSTR_GLOB),
+get_global_str_value(FORMATSTR, FORMATSTR_GLOB),
+FORMATSTR = "%s\00",
+get_buffsize_by_vreg(SRC_SIZE, FID, SRC),
+get_buffsize_by_vreg(DEST_SIZE, FID, DEST),
+DEST_SIZE < SRC_SIZE,
+MESSAGE = cat(cat(cat("sprintf(dest %s src): possible insufficient buffer size ", to_string(DEST_SIZE)), " for source of size "), to_string(SRC_SIZE))
+
+.
 
 
+/*
 
 get_buffsize_by_vreg(DEST_SIZE, FID, DEST),
 
