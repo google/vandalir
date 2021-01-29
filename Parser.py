@@ -38,6 +38,7 @@ class Parser:
         self.allocaVregs = list()
 
         self.artificialInstructionId = -1
+        self.artificialOperandId = -1
         self.outputList = {
             "function": list(),
             "argument": list(),
@@ -381,9 +382,9 @@ class Parser:
             for procOp in processedOperands:
                 if(not procOp):  # skip empty operands
                     continue
-                operand_str = "operand("+str(self.artificialInstructionId)+";"+str(self.operandid)+";\""+procOp+"\")"
+                operand_str = "operand("+str(self.artificialInstructionId)+";"+str(self.artificialOperandId)+";\""+procOp+"\")"
                 self.output(operand_str)
-                self.operandid += 1
+                self.artificialOperandId -= 1
 
         self.artificialInstructionId -= 1
         return virtualRegister
