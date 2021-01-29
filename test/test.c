@@ -5,6 +5,11 @@
 
 #define BUFFSIZE 8
 
+const int LENGTH = 10;
+const int ARR[3] = {10, 7, 42};
+const char ARR2[3] = {10, 7, 42};
+const char STRING[10] = "blub";
+
 char* getInput(char* name) {
     fgets(name, sizeof(char)*BUFFSIZE+1, stdin);
     return name;
@@ -68,9 +73,16 @@ int main(int argc, char *argv[]) {
     char** inputpointer;
     char someInput[30];
 
+    int test;
+    test = 424242;
+
   if(argv[1] != NULL) {
-    strncpy(someInput, argv[1], sizeof(someInput));
+    strncpy(someInput, argv[1], strlen(someInput));
     printf("argument1:%s\n", someInput);
+    test = atoi(argv[1]);
+    sprintf(someInput, "%s", argv[1]);
+    sprintf(someInput, argv[1]);
+    //sprintf(someInput, "%s", STRING);
   }
 
 	input = calloc(BUFFSIZE-1, sizeof(char));
