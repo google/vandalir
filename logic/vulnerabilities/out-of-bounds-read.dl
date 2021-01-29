@@ -1,5 +1,6 @@
 //strncpy vulnerable to out of bounds read
-is_vulnerable_strncpy_call_instruction(IID, MESSAGE) :- is_strncpy_call_instruction(IID),
+is_vulnerable_strncpy_call_instruction(IID, MESSAGE) :- 
+is_strncpy_call_instruction(IID),
 block(FID, BID, _), instruction(BID, IID, _, _),
 get_first_operand(IID, DEST), get_second_operand(IID, SRC), get_third_operand(IID, N), 
 get_int_by_vreg(COPY_SIZE, FID, N),
