@@ -113,6 +113,13 @@ is_calloc_call_instruction(IID) :- is_call_instruction(IID), get_last_operand(II
 .decl is_realloc_call_instruction(instructionid: _instructionid)
 is_realloc_call_instruction(IID) :- is_call_instruction(IID), get_last_operand(IID, OV), OV = "realloc".
 
+//get only call atoi family instructions
+.decl is_atoi_family_call_instruction(instructionid: _instructionid)
+is_atoi_family_call_instruction(IID) :- is_call_instruction(IID), get_last_operand(IID, OV), OV = "atoi".
+is_atoi_family_call_instruction(IID) :- is_call_instruction(IID), get_last_operand(IID, OV), OV = "atol".
+is_atoi_family_call_instruction(IID) :- is_call_instruction(IID), get_last_operand(IID, OV), OV = "atoll".
+is_atoi_family_call_instruction(IID) :- is_call_instruction(IID), get_last_operand(IID, OV), OV = "atof".
+
 //alias of get_function_for_call_instruction
 .decl is_X_call_instruction(functionname: symbol, instructionid: _instructionid)
 is_X_call_instruction(FNAME, IID) :- get_function_for_call_instruction(FNAME, IID).
