@@ -38,7 +38,7 @@ class Parser:
         self.allocaVregs = list()
 
         self.artificialInstructionId = -1
-        self.artificialOperandId = -1
+        self.artificialOperandId = -2147483646
         self.outputList = {
             "function": list(),
             "argument": list(),
@@ -384,7 +384,7 @@ class Parser:
                     continue
                 operand_str = "operand("+str(self.artificialInstructionId)+";"+str(self.artificialOperandId)+";\""+procOp+"\")"
                 self.output(operand_str)
-                self.artificialOperandId -= 1
+                self.artificialOperandId += 1
 
         self.artificialInstructionId -= 1
         return virtualRegister
