@@ -163,3 +163,12 @@ get_int_by_vreg(VAL, FID, NEWINT)
 .
 
 //TODO: case load integer
+
+
+//get str global values
+.decl get_global_str_value(value: symbol, global: symbol)
+//.output get_global_str_value
+get_global_str_value(VAL, GLOB) :-
+is_global_str(GLOB),
+global(GLOB, _, _, VAL)
+.
