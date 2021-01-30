@@ -84,77 +84,49 @@ is_vreg(LOC2).
 //first cases, where specific element of array could be located
 //case getelementptr
 memequals(FID1, LOC1, FID2, LOC2) :-
-//LOC1 = GEP instruction
 block(FID1, BID, _), 
 FID1 = FID2, //equal functions
 //TYPE1 gives the "basetype" of the GEP used for calculation. NOT the actual return type! 
 instruction(BID, IID, LOC1, OPC), OPC = "getelementptr", //LOC 1 is GEP instruction
-get_first_operand(IID, DATAOBJ), 
-iterate_gep_indices(FID1, DATAOBJ, RESULTLOC, IID, _),
+//get_first_operand(IID, DATAOBJ),
+get_num_operands(IID, MAXNUM),
+LEVEL = MAXNUM-1,
+get_gep_concatenated_memloc_str(IID, LEVEL, RESULTLOC),
 LOC2 = RESULTLOC.
 
 //case getelementptr, MEMLOC2 is global
 memequals(FID1, LOC1, FID2, LOC2) :-
-//LOC1 = GEP instruction
 block(FID1, BID, _), 
 FID2 = -1, //FID2 can be -1 if global
 //TYPE1 gives the "basetype" of the GEP used for calculation. NOT the actual return type! 
 instruction(BID, IID, LOC1, OPC), OPC = "getelementptr", //LOC 1 is GEP instruction
-get_first_operand(IID, DATAOBJ), 
-iterate_gep_indices(FID1, DATAOBJ, RESULTLOC, IID, _),
+//get_first_operand(IID, DATAOBJ), 
+get_num_operands(IID, MAXNUM),
+LEVEL = MAXNUM-1,
+get_gep_concatenated_memloc_str(IID, LEVEL, RESULTLOC),
 LOC2 = RESULTLOC.
 
 
 
 //help relations
 
-//iterate through all indicies of gep instruction
-.decl iterate_gep_indices(functionid: _functionid, startlocation: symbol, endlocation: symbol, instructionid: _instructionid, level: number)
-//case maximum level reached
-//.output iterate_gep_indices(delimiter=",")
-iterate_gep_indices(FID, STARTLOC, RESULT, IID, LEVEL) :-
-block(FID, BID, _), instruction(BID, IID, _, OPC), OPC = "getelementptr",
-concatenated(FID, STARTLOC),
+.decl get_gep_concatenated_memloc_str(instructionid: _instructionid, level: number, result: symbol)
+//.output get_gep_concatenated_memloc_str
+get_gep_concatenated_memloc_str(IID, LEVEL, RES) :-
+LEVEL = 1, 
+instruction(_, IID, _, _),
+get_first_operand(IID, DATAOBJ),
+RES = DATAOBJ
+.
+
+get_gep_concatenated_memloc_str(IID, LEVEL, RES) :-
+get_num_operands(IID, MAXOP),
+LEVEL>1, 
+LEVEL<=MAXOP-1, //last operand is reserved for return type info
+get_gep_concatenated_memloc_str(IID, LEVEL-1, BASELOC),
 get_ith_operand(IID, LEVEL, NEWINDEX),
-get_all_getelementptr_indices_str(NEWINDEX), //limit evaluated indices to thouse used by getelemeptr
-RESULT = cat(cat(STARTLOC, "."), NEWINDEX),
-get_num_operands(IID, NUMOPERANDS),
-LEVEL = NUMOPERANDS-1,
-LEVEL > 1.
-//case first level, index!=0
-iterate_gep_indices(FID, STARTLOC, RESULT, IID, LEVEL) :-
-block(FID, BID, _), instruction(BID, IID, _, OPC), OPC = "getelementptr",
-concatenated(FID, STARTLOC),
-get_ith_operand(IID, LEVEL, NEWINDEX),
-NEWINDEX != to_string(0),
-get_all_getelementptr_indices_str(NEWINDEX), //limit evaluated indices to thouse used by getelemeptr
-NEWSTARTLOC = cat(cat(STARTLOC, "."), NEWINDEX),
-LEVEL = 2,
-iterate_gep_indices(FID, NEWSTARTLOC, RESULT, IID, LEVEL+1).
-//case first level, index=2
-iterate_gep_indices(FID, STARTLOC, RESULT, IID, LEVEL) :-
-block(FID, BID, _), instruction(BID, IID, _, OPC), OPC = "getelementptr",
-concatenated(FID, STARTLOC),
-get_ith_operand(IID, LEVEL, NEWINDEX),
-get_all_getelementptr_indices_str(NEWINDEX), //limit evaluated indices to thouse used by getelemeptr
-NEWINDEX = to_string(0),
-LEVEL = 2,
-iterate_gep_indices(FID, STARTLOC, RESULT, IID, LEVEL+1).//skip this level if index = 2 (first level)
-//case not final level reached, but also not the first level
-iterate_gep_indices(FID, STARTLOC, RESULT, IID, LEVEL) :-
-block(FID, BID, _), instruction(BID, IID, _, OPC), OPC = "getelementptr",
-concatenated(FID, STARTLOC),
-get_ith_operand(IID, LEVEL, NEWINDEX),
-get_all_getelementptr_indices_str(NEWINDEX), //limit evaluated indices to thouse used by getelemeptr
-NEWSTARTLOC = cat(cat(STARTLOC, "."), NEWINDEX),
-get_num_operands(IID, NUMOPERANDS),
-LEVEL < NUMOPERANDS-1,
-LEVEL > 2,
-iterate_gep_indices(FID, NEWSTARTLOC, RESULT, IID, LEVEL+1).
-//case memequals to get GEPs that do not directly reference allocations, but e.g. other GEPs
-iterate_gep_indices(FID, STARTLOC, RESULT, IID, LEVEL) :-
-memequals(FID,STARTLOC,FID,ALTSTART),
-iterate_gep_indices(FID, ALTSTART, RESULT, IID, LEVEL).
+RES = cat(cat(BASELOC, "_"), NEWINDEX)
+.
 
 
 //get the vreg of all return instructions of one function
