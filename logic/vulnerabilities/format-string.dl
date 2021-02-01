@@ -9,7 +9,7 @@ instruction(BID, IID, _, _),
 is_X_call_instruction(FNAME, IID),
 get_ith_operand(IID, RELARGNUM, FSLOC),
 is_vreg(FSLOC),
-is_memloc_with_userinput(FID, FSLOC, _),
+is_memloc_with_userinput(FID, FSLOC),
 MESSAGE = cat(cat(cat(FNAME," detected and userinput is provided to its #"),to_string(RELARGNUM)), " argument which may indicate a format string vulnerability")
 .
 

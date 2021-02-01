@@ -1,6 +1,6 @@
 //user input "tainting":
 
-//additional memlocations
+//additional memlocations (these are only used as entry points to determine size limitations)
 
 //function arguments containing userinput
 
@@ -25,10 +25,16 @@ CAT = cat("userinput_", to_string(SIZE)),
 ARGID_REL >= INPUT_ID 
 .
 
-
-
-//TODO: add return value as userinput
-
+//mode return value
+memlocation(FID, LOC, TYPE, CAT) :- 
+function(FID, FNAME, _, TYPE),
+block(FID, BID, _),
+instruction(BID, IID, LOC, _),
+INPUT_ID = 0,
+userinput(FNAME, INPUT_ID, "=", _),
+get_size_of_userinput(SIZE, IID, FNAME, INPUT_ID),
+CAT = cat("userinput_", to_string(SIZE))
+.
 
 //load or getelementptr from userinput ==> is also userinput
 
@@ -41,7 +47,7 @@ LOC = VREG,
 get_first_operand(IID, TYPE),
 //ensure it does contain user input:
 get_third_operand(IID, LOADEDLOC),
-is_memloc_with_userinput(FID, LOADEDLOC, CAT).
+is_memloc_with_direct_userinput(FID, LOADEDLOC, CAT).
 
 // getelementptr instruction
 memlocation(FID, LOC, TYPE, CAT) :- 
@@ -51,10 +57,10 @@ LOC = VREG,
 TYPE = "unknown",
 //ensure it does contain user input:
 get_first_operand(IID, DATAOBJ),
-is_memloc_with_userinput(FID, DATAOBJ, CAT)
+is_memloc_with_direct_userinput(FID, DATAOBJ, CAT)
 .
 
-
+//helper to get size info for limited or unlimited userinput
 .decl get_size_of_userinput(size: number, instructionid: _instructionid, fname: symbol, argid_relative: number)
 //.output get_size_of_userinput
 //case unlimited
@@ -99,14 +105,14 @@ FNAME != "fgets"
 .
 
 
-//determine if memlocation may contain userinput and if so also return category
-.decl is_memloc_with_userinput(functionid: _functionid, location: symbol, memcategory: _memcategory)
-is_memloc_with_userinput(FID, LOC, CAT) :- 
+//determine if memlocation may contain direct userinput and if so also return category
+.decl is_memloc_with_direct_userinput(functionid: _functionid, location: symbol, memcategory: _memcategory)
+is_memloc_with_direct_userinput(FID, LOC, CAT) :- 
 memlocation(FID, LOC, _, CAT),
 is_memcat_userinput_str(CAT)
 .
 
-is_memloc_with_userinput(FID, LOC, CAT) :- 
+is_memloc_with_direct_userinput(FID, LOC, CAT) :- 
 memequals(FID, LOC, FID2, LOC2),
 memlocation(FID2, LOC2, _, CAT),
 is_memcat_userinput_str(CAT)
@@ -116,3 +122,56 @@ is_memcat_userinput_str(CAT)
 .decl is_memcat_userinput_str(inp: symbol)
 //.output is_memcat_userinput_str
 is_memcat_userinput_str(STR) :- memlocation(_, _, _, STR), match("userinput_.*", STR).
+
+
+//checks if given location may contain direct, as well as transitioning userinput
+.decl is_memloc_with_userinput(functionid: _functionid, location: symbol)
+//case direct user input
+is_memloc_with_userinput(FID, LOC) :- is_memloc_with_direct_userinput(FID, LOC, _).
+//case transitioning user input
+is_memloc_with_userinput(FID, LOC) :- transitions_userinput_to(FID, FROM, LOC), is_memloc_with_userinput(FID, FROM).
+//case memequals
+is_memloc_with_userinput(FID, LOC) :- memequals(FID, LOC, FID2, LOC2), is_memloc_with_userinput(FID2, LOC2).
+//case points-to
+is_memloc_with_userinput(FID, LOC) :- points_to(FID, LOC, FID2, LOC2), is_memloc_with_userinput(FID2, LOC2).
+
+
+//an edge FROM->TO describes that userinput in FROM may spill into TO
+.decl transitions_userinput_to(functionid: _functionid, memlocationFrom: symbol, memlocationTo: symbol)
+//case: transition userinput from argument to return value
+transitions_userinput_to(FID, FROM, TO) :-
+userinput_transitioning_function(FNAME, IN, OUT), OUT=0,
+block(FID, BID, _),
+instruction(BID, IID, TO, _),
+is_X_call_instruction(FNAME, IID),
+get_ith_operand(IID, IN, FROM)
+.
+
+//case: transition userinput from argument to argument
+transitions_userinput_to(FID, FROM, TO) :-
+userinput_transitioning_function(FNAME, IN, OUT), OUT>0, IN>0,
+block(FID, BID, _),
+instruction(BID, IID, TO, _),
+is_X_call_instruction(FNAME, IID),
+get_ith_operand(IID, IN, FROM),
+get_ith_operand(IID, OUT, TO)
+.
+
+
+
+//states which function may forward userinput to other functions
+.decl userinput_transitioning_function(functionname: symbol, inWithUserinput: number, out: number)
+//string.h accorging to https://www.cplusplus.com/reference/cstring/
+userinput_transitioning_function("strcpy", 2, 1).
+userinput_transitioning_function("strncpy", 2, 1).
+userinput_transitioning_function("memcpy", 2, 1).
+userinput_transitioning_function("memmove", 2, 1).
+userinput_transitioning_function("strcat", 2, 1).
+userinput_transitioning_function("strncat", 2, 1).
+userinput_transitioning_function("strxfrm", 2, 1).
+userinput_transitioning_function("memchr", 1, 0).
+userinput_transitioning_function("strchr", 1, 0).
+userinput_transitioning_function("strpbrk", 1, 0).
+userinput_transitioning_function("strrchr", 1, 0).
+userinput_transitioning_function("strstr", 1, 0).
+userinput_transitioning_function("strtok", 1, 0).
