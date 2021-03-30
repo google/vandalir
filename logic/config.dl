@@ -6,5 +6,5 @@
 .input configuration(delimiter=";")
 
 //is library mode enabled
-.decl ConfigIsLibraryModeEnabled(enabled: number)
-ConfigIsLibraryModeEnabled(NUM) :- NUM = 1, configuration("libraryMode", 1).
+.decl Config_LibraryMode(enabled: number)
+Config_LibraryMode(NUM) :- configuration("libraryMode", NUM).
