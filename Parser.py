@@ -313,8 +313,6 @@ class Parser:
             storageType = "unknown"
             if("private unnamed_addr" in globstr):
                 storageType = "private_unnamed_addr"
-            elif("private" in globstr):  # not sure if this case exists
-                storageType = "private"
             elif("common global" in globstr):
                 storageType = "common_global"
             elif("external global" in globstr):
