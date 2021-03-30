@@ -4,18 +4,6 @@
 
 //function arguments containing userinput
 
-//library mode
-memlocation(FID, LOC, TYPE, CAT) :- 
-Config_LibraryMode(1),
-function(FID, _, "define", _), //only defined functions
-argument(FID, _, LOC, TYPE), 
-is_pointer(TYPE),
-SIZE = MAXINT,
-CAT = cat("userinput_", to_string(SIZE))
-.
-
-//not library mode
-
 //mode equal
 memlocation(FID, LOC, TYPE, CAT) :- 
 argument(FID, ARGID, LOC, TYPE), 
@@ -71,6 +59,30 @@ TYPE = "unknown",
 get_first_operand(IID, DATAOBJ),
 is_memloc_with_direct_userinput(FID, DATAOBJ, CAT)
 .
+
+//library mode (=libmode)
+
+//libmode: all function arguments that are pointer may contain userinput
+memlocation(FID, LOC, TYPE, CAT) :- 
+Config_LibraryMode(1),
+function(FID, _, "define", _), //only defined functions
+argument(FID, _, LOC, TYPE), 
+is_pointer(TYPE),
+SIZE = MAXINT,
+CAT = cat("userinput_", to_string(SIZE))
+.
+
+//libmode: all public available globals that are pointers may contain userinput
+memlocation(FID, LOC, TYPE, CAT) :- 
+Config_LibraryMode(1),
+global(LOC, GT, TYPE, _, _),
+is_pointer(TYPE),
+is_external_global_type(GT), //these globals could be written from outside the library, thus may contain userinput
+FID = -1,
+SIZE = MAXINT,
+CAT = cat("userinput_", to_string(SIZE))
+.
+
 
 //helper to get size info for limited or unlimited userinput
 .decl get_size_of_userinput(size: number, instructionid: _instructionid, fname: symbol, argid_relative: number)
