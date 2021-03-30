@@ -38,7 +38,7 @@ SUBSTR = substr(T, 1, strlen(T)), !contains("@", SUBSTR).
 
 //is given operand a global str
 .decl is_global_str(type: symbol)
-is_global_str(T) :- global(T, TYPE, _, _), TYPE = "i8".
+is_global_str(T) :- global(T, _, TYPE, _, _), TYPE = "i8".
 
 //is given operand numeric (aka is not a string)
 .decl is_numeric(type: symbol)

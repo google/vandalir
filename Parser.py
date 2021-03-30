@@ -37,7 +37,7 @@ MAXDEPTH = 4
 # configuration Datalog
 
 # set library mode (all output facing parameters may contain userinput)
-DLC_LIBRARYMODE = ("libraryMode", True)
+DLC_LIBRARYMODE = ("libraryMode", False)
 
 # build config array
 DATALOG_CONFIG = [DLC_LIBRARYMODE]
@@ -303,9 +303,28 @@ class Parser:
     def parseGlobals(self, module):
 
         globals = list(module.global_variables)
-        globals.extend(list(module.functions))
+        # globals.extend(list(module.functions))
         for glob in globals:
             globalName = "@"+str(glob.name).replace(".", "_")  # avoid globals name conflicts
+            # print(globalName)
+            globstr = str(glob)
+            # print(globstr)
+            # get storage type
+            storageType = "unknown"
+            if("private unnamed_addr" in globstr):
+                storageType = "private_unnamed_addr"
+            elif("private" in globstr):  # not sure if this case exists
+                storageType = "private"
+            elif("common global" in globstr):
+                storageType = "common_global"
+            elif("external global" in globstr):
+                storageType = "external_global"
+            elif("global" in globstr):
+                storageType = "global"
+            elif("constant" in globstr):
+                storageType = "constant"
+            # print(storageType)
+            # get data type
             globType = str(glob.type)
             (globType, globTypeArraySize) = self.parseType(globType)
             globValue = "unknown"
@@ -313,7 +332,7 @@ class Parser:
                 glob = str(glob)
                 # print(glob)
                 globValue = str(glob)[glob.find("c\"")+2:glob.rfind("\"")]
-            glob_str = "global("+globalName+";"+globType+";"+str(globTypeArraySize)+";"+globValue+")"
+            glob_str = "global("+globalName+";"+storageType+";"+globType+";"+str(globTypeArraySize)+";"+globValue+")"
             self.output(glob_str)
 
     def parseStructs(self, module):

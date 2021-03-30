@@ -54,17 +54,17 @@ is_heap_allocation_call(IID), CAT = "heap",
 TYPE = "i8*".
 //global allocations of one element
 memlocation(FID, LOC, TYPE, CAT) :- 
-global(LOC, TYPE, SIZE, _),
+global(LOC, _, TYPE, SIZE, _),
 SIZE = 1,
 FID = -1, CAT = "global".
 //global allocations of array (all element).
 memlocation(FID, LOC, TYPE, CAT) :- 
-global(LOC, BASETYPE, SIZE, _), TYPE = cat(BASETYPE, "*"),
+global(LOC, _, BASETYPE, SIZE, _), TYPE = cat(BASETYPE, "*"),
 SIZE > 1,
 FID = -1, CAT = "arrayAll".
 //global allocations of array (index elements).
 memlocation(FID, LOCATION, TYPE, CAT) :- 
-global(LOC, BASETYPE, SIZE, _), 
+global(LOC, _, BASETYPE, SIZE, _), 
 TYPE = cat(BASETYPE, "*"),
 SIZE > 1,
 memlocation_global_array_enumerator(FID, LOC, NUM, BASETYPE, CAT),
@@ -161,12 +161,12 @@ memlocation_alloca_array_enumerator(FID, LOC, NUM2, TYPE, CAT).
 .decl memlocation_global_array_enumerator(functionid: _functionid, memlocation: symbol, enumerator: number, memtyp: symbol, memcategory: _memcategory)
 //.output memlocation_global_array_enumerator(delimiter=",")
 memlocation_global_array_enumerator(FID, LOC, NUM, TYPE, CAT) :-
-global(LOC, TYPE, SIZE, _),
+global(LOC, _, TYPE, SIZE, _),
 NUM = 0, NUM<SIZE,
 SIZE > 1,
 FID = -1, CAT = "arrayIndex".
 memlocation_global_array_enumerator(FID, LOC, NUM, TYPE, CAT) :-
-global(LOC, TYPE, SIZE, _),
+global(LOC, _, TYPE, SIZE, _),
 NUM > 0, NUM<SIZE, NUM = NUM2+1,
 SIZE > 1,
 memlocation_global_array_enumerator(FID, LOC, NUM2, TYPE, CAT),

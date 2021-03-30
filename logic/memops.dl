@@ -170,5 +170,5 @@ get_int_by_vreg(VAL, FID, NEWINT)
 //.output get_global_str_value
 get_global_str_value(VAL, GLOB) :-
 is_global_str(GLOB),
-global(GLOB, _, _, VAL)
+global(GLOB, _, _, _, VAL)
 .

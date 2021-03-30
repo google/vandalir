@@ -35,7 +35,7 @@ opval(T) :- T = OV, operand(_,_,OV).
 .decl operand(instructionid: _instructionid, operandid: _operandid, operandvalue: symbol)
 .input operand(delimiter=";")
 
-.decl global(name: symbol, type: symbol, size: number, value: symbol)
+.decl global(name: symbol, globaltype: symbol, type: symbol, size: number, value: symbol)
 .input global(delimiter=";")
 
 .decl struct(structid: _structid, name: symbol, size: number)
