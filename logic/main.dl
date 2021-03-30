@@ -5,6 +5,7 @@
 #define MAXINT 2147483647
 
 //framework
+#include "config.dl"
 #include "util.dl"
 #include "instructions.dl"
 #include "operands.dl"

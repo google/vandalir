@@ -1,0 +1,10 @@
+//load configuration file
+
+//input configuration
+
+.decl configuration(name: symbol, value: number)
+.input configuration(delimiter=";")
+
+//is library mode enabled
+.decl ConfigIsLibraryModeEnabled(enabled: number)
+ConfigIsLibraryModeEnabled(NUM) :- NUM = 1, configuration("libraryMode", 1).

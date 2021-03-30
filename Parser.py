@@ -5,13 +5,20 @@ import os
 import sys
 import re
 
+
+# configuration converter
+
+# directory of fact files
 FACTS_DIR = "facts"
 
+# installed llvm version (tested on 10)
 LLVM_VER = "10"
 
+# define typical user input functions
 CONV_INSTRUCTIONS = ["trunc", "zext", "sext", "fptrunc", "fpext", "fptoui", "fptosi",
                      "uitofp", "sitofp", "ptrtoint", "inttoptr", "bitcast", "addrspacecast"]
 
+# define typical user input functions
 USER_INPUT = [["main", "1", "+", "0"], ["scanf", "2", "+", "1"], ["fscanf", "3", "+", "1"],
               ["sscanf", "2", "+", "1"], ["vscanf", "2", "+", "1"],
               ["vsscanf", "3", "+", "1"], ["vfscanf", "2", "+", "1"],
@@ -27,6 +34,15 @@ LIMIT = 1000
 MAXDEPTH = 4
 
 
+# configuration Datalog
+
+# set library mode (all output facing parameters may contain userinput)
+DLC_LIBRARYMODE = ("libraryMode", True)
+
+# build config array
+DATALOG_CONFIG = [DLC_LIBRARYMODE]
+
+# implementation
 class Parser:
 
     def __init__(self, input):
@@ -61,6 +77,7 @@ class Parser:
         self.parseStructs(module)
         self.parse_module(module)
         self.generate_helper_facts()
+        self.generate_configuration_fact()
 
         print("Parsing successful.")
 
@@ -513,6 +530,19 @@ class Parser:
                 if(i > 0):
                     f.writelines("\n")
                 f.writelines(";".join(outputList[i]))
+
+    def generate_configuration_fact(self):
+        strConfigList = list()
+        for configEntry in DATALOG_CONFIG:
+            if(configEntry[1] is True):
+                strConfigList.append((configEntry[0], "1"))
+            if(configEntry[1] is False):
+                strConfigList.append((configEntry[0], "0"))
+
+        with open(FACTS_DIR+"/configuration.facts", "w") as f:
+            for entry in strConfigList:
+                datalog_configuration_entry = entry[0]+";"+entry[1]
+                f.writelines(datalog_configuration_entry+"\n")
 
     def concatenated_locations_helper(self, baseString, currentLevel):
         outputStrings = list()
