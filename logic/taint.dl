@@ -8,7 +8,7 @@
 memlocation(FID, LOC, TYPE, CAT) :- 
 Config_LibraryMode(1),
 function(FID, _, "define", _), //only defined functions
-argument(FID, ARGID, LOC, TYPE), 
+argument(FID, _, LOC, TYPE), 
 is_pointer(TYPE),
 SIZE = MAXINT,
 CAT = cat("userinput_", to_string(SIZE))
