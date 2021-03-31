@@ -1,3 +1,24 @@
+//control flow edges of CFG
+.decl edge(functionid: _functionid, startblock: _blockid, endblock: _blockid)
+//.output edge(delimiter=",")
+edge(FID, START, END) :- 
+block(FID, START, STARTLABEL), 
+block(FID, END, ENDLABEL),
+predecessor(FID, ENDLABEL, STARTLABEL)
+.
+
+//all edges that go downward (no loop edges!)
+.decl downwardEdge(functionid: _functionid, startblock: _blockid, endblock: _blockid)
+downwardEdge(FID, START, END) :- edge(FID, START, END), START<END.
+
+//path that does not go through any loops
+.decl downwardPath(functionid: _functionid, startblock: _blockid, endblock: _blockid)
+downwardPath(FID, START, END) :- downwardEdge(FID, START, END).
+downwardPath(FID, START, END) :- downwardPath(FID, START, MIDDLE), downwardEdge(FID, MIDDLE, END).
+
+
+//basic blocks
+
 //get previous basic block within function
 .decl previous_block(functionid: _functionid, start: _blockid, previous: _blockid)
 previous_block(FID, START, PRED) :- block(FID, START, LABEL), block(FID, PRED, LABEL2),

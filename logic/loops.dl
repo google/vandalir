@@ -1,0 +1,75 @@
+//loop detection
+
+//Edge going upward in CFG
+.decl loopedge(functionid: _functionid, startblock: _blockid, endblock: _blockid)
+loopedge(FID, START, END) :- edge(FID, START, END), START>END.
+
+//detect loopCondition
+.decl loopCondition(functionid: _functionid, edgestart: _blockid, edgeend: _blockid, conditionInstruction: _instructionid, type: symbol)
+//.output loopCondition(delimiter=",")
+
+//case foot-controlled
+loopCondition(FID, ESTART, EEND, CONDITION, TYPE) :-
+loopedge(FID, ESTART, EEND),
+last_instruction_in_block(ESTART, IID),
+get_num_operands(IID, 3),
+CONDITION = IID,
+TYPE = "foot-controlled"
+.
+
+//case head-controlled
+loopCondition(FID, ESTART, EEND, CONDITION, TYPE) :-
+loopedge(FID, ESTART, EEND),
+last_instruction_in_block(ESTART, IID),
+get_num_operands(IID, 1),
+last_instruction_in_block(EEND, HEADIID),
+get_num_operands(HEADIID, 3),
+CONDITION = HEADIID,
+TYPE = "head-controlled"
+.
+
+
+.decl loop(functionid: _functionid, conditionBlock: _blockid, type: symbol)
+.output loop(delimiter=",")
+loop(FID, CONDITION, TYPE) :- 
+loopCondition(FID, _, _, CONDITIONID, TYPE), 
+instruction(CONDITION, CONDITIONID, _, _)
+.
+
+
+//enumerates all blocks within loop without the condition block
+.decl loopBody(conditionBlock: _blockid, bodyBlock: _blockid)
+.output loopBody(delimiter=",")
+loopBody(CONDBLOCK, BODY) :- loopBodyWithCondition(CONDBLOCK, BODY), CONDBLOCK != BODY.
+
+
+//enumerates all blocks within loop including the confition block
+.decl loopBodyWithCondition(conditionBlock: _blockid, bodyBlock: _blockid)
+//.output loopBodyWithCondition(delimiter=",")
+loopBodyWithCondition(CONDBLOCK, BODY) :- 
+loopCondition(_, EDGESTART, EDGEEND, CONDITIONID, _),
+instruction(CONDBLOCK, CONDITIONID, _, _),
+downwardPath(_, EDGEEND, X), BODY = X,
+X<=EDGESTART
+.
+
+loopBodyWithCondition(CONDBLOCK, BODY) :- 
+loopCondition(_, EDGESTART, EDGEEND, CONDITIONID, _),
+instruction(CONDBLOCK, CONDITIONID, _, _), 
+downwardPath(_, EDGEEND, X), BODY = EDGEEND,
+X<=EDGESTART
+.
+
+loopBodyWithCondition(CONDBLOCK, BODY) :- 
+loopCondition(_, EDGESTART, EDGEEND, CONDITIONID, _),
+instruction(CONDBLOCK, CONDITIONID, _, _), 
+downwardPath(_, X, EDGESTART), BODY = EDGESTART,
+X>=EDGEEND
+.
+
+loopBodyWithCondition(CONDBLOCK, BODY) :- 
+loopCondition(_, EDGESTART, EDGEEND, CONDITIONID, _), 
+instruction(CONDBLOCK, CONDITIONID, _, _),
+downwardPath(_, X, EDGESTART), BODY = X,
+X>=EDGEEND
+.

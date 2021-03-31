@@ -62,6 +62,17 @@ OID2 = OID+1, COUNT=1.
 get_num_operands_recursive(IID, OID, COUNT) :- operand(IID, OID, _), operand(IID, OID2, _), 
 OID2 = OID+1, get_num_operands_recursive(IID, OID2, OLDCOUNT), COUNT = OLDCOUNT+1.
 
+
+//instructions
+
+//get last instruction of block
+.decl last_instruction_in_block(blockid: _blockid, instructionid: _instructionid)
+//.output last_instruction_in_block
+last_instruction_in_block(BID, IID) :- 
+instruction(BID, IID, _, _),
+IID = max IIDNUM : instruction(BID, IIDNUM, _, _)
+.
+
 //get only conversion instruction
 .decl is_conversion_instruction(instructionid: _instructionid)
 is_conversion_instruction(IID) :- instruction(_, IID, _, OPC), conversion_instruction(OPC).

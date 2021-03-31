@@ -10,6 +10,7 @@
 #include "instructions.dl"
 #include "operands.dl"
 #include "control-flow.dl"
+#include "loops.dl"
 #include "memlocation.dl"
 #include "memlocation_structs.dl"
 
