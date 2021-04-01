@@ -16,6 +16,17 @@ downwardEdge(FID, START, END) :- edge(FID, START, END), START<END.
 downwardPath(FID, START, END) :- downwardEdge(FID, START, END).
 downwardPath(FID, START, END) :- downwardPath(FID, START, MIDDLE), downwardEdge(FID, MIDDLE, END).
 
+//block lists all blocks in downward path
+.decl blockInDownwardPath(functionid: _functionid, startblock: _blockid, endblock: _blockid, block: _blockid)
+.output blockInDownwardPath(delimiter=",")
+blockInDownwardPath(FID, START, END, BLOCK) :- 
+downwardPath(FID, START, END), BLOCK = START.
+
+blockInDownwardPath(FID, START, END, BLOCK) :- 
+downwardPath(FID, START, END), BLOCK = END.
+
+blockInDownwardPath(FID, START, END, BLOCK) :- 
+downwardPath(FID, START, X), downwardPath(FID, X, END), BLOCK = X.
 
 //basic blocks
 
