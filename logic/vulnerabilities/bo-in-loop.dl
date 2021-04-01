@@ -1,0 +1,54 @@
+//detect buffer overflows within loops
+
+//detect duplicate variable increase
+.decl is_loop_with_duplicate_increase(loopCondition: _blockid, message: symbol)
+.output is_loop_with_duplicate_increase(delimiter=",")
+//case head-controlled
+is_loop_with_duplicate_increase(CB, MESSAGE) :- 
+TYPE = "head-controlled",
+loop(FID, CB, TYPE),
+loopCondition(FID, LASTBLOCK, CB, CBIID, TYPE),
+instruction(CB, CBIID, _, _),
+downwardPath(FID, CB, LASTBLOCK),
+blockInDownwardPath(FID, CB, LASTBLOCK, BLOCK),
+blockInDownwardPath(FID, CB, LASTBLOCK, BLOCK2), //BLOCK1 and BLOCK2 may be the same
+loop_variable(CB, FID, VAR),
+//first increase instruction
+is_increase_variable_instruction_of_variable(BLOCK, IID, VAR),
+//second increase instruction
+is_increase_variable_instruction_of_variable(BLOCK2, IID2, VAR),
+IID != IID2,
+MESSAGE = "duplicate loop variable increase in loop detected"
+.
+
+//case foot-controlled
+is_loop_with_duplicate_increase(CB, MESSAGE) :- 
+TYPE = "foot-controlled",
+loop(FID, CB, TYPE),
+loopCondition(FID, CB, FIRSTBLOCK, CBIID, TYPE),
+instruction(CB, CBIID, _, _),
+downwardPath(FID, FIRSTBLOCK, CB),
+blockInDownwardPath(FID, FIRSTBLOCK, CB, BLOCK),
+blockInDownwardPath(FID, FIRSTBLOCK, CB, BLOCK2), //BLOCK1 and BLOCK2 may be the same
+loop_variable(CB, FID, VAR),
+//first increase instruction
+is_increase_variable_instruction_of_variable(BLOCK, IID, VAR),
+//second increase instruction
+is_increase_variable_instruction_of_variable(BLOCK2, IID2, VAR),
+IID != IID2,
+MESSAGE = "duplicate loop variable increase in loop detected"
+.
+
+
+//the pointer which the loop iterates through is increased in one path within the loop more than once
+.decl is_increase_variable_instruction_of_variable(blockid: _blockid, instructionid: _instructionid, variable: symbol)
+.output is_increase_variable_instruction_of_variable(delimiter=",")
+is_increase_variable_instruction_of_variable(BID, IID, VAR) :-
+instruction(BID, IID, _, OPC),
+OPC = "getelementptr",
+get_first_operand(IID, VREG),
+get_second_operand(IID, INDEX),
+to_number(INDEX) > 0,
+memequals(FID, VREG, FID, VAR),
+loop_variable(_, FID, VAR)
+.
