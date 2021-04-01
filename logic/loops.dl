@@ -28,13 +28,45 @@ CONDITION = HEADIID,
 TYPE = "head-controlled"
 .
 
-
+//all loops
 .decl loop(functionid: _functionid, conditionBlock: _blockid, type: symbol)
 .output loop(delimiter=",")
 loop(FID, CONDITION, TYPE) :- 
 loopCondition(FID, _, _, CONDITIONID, TYPE), 
 instruction(CONDITION, CONDITIONID, _, _)
 .
+
+//loops with paths
+.decl loop_with_paths(conditionBlock: _blockid)
+.output loop_with_paths(delimiter=",")
+loop_with_paths(CB) :- 
+loop(_, CB, _),
+COUNTBB = count : { loopBody(CB, _) },
+COUNTBB > 1
+.
+
+//nested loops
+.decl nested_loop(conditionBlock: _blockid)
+.output nested_loop(delimiter=",")
+nested_loop(CB) :-
+loop(_, CB, _),
+loopBody(X, BODYX),
+X != CB,
+CB = BODYX
+.
+
+//the 4 loop types (see https://www.sciencedirect.com/science/article/pii/S0167404819301634)
+.decl loop_sn(conditionBlock: _blockid)
+loop_sn(CB) :- loop(_, CB, _), !nested_loop(CB), !loop_with_paths(CB).
+
+.decl loop_sp(conditionBlock: _blockid)
+loop_sp(CB) :- loop(_, CB, _), !nested_loop(CB), loop_with_paths(CB).
+
+.decl loop_nn(conditionBlock: _blockid)
+loop_nn(CB) :- loop(_, CB, _), nested_loop(CB), !loop_with_paths(CB).
+
+.decl loop_np(conditionBlock: _blockid)
+loop_np(CB) :- loop(_, CB, _), nested_loop(CB), loop_with_paths(CB).
 
 
 //enumerates all blocks within loop without the condition block
