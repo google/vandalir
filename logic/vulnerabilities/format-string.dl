@@ -1,8 +1,8 @@
 //detect format string attack
-.decl is_vulnerable_format_string_instruction(instructionid: _instructionid, message: symbol)
+.decl is_vulnerable_format_string_instruction(instructionid: _instructionid, level: symbol, message: symbol)
 //.output is_vulnerable_format_string_instruction
 //detect userinput in formatstring parameter
-is_vulnerable_format_string_instruction(IID, MESSAGE) :-
+is_vulnerable_format_string_instruction(IID, LEVEL, MESSAGE) :-
 get_formatstring_arg(FNAME, RELARGNUM),
 block(FID, BID, _),
 instruction(BID, IID, _, _), 
@@ -10,11 +10,12 @@ is_X_call_instruction(FNAME, IID),
 get_ith_operand(IID, RELARGNUM, FSLOC),
 is_vreg(FSLOC),
 is_memloc_with_userinput(FID, FSLOC),
+LEVEL = "Vulnerability",
 MESSAGE = cat(cat(cat(FNAME," detected and userinput is provided to its #"),to_string(RELARGNUM)), " argument which may indicate a format string vulnerability")
 .
 
 //issue warning if the minimal number of regular arguments is not met and critical arg(containing the formatstring) seems to be generated dynamically
-is_vulnerable_format_string_instruction(IID, MESSAGE) :-
+is_vulnerable_format_string_instruction(IID, LEVEL, MESSAGE) :-
 get_formatstring_arg(FNAME, RELARGNUM),
 block(FID, BID, _),
 instruction(BID, IID, _, _), 
@@ -24,11 +25,12 @@ is_vreg(FSLOC),
 block(FID, BID2, _),
 instruction(BID2, IID2, FSLOC, _),
 IID2 > 0, //is a real not an artificial vreg
-MESSAGE = cat("Warning: ", cat(FNAME, " detected and its formatstring argument is not global."))
+LEVEL = "Warning",
+MESSAGE = cat(FNAME, " detected and its formatstring argument is not global.")
 .
 
 //issue warning if the minimal number of regular arguments is not met and critical arg(containing the formatstring) seems to be generated dynamically
-is_vulnerable_format_string_instruction(IID, MESSAGE) :-
+is_vulnerable_format_string_instruction(IID, LEVEL, MESSAGE) :-
 get_formatstring_arg(FNAME, RELARGNUM),
 block(FID, BID, _),
 instruction(BID, IID, _, _), 
@@ -40,7 +42,8 @@ instruction(BID2, IID_GEP, FSLOC, "getelementptr"),
 get_first_operand(IID_GEP, FORMATSTR_VREG),
 is_vreg(FORMATSTR_VREG),
 !is_global(FORMATSTR_VREG),
-MESSAGE = cat("Warning: ", cat(FNAME, " detected and its formatstring argument is not global."))
+LEVEL = "Warning",
+MESSAGE = cat(FNAME, " detected and its formatstring argument is not global.")
 .
 
 

@@ -1,10 +1,11 @@
 //detect buffer overflows within loops
 
 //detect duplicate variable increase
-.decl is_loop_with_duplicate_increase(loopCondition: _blockid, message: symbol)
-.output is_loop_with_duplicate_increase(delimiter=",")
+.decl is_loop_with_duplicate_increase(loopConditionInstruction: _instructionid, level: symbol, message: symbol)
+//.output is_loop_with_duplicate_increase(delimiter=",")
+
 //case head-controlled
-is_loop_with_duplicate_increase(CB, MESSAGE) :- 
+is_loop_with_duplicate_increase(CBIID, LEVEL, MESSAGE) :- 
 TYPE = "head-controlled",
 loop(FID, CB, TYPE),
 loopCondition(FID, LASTBLOCK, CB, CBIID, TYPE),
@@ -18,11 +19,12 @@ is_increase_variable_instruction_of_variable(BLOCK, IID, VAR),
 //second increase instruction
 is_increase_variable_instruction_of_variable(BLOCK2, IID2, VAR),
 IID != IID2,
-MESSAGE = "duplicate loop variable increase in loop detected"
+MESSAGE = "duplicate loop variable increase in loop, may result in memory error",
+LEVEL = "Warning"
 .
 
 //case foot-controlled
-is_loop_with_duplicate_increase(CB, MESSAGE) :- 
+is_loop_with_duplicate_increase(CBIID, LEVEL, MESSAGE) :- 
 TYPE = "foot-controlled",
 loop(FID, CB, TYPE),
 loopCondition(FID, CB, FIRSTBLOCK, CBIID, TYPE),
@@ -36,19 +38,21 @@ is_increase_variable_instruction_of_variable(BLOCK, IID, VAR),
 //second increase instruction
 is_increase_variable_instruction_of_variable(BLOCK2, IID2, VAR),
 IID != IID2,
-MESSAGE = "duplicate loop variable increase in loop detected"
+MESSAGE = "duplicate loop variable increase in loop, may result in memory error",
+LEVEL = "Warning"
 .
 
 
 //the pointer which the loop iterates through is increased in one path within the loop more than once
 .decl is_increase_variable_instruction_of_variable(blockid: _blockid, instructionid: _instructionid, variable: symbol)
-.output is_increase_variable_instruction_of_variable(delimiter=",")
+//.output is_increase_variable_instruction_of_variable(delimiter=",")
 is_increase_variable_instruction_of_variable(BID, IID, VAR) :-
 instruction(BID, IID, _, OPC),
 OPC = "getelementptr",
 get_first_operand(IID, VREG),
 get_second_operand(IID, INDEX),
-to_number(INDEX) > 0,
+is_numeric(INDEX),
+INDEX != "0",
 memequals(FID, VREG, FID, VAR),
 loop_variable(_, FID, VAR)
 .

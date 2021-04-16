@@ -5,17 +5,19 @@
 #include "vulnerabilities/format-string.dl"
 
 //print results
-.decl print_vulnerable(functionname: symbol, label: symbol, virtualregister: symbol, message: symbol)
-.output print_vulnerable(delimiter=",")
+.decl print_vulnerable(level: symbol, functionname: symbol, label: symbol, virtualregister: symbol, message: symbol)
+.output print_vulnerable(delimiter=";")
 
-print_vulnerable(NAME, LAB, VREG, MESSAGE) :- instruction(BID, IID, VREG, _), 
-get_vulnerable(IID, MESSAGE), block(FID, BID, LAB), function(FID, NAME, _, _).
+print_vulnerable(LEVEL, FNAME, BBLOCK, VREG, MESSAGE) :- instruction(BID, IID, VREG, _), 
+get_vulnerable(IID, LEVEL, MESSAGE), block(FID, BID, BBLOCK), function(FID, FNAME, _, _).
 
 
 
-.decl get_vulnerable(instructionid: _instructionid, message: symbol)
-get_vulnerable(IID, MESSAGE) :- is_vulnerable_strncpy_call_instruction(IID, MESSAGE).
-get_vulnerable(IID, MESSAGE) :- is_vulnerable_fgets_call_instruction(IID, MESSAGE).
-get_vulnerable(IID, MESSAGE) :- is_vulnerable_sprintf_call_instruction(IID, MESSAGE).
-get_vulnerable(IID, MESSAGE) :- is_vulnerable_atoi_family_instruction(IID, MESSAGE).
-get_vulnerable(IID, MESSAGE) :- is_vulnerable_format_string_instruction(IID, MESSAGE).
+.decl get_vulnerable(instructionid: _instructionid, LEVEL: symbol, message: symbol)
+get_vulnerable(IID, LEVEL, MESSAGE) :- is_vulnerable_strncpy_call_instruction(IID, LEVEL, MESSAGE).
+get_vulnerable(IID, LEVEL, MESSAGE) :- is_vulnerable_fgets_call_instruction(IID, LEVEL, MESSAGE).
+get_vulnerable(IID, LEVEL, MESSAGE) :- is_vulnerable_sprintf_call_instruction(IID, LEVEL, MESSAGE).
+get_vulnerable(IID, LEVEL, MESSAGE) :- is_vulnerable_atoi_family_instruction(IID, LEVEL, MESSAGE).
+get_vulnerable(IID, LEVEL, MESSAGE) :- is_vulnerable_format_string_instruction(IID, LEVEL, MESSAGE).
+get_vulnerable(IID, LEVEL, MESSAGE) :- is_loop_with_duplicate_increase(IID, LEVEL, MESSAGE).
+
