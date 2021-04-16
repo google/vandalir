@@ -257,7 +257,7 @@ class Parser:
         # remove (i8, i8)* kind of datatypes
         while("(" in ops and ")" in ops):
             LocOpenBracket = ops.find("(")
-            LocCloseBracket = ops.find(")")
+            LocCloseBracket = ops.rfind(")")
             before = ops[:LocOpenBracket]
             after = ops[LocCloseBracket+1:]
             while(after[0] == "*" or after[0] == " "):
