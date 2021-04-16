@@ -30,7 +30,7 @@ TYPE = "head-controlled"
 
 //all loops
 .decl loop(functionid: _functionid, conditionBlock: _blockid, type: symbol)
-.output loop(delimiter=",")
+//.output loop(delimiter=",")
 loop(FID, CONDITION, TYPE) :- 
 loopCondition(FID, _, _, CONDITIONID, TYPE), 
 instruction(CONDITION, CONDITIONID, _, _)
@@ -71,7 +71,7 @@ loop_np(CB) :- loop(_, CB, _), nested_loop(CB), loop_with_paths(CB).
 
 //enumerates all blocks within loop without the condition block
 .decl loopBody(conditionBlock: _blockid, bodyBlock: _blockid)
-.output loopBody(delimiter=",")
+//.output loopBody(delimiter=",")
 loopBody(CONDBLOCK, BODY) :- loopBodyWithCondition(CONDBLOCK, BODY), CONDBLOCK != BODY.
 
 
@@ -110,7 +110,7 @@ X>=EDGEEND
 //detect loop variables (variables that determine the exit condition of a loop)
 
 .decl loop_variable(conditionBlock: _blockid, functionid: _functionid, loopVariable: symbol)
-.output loop_variable(delimiter=",")
+//.output loop_variable(delimiter=",")
 //case: condition block, direct integer
 loop_variable(CB, FID, VREGLV) :- 
 block(FID, CB, _),

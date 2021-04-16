@@ -18,7 +18,7 @@ downwardPath(FID, START, END) :- downwardPath(FID, START, MIDDLE), downwardEdge(
 
 //block lists all blocks in downward path
 .decl blockInDownwardPath(functionid: _functionid, startblock: _blockid, endblock: _blockid, block: _blockid)
-.output blockInDownwardPath(delimiter=",")
+//.output blockInDownwardPath(delimiter=",")
 blockInDownwardPath(FID, START, END, BLOCK) :- 
 downwardPath(FID, START, END), BLOCK = START.
 
