@@ -1,0 +1,8 @@
+//atoi family used with userinput
+.decl is_inherently_dangerous_function(instructionid: _instructionid, level:symbol, message: symbol)
+is_inherently_dangerous_function(IID, LEVEL, MESSAGE) :- 
+is_gets_call_instruction(IID),
+MESSAGE = "Inherently dangerous functions 'gets()' found.",
+LEVEL = "Vulnerability"
+.
+

@@ -3,6 +3,7 @@
 #include "vulnerabilities/out-of-bounds-read.dl"
 #include "vulnerabilities/integer-overflow.dl"
 #include "vulnerabilities/format-string.dl"
+#include "vulnerabilities/dangerous-functions.dl"
 
 //print results
 .decl print_vulnerable(level: symbol, functionname: symbol, label: symbol, virtualregister: symbol, message: symbol)
@@ -20,4 +21,6 @@ get_vulnerable(IID, LEVEL, MESSAGE) :- is_vulnerable_sprintf_call_instruction(II
 get_vulnerable(IID, LEVEL, MESSAGE) :- is_vulnerable_atoi_family_instruction(IID, LEVEL, MESSAGE).
 get_vulnerable(IID, LEVEL, MESSAGE) :- is_vulnerable_format_string_instruction(IID, LEVEL, MESSAGE).
 get_vulnerable(IID, LEVEL, MESSAGE) :- is_loop_with_duplicate_increase(IID, LEVEL, MESSAGE).
+get_vulnerable(IID, LEVEL, MESSAGE) :- is_inherently_dangerous_function(IID, LEVEL, MESSAGE).
+
 
