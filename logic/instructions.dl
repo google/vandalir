@@ -124,6 +124,11 @@ is_calloc_call_instruction(IID) :- is_call_instruction(IID), get_last_operand(II
 .decl is_realloc_call_instruction(instructionid: _instructionid)
 is_realloc_call_instruction(IID) :- is_call_instruction(IID), get_last_operand(IID, OV), OV = "realloc".
 
+//get only call gets instructions
+.decl is_gets_call_instruction(instructionid: _instructionid)
+is_gets_call_instruction(IID) :- is_call_instruction(IID), get_last_operand(IID, OV), OV = "gets".
+
+
 //get only call atoi family instructions
 .decl is_atoi_family_call_instruction(instructionid: _instructionid)
 is_atoi_family_call_instruction(IID) :- is_call_instruction(IID), get_last_operand(IID, OV), OV = "atoi".
