@@ -60,6 +60,43 @@ MESSAGE = cat(cat(cat("sprintf(dest %s src): possible insufficient buffer size "
 .
 
 
+//memcpy vulnerable to bo
+.decl is_vulnerable_memcpy_call_instruction(instructionid: _instructionid, level: symbol, message: symbol)
+is_vulnerable_memcpy_call_instruction(IID, LEVEL, MESSAGE) :- is_memcpy_call_instruction(IID), 
+block(FID, BID, _), instruction(BID, IID, _, _),
+get_first_operand(IID, DEST), get_third_operand(IID, N), 
+get_buffsize_by_vreg(DEST_SIZE, FID, DEST), 
+get_int_by_vreg(COPY_SIZE, FID, N),
+MESSAGE = cat(cat(cat("memcpy: possible insufficient buffer size ", to_string(DEST_SIZE)), " for n of size "), to_string(COPY_SIZE)),
+LEVEL = "Vulnerability",
+DEST_SIZE < COPY_SIZE.
+
+//memcpy vulnerable to bo
+.decl is_vulnerable_memmove_call_instruction(instructionid: _instructionid, level: symbol, message: symbol)
+is_vulnerable_memmove_call_instruction(IID, LEVEL, MESSAGE) :- is_memmove_call_instruction(IID), 
+block(FID, BID, _), instruction(BID, IID, _, _),
+get_first_operand(IID, DEST), get_third_operand(IID, N), 
+get_buffsize_by_vreg(DEST_SIZE, FID, DEST), 
+get_int_by_vreg(COPY_SIZE, FID, N),
+MESSAGE = cat(cat(cat("memmove: possible insufficient buffer size ", to_string(DEST_SIZE)), " for n of size "), to_string(COPY_SIZE)),
+LEVEL = "Vulnerability",
+DEST_SIZE < COPY_SIZE.
+
+//strcpy vulnerable to bo
+.decl is_vulnerable_strcpy_call_instruction(instructionid: _instructionid, level: symbol, message: symbol)
+is_vulnerable_strcpy_call_instruction(IID, LEVEL, MESSAGE) :- is_memmove_call_instruction(IID), 
+block(FID, BID, _), instruction(BID, IID, _, _),
+get_first_operand(IID, DEST), get_second_operand(IID, SRC), 
+get_buffsize_by_vreg(DEST_SIZE, FID, DEST), 
+get_buffsize_by_vreg(SRC_SIZE, FID, SRC),
+MESSAGE = cat(cat(cat(cat("strcpy: possible insufficient buffer size ", to_string(DEST_SIZE)), " for copy of "), to_string(SRC_SIZE)), " sized buffer"),
+LEVEL = "Vulnerability",
+DEST_SIZE < SRC_SIZE.
+
+
+
+
+
 /*
 
 get_buffsize_by_vreg(DEST_SIZE, FID, DEST),

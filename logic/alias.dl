@@ -7,6 +7,7 @@ functionid2: _functionid, memlocation2: symbol)
 memequals(FID1, LOC1, FID2, LOC2) :- 
 memequals(FID2, LOC2, FID1, LOC1).
 
+//case: [(a <==> x) && (x <==> b)] ==> (a <==> b)
 memequals(FID1, LOC1, FID2, LOC2) :- 
 memequals(FID1, LOC1, FIDX, LOCX),
 memequals(FID2, LOC2, FIDX, LOCX).

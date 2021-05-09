@@ -22,5 +22,8 @@ get_vulnerable(IID, LEVEL, MESSAGE) :- is_vulnerable_atoi_family_instruction(IID
 get_vulnerable(IID, LEVEL, MESSAGE) :- is_vulnerable_format_string_instruction(IID, LEVEL, MESSAGE).
 get_vulnerable(IID, LEVEL, MESSAGE) :- is_loop_with_duplicate_increase(IID, LEVEL, MESSAGE).
 get_vulnerable(IID, LEVEL, MESSAGE) :- is_inherently_dangerous_function(IID, LEVEL, MESSAGE).
+get_vulnerable(IID, LEVEL, MESSAGE) :- is_vulnerable_memcpy_call_instruction(IID, LEVEL, MESSAGE).
+get_vulnerable(IID, LEVEL, MESSAGE) :- is_vulnerable_memmove_call_instruction(IID, LEVEL, MESSAGE).
+get_vulnerable(IID, LEVEL, MESSAGE) :- is_vulnerable_strcpy_call_instruction(IID, LEVEL, MESSAGE).
 
 
