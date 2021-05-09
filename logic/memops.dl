@@ -73,16 +73,23 @@ get_int_by_vreg(SIZE, FID, OV2).
 
 //get size of buffer by virtual register
 .decl get_buffsize_by_vreg(size: number, functionid: _functionid, _vreg: symbol)
-.output get_buffsize_by_vreg(delimiter=",")
+//.output get_buffsize_by_vreg(delimiter=",")
 
 //case alloca (end recursion)
-get_buffsize_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, IID, VREG, OPC), OPC = "alloca",
+get_buffsize_by_vreg(VAL, FID, VREG) :- 
+block(FID, BID, _), instruction(BID, IID, VREG, OPC), OPC = "alloca",
 get_size_of_alloca(IID, VAL), get_first_operand(IID, ALLOCATYPE),
-!is_pointer(ALLOCATYPE).
+!is_pointer(ALLOCATYPE),
+!is_struct(ALLOCATYPE)
+.
 
 //case getelementptr
 get_buffsize_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, IID, VREG, OPC), OPC = "getelementptr", 
-get_first_operand(IID, OV1), get_buffsize_by_vreg(VAL, FID, OV1).
+get_first_operand(IID, OV1), 
+get_last_operand(IID, TYPE), 
+!is_struct(OV1),
+!is_struct(TYPE),
+get_buffsize_by_vreg(VAL, FID, OV1).
 
 //case memequals
 get_buffsize_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, _, VREG, _),
@@ -117,6 +124,30 @@ global(VREG, _, _, VAL, _),
 function(FID, _, _, _)
 .
 
+//case struct (1-dim)
+get_buffsize_by_vreg(VAL, FID, VREG) :-
+block(FID, BID, _), instruction(BID, IID, VREG, OPC), OPC = "getelementptr", 
+get_last_operand(IID, TYPE), 
+is_struct(TYPE),
+!is_pointer(TYPE),
+struct(STRUCTID, TYPE, _),
+get_third_operand(IID, INDEXSTR),
+INDEX = to_number(INDEXSTR),
+get_struct_operand_size(VAL, STRUCTID, INDEX)
+.
+
+.decl get_struct_size(value: number, structid: _structid)
+//.output get_struct_size(delimiter=",")
+get_struct_size(VAL, STRUCTID) :- 
+struct(STRUCTID, _, _),
+VAL = sum SIZE : get_struct_operand_size(SIZE, STRUCTID, _)
+.
+
+.decl get_struct_operand_size(value: number, structid: _structid, structoperandid:_structoperandid)
+//.output get_struct_operand_size(delimiter=",")
+get_struct_operand_size(VAL, STRUCTID, STROPID) :- 
+structoperand(STRUCTID, STROPID, _, VALSTR),
+VAL = to_number(VALSTR).
 
 //get possible integer values
 .decl get_int_by_vreg(value: number, functionid: _functionid, _vreg: symbol)
