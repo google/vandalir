@@ -33,7 +33,7 @@ sudo apt-get install souffle
 To start the full pipeline on a c file simply run:
 
 ```
-./run.sh -f path/to/sourcefile.c
+./run.sh path/to/sourcefile.c
 ```
 
 The results are then stored in the output directory. 
