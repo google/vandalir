@@ -128,6 +128,18 @@ is_realloc_call_instruction(IID) :- is_call_instruction(IID), get_last_operand(I
 .decl is_gets_call_instruction(instructionid: _instructionid)
 is_gets_call_instruction(IID) :- is_call_instruction(IID), get_last_operand(IID, OV), OV = "gets".
 
+//get only call memcpy instructions
+.decl is_memcpy_call_instruction(instructionid: _instructionid)
+is_memcpy_call_instruction(IID) :- is_call_instruction(IID), get_last_operand(IID, OV), contains("memcpy", OV).
+
+//get only call memmove instructions
+.decl is_memmove_call_instruction(instructionid: _instructionid)
+is_memmove_call_instruction(IID) :- is_call_instruction(IID), get_last_operand(IID, OV), contains("memmove", OV).
+
+//get only call gets instructions
+.decl is_strcpy_call_instruction(instructionid: _instructionid)
+is_strcpy_call_instruction(IID) :- is_call_instruction(IID), get_last_operand(IID, OV), OV = "strcpy".
+
 
 //get only call atoi family instructions
 .decl is_atoi_family_call_instruction(instructionid: _instructionid)
