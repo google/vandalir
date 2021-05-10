@@ -136,7 +136,7 @@ block(FID, BID, _), instruction(BID, IID, _, _),
 get_first_operand(IID, DEST), get_third_operand(IID, N), 
 get_buffsize_by_vreg(DEST_SIZE, FID, DEST), 
 get_int_by_vreg(CAT_SIZE, FID, N),
-MESSAGE = cat(cat(cat(cat("strncat: possible insufficient buffer size ", to_string(DEST_SIZE)), " for concatenation with "), to_string(SRC_SIZE)), ", plus null-character characters"),
+MESSAGE = cat(cat(cat(cat("strncat: possible insufficient buffer size ", to_string(DEST_SIZE)), " for concatenation with "), to_string(CAT_SIZE)), ", plus null-character characters"),
 LEVEL = "Vulnerability",
 DEST_SIZE <= CAT_SIZE.
 

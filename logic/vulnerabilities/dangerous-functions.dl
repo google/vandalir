@@ -1,6 +1,6 @@
 //inherently dangerous function
 .decl dangerous_function(instructionid: _instructionid, level: symbol, message: symbol)
-dangerous_function(IID, LEVEL, MESSAGE) :- is_inherently_dangerous_function(IID, LEVEL, MESSAGE)
+dangerous_function(IID, LEVEL, MESSAGE) :- is_inherently_dangerous_function(IID, LEVEL, MESSAGE).
 
 //gets found
 .decl is_inherently_dangerous_function(instructionid: _instructionid, level:symbol, message: symbol)
