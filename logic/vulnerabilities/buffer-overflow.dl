@@ -4,7 +4,7 @@ buffer_overflow(IID, LEVEL, MESSAGE) :- is_vulnerable_strncpy_call_instruction(I
 buffer_overflow(IID, LEVEL, MESSAGE) :- is_vulnerable_fgets_call_instruction(IID, LEVEL, MESSAGE).
 buffer_overflow(IID, LEVEL, MESSAGE) :- is_vulnerable_snprintf_call_instruction(IID, LEVEL, MESSAGE).
 buffer_overflow(IID, LEVEL, MESSAGE) :- is_vulnerable_sprintf_call_instruction(IID, LEVEL, MESSAGE).
-buffer_overflow(IID, LEVEL, MESSAGE) :- is_vulnerable_memcpy_call_instruction(IID, LEVEL, MESSAGE).
+//buffer_overflow(IID, LEVEL, MESSAGE) :- is_vulnerable_memcpy_call_instruction(IID, LEVEL, MESSAGE).
 buffer_overflow(IID, LEVEL, MESSAGE) :- is_vulnerable_memmove_call_instruction(IID, LEVEL, MESSAGE).
 buffer_overflow(IID, LEVEL, MESSAGE) :- is_vulnerable_strcpy_call_instruction(IID, LEVEL, MESSAGE).
 buffer_overflow(IID, LEVEL, MESSAGE) :- is_vulnerable_wscpy_call_instruction(IID, LEVEL, MESSAGE).
@@ -20,6 +20,7 @@ get_buffsize_by_vreg(DEST_SIZE, FID, OV1),
 get_int_by_vreg(COPY_SIZE, FID, N),
 MESSAGE = cat(cat(cat("strncpy: possible insufficient buffer size ", to_string(DEST_SIZE)), " for n of size "), to_string(COPY_SIZE)),
 LEVEL = "Vulnerability",
+DEST_SIZE != 1,//this eliminates many false positives
 DEST_SIZE < COPY_SIZE.
 
 //fgets vulnerable to bo
@@ -29,6 +30,7 @@ is_fgets_call_instruction(IID), block(FID, BID, _), instruction(BID, IID, _, _),
 get_first_operand(IID, OV1), get_second_operand(IID, N),
 get_buffsize_by_vreg(DEST_SIZE, FID, OV1), 
 get_int_by_vreg(COPY_SIZE, FID, N),
+DEST_SIZE != 1,//this eliminates many false positives
 DEST_SIZE < COPY_SIZE,
 MESSAGE = cat(cat(cat("fgets: possible insufficient buffer size ", to_string(DEST_SIZE)), " for n of size "), N),
 LEVEL = "Vulnerability".
@@ -42,6 +44,7 @@ get_first_operand(IID, DEST),
 get_second_operand(IID, N),
 get_buffsize_by_vreg(DEST_SIZE, FID, DEST), 
 get_int_by_vreg(COPY_SIZE, FID, N),
+DEST_SIZE != 1,//this eliminates many false positives
 DEST_SIZE < COPY_SIZE,
 LEVEL = "Vulnerability",
 MESSAGE = cat(cat(cat("snprintf: possible insufficient buffer size ", to_string(DEST_SIZE)), " for n of size "), N)
@@ -65,6 +68,7 @@ get_global_str_value(FORMATSTR, FORMATSTR_GLOB),
 FORMATSTR = "%s\00",
 get_buffsize_by_vreg(SRC_SIZE, FID, SRC),
 get_buffsize_by_vreg(DEST_SIZE, FID, DEST),
+DEST_SIZE != 1,//this eliminates many false positives
 DEST_SIZE < SRC_SIZE,
 LEVEL = "Vulnerability",
 MESSAGE = cat(cat(cat("sprintf(dest %s src): possible insufficient buffer size ", to_string(DEST_SIZE)), " for source of size "), to_string(SRC_SIZE))
@@ -81,6 +85,7 @@ get_buffsize_by_vreg(DEST_SIZE, FID, DEST),
 get_int_by_vreg(COPY_SIZE, FID, N),
 MESSAGE = cat(cat(cat("memcpy: possible insufficient buffer size ", to_string(DEST_SIZE)), " for n of size "), to_string(COPY_SIZE)),
 LEVEL = "Vulnerability",
+DEST_SIZE != 1,//this eliminates many false positives
 DEST_SIZE < COPY_SIZE.
 
 //memmove vulnerable to bo
@@ -92,6 +97,7 @@ get_buffsize_by_vreg(DEST_SIZE, FID, DEST),
 get_int_by_vreg(COPY_SIZE, FID, N),
 MESSAGE = cat(cat(cat("memmove: possible insufficient buffer size ", to_string(DEST_SIZE)), " for n of size "), to_string(COPY_SIZE)),
 LEVEL = "Vulnerability",
+DEST_SIZE != 1,//this eliminates many false positives
 DEST_SIZE < COPY_SIZE.
 
 //strcpy vulnerable to bo
@@ -103,6 +109,7 @@ get_buffsize_by_vreg(DEST_SIZE, FID, DEST),
 get_buffsize_by_vreg(SRC_SIZE, FID, SRC),
 MESSAGE = cat(cat(cat(cat("strcpy: possible insufficient buffer size ", to_string(DEST_SIZE)), " for copy of "), to_string(SRC_SIZE)), " sized buffer"),
 LEVEL = "Vulnerability",
+DEST_SIZE != 1,//this eliminates many false positives
 DEST_SIZE < SRC_SIZE.
 
 //wscpy vulnerable to bo
@@ -114,6 +121,7 @@ get_buffsize_by_vreg(DEST_SIZE, FID, DEST),
 get_buffsize_by_vreg(SRC_SIZE, FID, SRC),
 MESSAGE = cat(cat(cat(cat("wscpy: possible insufficient buffer size ", to_string(DEST_SIZE)), " for copy of "), to_string(SRC_SIZE)), " sized buffer"),
 LEVEL = "Vulnerability",
+DEST_SIZE != 1,//this eliminates many false positives
 DEST_SIZE < SRC_SIZE.
 
 //strcat vulnerable to bo
@@ -126,6 +134,7 @@ get_buffsize_by_vreg(DEST_SIZE, FID, DEST),
 get_buffsize_by_vreg(SRC_SIZE, FID, SRC),
 MESSAGE = cat(cat(cat(cat("strcat: possible insufficient buffer size ", to_string(DEST_SIZE)), " for concatenation with "), to_string(SRC_SIZE)), " sized buffer"),
 LEVEL = "Vulnerability",
+DEST_SIZE != 1,//this eliminates many false positives
 DEST_SIZE < SRC_SIZE.
 
 //strncat vulnerable to bo
@@ -138,6 +147,7 @@ get_buffsize_by_vreg(DEST_SIZE, FID, DEST),
 get_int_by_vreg(CAT_SIZE, FID, N),
 MESSAGE = cat(cat(cat(cat("strncat: possible insufficient buffer size ", to_string(DEST_SIZE)), " for concatenation with "), to_string(CAT_SIZE)), ", plus null-character characters"),
 LEVEL = "Vulnerability",
+DEST_SIZE != 1,//this eliminates many false positives
 DEST_SIZE <= CAT_SIZE.
 
 
