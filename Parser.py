@@ -9,7 +9,8 @@ import re
 # configuration converter
 
 # directory of fact files
-FACTS_DIR = "facts"
+global FACTS_DIR
+FACTS_DIR = ""
 
 # installed llvm version (tested on 10)
 LLVM_VER = "10"
@@ -623,7 +624,9 @@ class Parser:
 if __name__ == "__main__":
     argparser = argparse.ArgumentParser(description='Generate datalog facts from LLVM-IR files.')
     argparser.add_argument('input', help='path to the LLVM-IR .ll file')
+    argparser.add_argument('-o', action='store', dest='output_dir', default="facts", help='specify facts directory')
     args = argparser.parse_args()
+    FACTS_DIR = args.output_dir
 
     parser = Parser(args.input)
     parser.parse()
