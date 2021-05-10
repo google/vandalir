@@ -4,7 +4,7 @@ buffer_overflow(IID, LEVEL, MESSAGE) :- is_vulnerable_strncpy_call_instruction(I
 buffer_overflow(IID, LEVEL, MESSAGE) :- is_vulnerable_fgets_call_instruction(IID, LEVEL, MESSAGE).
 buffer_overflow(IID, LEVEL, MESSAGE) :- is_vulnerable_snprintf_call_instruction(IID, LEVEL, MESSAGE).
 buffer_overflow(IID, LEVEL, MESSAGE) :- is_vulnerable_sprintf_call_instruction(IID, LEVEL, MESSAGE).
-//buffer_overflow(IID, LEVEL, MESSAGE) :- is_vulnerable_memcpy_call_instruction(IID, LEVEL, MESSAGE).
+buffer_overflow(IID, LEVEL, MESSAGE) :- is_vulnerable_memcpy_call_instruction(IID, LEVEL, MESSAGE).
 buffer_overflow(IID, LEVEL, MESSAGE) :- is_vulnerable_memmove_call_instruction(IID, LEVEL, MESSAGE).
 buffer_overflow(IID, LEVEL, MESSAGE) :- is_vulnerable_strcpy_call_instruction(IID, LEVEL, MESSAGE).
 buffer_overflow(IID, LEVEL, MESSAGE) :- is_vulnerable_wscpy_call_instruction(IID, LEVEL, MESSAGE).
