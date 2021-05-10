@@ -2,7 +2,7 @@ import subprocess
 import glob
 import os
 import shutil
-import multiprocessing as mp
+from multiprocessing.pool import ThreadPool
 
 
 juliet_path = "./test/Juliet/"
@@ -11,9 +11,13 @@ juliet_report_path = "./jreports/"
 
 results = []
 
+PROCS_FOR_LARGE = 1
+LARGE_SIZE = 20000
+SKIP_LARGE = True
+THREADS = 4
+
+
 # get report of current soufflé run
-
-
 def get_report(badgood, filename, output_dir):
 
     testcase = filename.replace(".bc", "").replace(".ll", "").replace("-bad", "").replace("-good", "")
@@ -28,14 +32,34 @@ def get_report(badgood, filename, output_dir):
 
 
 # run one testcase
-def run_file(cwe, badgood, filename, id):
+def run_file(cwe, badgood, filename, id, processes):
     facts_dir = "facts/"+id
     output_dir = "output/"+id
+    filepath = juliet_path+"CWE"+cwe+"/"+badgood+"/"+filename
 
-    command = "./run.sh "+juliet_path+"CWE"+cwe+"/"+badgood+"/"+filename+" "
-    command += "-f "+facts_dir+" "
-    command += "-o "+output_dir+" "
-    command += "-j 1"
+    if(os.path.getsize(filepath) > LARGE_SIZE):
+        processes = str(PROCS_FOR_LARGE)
+        if(SKIP_LARGE):
+            print("Skipped: "+filename+" id:"+id)
+            return ""
+
+    # create files
+    if(not os.path.isdir(output_dir)):
+        os.mkdir(output_dir)
+
+    if(not os.path.isdir(facts_dir)):
+        os.mkdir(facts_dir)
+
+    # parse
+    command_parse = "python3 Parser.py "+filepath+" "
+    command_parse += "-o "+facts_dir
+    subprocess.call(command_parse, shell=True)
+
+    # run
+    command = "bin/analyzer "+filepath+" "
+    command += "-F "+facts_dir+" "
+    command += "-D "+output_dir+" "
+    command += "-j "+processes+" "
     subprocess.call(command, shell=True)
     report = get_report(badgood, filename, output_dir)
     print("Succesfully analyzed "+filename+" id:"+id)
@@ -47,6 +71,12 @@ def run_file(cwe, badgood, filename, id):
         shutil.rmtree(output_dir)
     return report
 
+
+def compile_datalog():
+    print("Compiling Datalog...")
+    command = "souffle \"logic/main.dl\" -o bin/analyzer"
+    subprocess.call(command, shell=True)
+    print("Datalog compiled.")
 
 # add .bc ending to bitcodefiles and decompile to .ll files
 def preprocess_folder(folder):
@@ -71,6 +101,9 @@ def collect_reports(report):
 
 # run all testcases (good OR bad) of one CWE
 def run_cwe(cwe, badgood):
+    global results
+
+    results = []
     cwe_dir = juliet_path+"CWE"+cwe+"/"
     badgood_dir = cwe_dir+badgood+"/"
 
@@ -79,20 +112,28 @@ def run_cwe(cwe, badgood):
     # numOfFiles = len(glob.glob1(badgood_dir, "*.ll"))
     # processed = 0
 
-    file_list = list()
+    small_file_list = list()
     # full_report = list()
 
     for subdir, dirs, files in os.walk(badgood_dir):
         for filename in files:
             if(filename.endswith(".ll")):
-                file_list.append(filename)
+                # filepath = badgood_dir + filename
+                small_file_list.append(filename)
 
-    pool = mp.Pool(6)
-    [pool.apply_async(run_file, args=(cwe, badgood, filename, str(id+1)), callback=collect_reports)
-     for id, filename in enumerate(file_list)]
+    pool = ThreadPool(THREADS)
+    [pool.apply_async(run_file, args=(cwe, badgood, filename, str(id+1), "1"), callback=collect_reports)
+     for id, filename in enumerate(small_file_list)]
     pool.close()
     pool.join()
+    print("Small files processed")
 
+    # non parallel large file processing
+    '''
+    for id, filename in enumerate(large_file_list):
+        res = run_file(cwe, badgood, filename, str(id+1), str(1))
+        results.extend(res)
+    '''
     full_report_str = "".join(results)
     with open(juliet_report_path+'jreport_cwe'+cwe+'_'+badgood+'.csv', mode='w') as report:
         report.write(full_report_str)
@@ -121,7 +162,8 @@ def evaluate_all_cwes():
 
 
 def main():
-    evaluate_good("121")
+    compile_datalog()
+    evaluate_bad("121")
 
 
 if __name__ == "__main__":
