@@ -1,7 +1,7 @@
 //points-to analysis
 .decl points_to(functionid1: _functionid, memlocation1: symbol,
 functionid2: _functionid, memlocation2: symbol)
-//.output points_to(delimiter=",")
+.output points_to(delimiter=",")
 
 //memequals cases (not strictly necessary?)
 //cases memequals: (s -> e && as <==> s) ==> as -> e
@@ -31,8 +31,10 @@ instruction(BID, IID, _, OPC), OPC = "store",
 get_second_operand(IID, ELOC),
 get_fourth_operand(IID, SLOC),
 pointer_level(STYPE, STYPE_PLVL),
-memlocation(SFID, SLOC, STYPE, _), 
-memlocation(EFID, ELOC, ETYPE, _),
+memlocation(SFID, SLOC, _, _), 
+memlocation(EFID, ELOC, _, _),
+get_first_operand(IID, ETYPE),
+get_third_operand(IID, STYPE),
 pointer_level(ETYPE, ETYPE_PLVL),
 ETYPE_PLVL < STYPE_PLVL,
 ETYPE != "unknown", //TODO: fix parser to include types
@@ -41,9 +43,11 @@ EFID = FID.
 
 //case load 
 points_to(SFID, SLOC, EFID, ELOC) :-
-memlocation(SFID, SLOC, STYPE, _), 
-memlocation(EFID, ELOC, ETYPE, _),
+memlocation(SFID, SLOC, _, _), 
+memlocation(EFID, ELOC, _, _),
 instruction(BID, IID, VREG, OPC), block(FID, BID, _), OPC = "load",
+get_first_operand(IID, ETYPE),
+get_second_operand(IID, STYPE),
 pointer_level(STYPE, STYPE_PLVL),
 pointer_level(ETYPE, ETYPE_PLVL),
 ETYPE_PLVL < STYPE_PLVL,
@@ -55,13 +59,16 @@ EFID = FID.
 
 //case load with STYPE="unknown"
 points_to(SFID, SLOC, EFID, ELOC) :-
-memlocation(SFID, SLOC, STYPE, _), 
-memlocation(EFID, ELOC, ETYPE, _),
+memlocation(SFID, SLOC, _, _), 
+memlocation(EFID, ELOC, _, _),
+get_first_operand(IID, ETYPE),
+get_second_operand(IID, STYPE),
 instruction(BID, IID, VREG, OPC), block(FID, BID, _), OPC = "load",
 STYPE = "unknown",
 pointer_level(ETYPE, ETYPE_PLVL),
 ETYPE_PLVL >= 1,
 VREG = ELOC, 
-get_third_operand(IID, SLOC), 
+get_third_operand(IID, SLOC),
 SFID = FID,
-EFID = FID.
+EFID = FID
+.
