@@ -132,6 +132,7 @@ is_struct(TYPE),
 !is_pointer(TYPE),
 struct(STRUCTID, TYPE, _),
 get_third_operand(IID, INDEXSTR),
+is_numeric(INDEXSTR),
 INDEX = to_number(INDEXSTR),
 get_struct_operand_size(VAL, STRUCTID, INDEX)
 .
@@ -147,6 +148,7 @@ VAL = sum SIZE : get_struct_operand_size(SIZE, STRUCTID, _)
 //.output get_struct_operand_size(delimiter=",")
 get_struct_operand_size(VAL, STRUCTID, STROPID) :- 
 structoperand(STRUCTID, STROPID, _, VALSTR),
+is_numeric(VALSTR),
 VAL = to_number(VALSTR).
 
 //get possible integer values
@@ -154,12 +156,14 @@ VAL = to_number(VALSTR).
 //.output get_int_by_vreg(delimiter=",")
 //case add
 get_int_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, IID, VREG, OPC), OPC = "add",
-get_first_operand(IID, OV1), get_third_operand(IID, OV2), 
+get_first_operand(IID, OV1), get_third_operand(IID, OV2),
+is_numeric(OV2), 
 VAL=TMP+to_number(OV2), get_int_by_vreg(TMP, FID, OV1).
 
 //case sub
 get_int_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, IID, VREG, OPC), OPC = "sub",
-get_first_operand(IID, OV1), get_third_operand(IID, OV2), 
+get_first_operand(IID, OV1), get_third_operand(IID, OV2),
+is_numeric(OV2),  
 VAL=TMP-to_number(OV2), get_int_by_vreg(TMP, FID, OV1).
 
 //case call strlen
