@@ -191,7 +191,6 @@ get_int_by_vreg(VAL, FID, VREG) :-
 is_numeric(VREG),
 VAL = to_number(VREG), block(FID, _, _).
 
-
 //case store integer
 get_int_by_vreg(VAL, FID, VREG) :- 
 block(FID, BID, _), 
