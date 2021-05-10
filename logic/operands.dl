@@ -3,11 +3,12 @@
 //is given operand a vreg
 .decl is_vreg(type: symbol)
 is_vreg(T) :- contains("%", T), opval(T),
+strlen(T) > 0,
 SUBSTR = substr(T, 1, strlen(T)), !contains("%", SUBSTR).
 
 //is given operand a struct
 .decl is_struct(type: symbol)
-is_struct(T) :- is_vreg(T), substr(T, 0, 8) = "%struct.", !is_pointer(T).
+is_struct(T) :- strlen(T) > 0, is_vreg(T), substr(T, 0, 8) = "%struct.", !is_pointer(T).
 
 //is given operand a multidimensional array
 .decl is_multidimensional(type: symbol)
@@ -34,6 +35,7 @@ is_multidimensional(T) :- contains("x", T), opval(T).
 //is given operand a global
 .decl is_global(type: symbol)
 is_global(T) :- contains("@", T), opval(T),
+strlen(T) > 0,
 SUBSTR = substr(T, 1, strlen(T)), !contains("@", SUBSTR).
 
 //is given operand a global str

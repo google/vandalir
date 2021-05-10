@@ -14,7 +14,7 @@
 type(T) :- T = OV, operand(_,_,OV).
 
 .decl opval(type: symbol)
-opval(T) :- T = OV, operand(_,_,OV).
+opval(T) :- T = OV, strlen(T) > 0, operand(_,_,OV).
 
 //inputs
 .decl function(functionid: _functionid, functionname: symbol, functiontype: symbol, returntype: symbol)

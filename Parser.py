@@ -304,6 +304,8 @@ class Parser:
             operands[3] = operand2_split[1]
 
         for op in operands:
+            if(len(op) == 0):
+                continue
             op = str(op).strip()
             operand_str = "operand("+str(self.instructionid)+";"+str(self.operandid)+";\""+op+"\")"
             self.output(operand_str)
