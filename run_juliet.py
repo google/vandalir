@@ -12,6 +12,8 @@ juliet_report_path = "./jreports/"
 results = []
 
 # get report of current soufflé run
+
+
 def get_report(badgood, filename, output_dir):
 
     testcase = filename.replace(".bc", "").replace(".ll", "").replace("-bad", "").replace("-good", "")
@@ -38,7 +40,7 @@ def run_file(cwe, badgood, filename, id):
     report = get_report(badgood, filename, output_dir)
     print("Succesfully analyzed "+filename+" id:"+id)
 
-    #clean up directories
+    # clean up directories
     if(os.path.isdir(facts_dir)):
         shutil.rmtree(facts_dir)
     if(os.path.isdir(output_dir)):
@@ -60,6 +62,7 @@ def preprocess_folder(folder):
             if(filename.endswith(".bc") and not os.path.isfile(str(filepath)[:-3]+".ll")):
                 os.system("llvm-dis-10 "+filepath)
     print("Preprocessing successfully finished")
+
 
 def collect_reports(report):
     global results
@@ -85,7 +88,8 @@ def run_cwe(cwe, badgood):
                 file_list.append(filename)
 
     pool = mp.Pool(6)
-    [pool.apply_async(run_file, args=(cwe, badgood, filename, str(id+1)), callback=collect_reports) for id, filename in enumerate(file_list)]
+    [pool.apply_async(run_file, args=(cwe, badgood, filename, str(id+1)), callback=collect_reports)
+     for id, filename in enumerate(file_list)]
     pool.close()
     pool.join()
 
