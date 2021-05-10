@@ -43,6 +43,8 @@ DLC_LIBRARYMODE = ("libraryMode", False)
 DATALOG_CONFIG = [DLC_LIBRARYMODE]
 
 # implementation
+
+
 class Parser:
 
     def __init__(self, input):
@@ -223,9 +225,9 @@ class Parser:
 
         datatype = instr[0].strip()
 
-        firstVal = instr[2].replace(",","").strip()
+        firstVal = instr[2].replace(",", "").strip()
         firstCondBlock = instr[3].strip()[1:]+":"
-        secondVal = instr[6].replace(",","").strip()
+        secondVal = instr[6].replace(",", "").strip()
         secondCondBlock = instr[7].strip()[1:]+":"
 
         operands = [datatype, firstVal, firstCondBlock, secondVal, secondCondBlock]
@@ -289,10 +291,16 @@ class Parser:
         ops = str(instruction).strip().replace("store ", "").split(", ")
         operand1_split = ops[0].strip().split(" ")
         operands[0] = operand1_split[0]
-        operands[1] = operand1_split[1]
+        if(len(operand1_split) == 1):
+            operands[1] = ""
+        else:
+            operands[1] = operand1_split[1]
         operand2_split = ops[1].strip().split(" ")
         operands[2] = operand2_split[0]
-        operands[3] = operand2_split[1]
+        if(len(operand2_split) == 1):
+            operands[3] = ""
+        else:
+            operands[3] = operand2_split[1]
 
         for op in operands:
             op = str(op).strip()
@@ -418,7 +426,8 @@ class Parser:
             for procOp in processedOperands:
                 if(not procOp):  # skip empty operands
                     continue
-                operand_str = "operand("+str(self.artificialInstructionId)+";"+str(self.artificialOperandId)+";\""+procOp+"\")"
+                operand_str = "operand("+str(self.artificialInstructionId)+";" + \
+                    str(self.artificialOperandId)+";\""+procOp+"\")"
                 self.output(operand_str)
                 self.artificialOperandId += 1
 
@@ -497,8 +506,9 @@ class Parser:
             if(not changed):
                 newOutput.append(outputEntry)
         if(outputType == "operand"):
-            if(newOutput[2][0] == "@"):
-                newOutput[2] = newOutput[2].replace(".", "_")  # avoid globals name conflicts
+            if(len(newOutput[2]) > 0):
+                if(newOutput[2][0] == "@"):
+                    newOutput[2] = newOutput[2].replace(".", "_")  # avoid globals name conflicts
         self.outputList[outputType].append(";".join(newOutput))
 
     def printOutput(self):
