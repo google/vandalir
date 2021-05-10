@@ -73,7 +73,7 @@ get_int_by_vreg(SIZE, FID, OV2).
 
 //get size of buffer by virtual register
 .decl get_buffsize_by_vreg(size: number, functionid: _functionid, _vreg: symbol)
-//.output get_buffsize_by_vreg(delimiter=",")
+.output get_buffsize_by_vreg(delimiter=",")
 
 //case alloca (end recursion)
 get_buffsize_by_vreg(VAL, FID, VREG) :- 
@@ -153,23 +153,37 @@ VAL = to_number(VALSTR).
 
 //get possible integer values
 .decl get_int_by_vreg(value: number, functionid: _functionid, _vreg: symbol)
-//.output get_int_by_vreg(delimiter=",")
+.output get_int_by_vreg(delimiter=",")
+
 //case add
 get_int_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, IID, VREG, OPC), OPC = "add",
 get_first_operand(IID, OV1), get_third_operand(IID, OV2),
 is_numeric(OV2), 
 VAL=TMP+to_number(OV2), get_int_by_vreg(TMP, FID, OV1).
 
-//case sub
+//case sub (sub number from vreg)
 get_int_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, IID, VREG, OPC), OPC = "sub",
 get_first_operand(IID, OV1), get_third_operand(IID, OV2),
 is_numeric(OV2),  
 VAL=TMP-to_number(OV2), get_int_by_vreg(TMP, FID, OV1).
 
-//case call strlen
+//case sub2 (sub vreg from number)
+get_int_by_vreg(VAL, FID, VREG) :- 
+block(FID, BID, _), instruction(BID, IID, VREG, OPC), OPC = "sub",
+get_first_operand(IID, OV1), get_second_operand(IID, OV2),
+is_numeric(OV1),  
+VAL=to_number(OV1)-TMP, 
+get_int_by_vreg(TMP, FID, OV2).
+
+//case call strlen (Maximum)
 get_int_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, IID, VREG, OPC), OPC = "call",
 get_first_operand(IID, OV1), is_strlen_call_instruction(IID),
 get_buffsize_by_vreg(VAL, FID, OV1).
+
+//case call strlen (TODO: Minimum with userinput (only) can be 0)
+get_int_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, IID, VREG, OPC), OPC = "call",
+is_strlen_call_instruction(IID),
+VAL = 0.
 
 //case memequals
 get_int_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, _, VREG, _),
@@ -204,7 +218,17 @@ get_fourth_operand(IID, VREG),
 get_int_by_vreg(VAL, FID, NEWINT)
 .
 
-//TODO: case load integer
+//case load integer
+//TODO: check if type check is necessary (?)
+get_int_by_vreg(VAL, FID, VREG) :- 
+block(FID, BID, _), 
+instruction(BID, IID, VREG, OPC), OPC = "load",
+get_first_operand(IID, TYPE),
+!is_pointer(TYPE),
+get_third_operand(IID, NEWINT), 
+get_int_by_vreg(VAL, FID, NEWINT)
+.
+
 
 
 //get str global values
