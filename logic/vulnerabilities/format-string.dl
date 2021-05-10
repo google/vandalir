@@ -1,4 +1,7 @@
 //detect format string attack
+.decl format_string_attacks(instructionid: _instructionid, level: symbol, message: symbol)
+format_string_attacks(IID, LEVEL, MESSAGE) :- is_vulnerable_format_string_instruction(IID, LEVEL, MESSAGE).
+
 .decl is_vulnerable_format_string_instruction(instructionid: _instructionid, level: symbol, message: symbol)
 //.output is_vulnerable_format_string_instruction
 //detect userinput in formatstring parameter

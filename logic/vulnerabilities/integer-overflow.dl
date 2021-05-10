@@ -1,3 +1,7 @@
+//all integer overflows
+.decl integer_overflow(instructionid: _instructionid, level: symbol, message: symbol)
+integer_overflow(IID, LEVEL, MESSAGE) :- is_vulnerable_atoi_family_instruction(IID, LEVEL, MESSAGE).
+
 //atoi family used with userinput
 .decl is_vulnerable_atoi_family_instruction(instructionid: _instructionid, level:symbol, message: symbol)
 is_vulnerable_atoi_family_instruction(IID, LEVEL, MESSAGE) :- 

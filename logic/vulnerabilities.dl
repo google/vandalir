@@ -15,15 +15,10 @@ get_vulnerable(IID, LEVEL, MESSAGE), block(FID, BID, BBLOCK), function(FID, FNAM
 
 
 .decl get_vulnerable(instructionid: _instructionid, LEVEL: symbol, message: symbol)
-get_vulnerable(IID, LEVEL, MESSAGE) :- is_vulnerable_strncpy_call_instruction(IID, LEVEL, MESSAGE).
-get_vulnerable(IID, LEVEL, MESSAGE) :- is_vulnerable_fgets_call_instruction(IID, LEVEL, MESSAGE).
-get_vulnerable(IID, LEVEL, MESSAGE) :- is_vulnerable_sprintf_call_instruction(IID, LEVEL, MESSAGE).
-get_vulnerable(IID, LEVEL, MESSAGE) :- is_vulnerable_atoi_family_instruction(IID, LEVEL, MESSAGE).
-get_vulnerable(IID, LEVEL, MESSAGE) :- is_vulnerable_format_string_instruction(IID, LEVEL, MESSAGE).
-get_vulnerable(IID, LEVEL, MESSAGE) :- is_loop_with_duplicate_increase(IID, LEVEL, MESSAGE).
-get_vulnerable(IID, LEVEL, MESSAGE) :- is_inherently_dangerous_function(IID, LEVEL, MESSAGE).
-get_vulnerable(IID, LEVEL, MESSAGE) :- is_vulnerable_memcpy_call_instruction(IID, LEVEL, MESSAGE).
-get_vulnerable(IID, LEVEL, MESSAGE) :- is_vulnerable_memmove_call_instruction(IID, LEVEL, MESSAGE).
-get_vulnerable(IID, LEVEL, MESSAGE) :- is_vulnerable_strcpy_call_instruction(IID, LEVEL, MESSAGE).
-
+get_vulnerable(IID, LEVEL, MESSAGE) :- buffer_overflow(IID, LEVEL, MESSAGE).
+get_vulnerable(IID, LEVEL, MESSAGE) :- bo_in_loops(IID, LEVEL, MESSAGE).
+get_vulnerable(IID, LEVEL, MESSAGE) :- out_of_bounds_read(IID, LEVEL, MESSAGE).
+get_vulnerable(IID, LEVEL, MESSAGE) :- format_string_attacks(IID, LEVEL, MESSAGE).
+get_vulnerable(IID, LEVEL, MESSAGE) :- integer_overflow(IID, LEVEL, MESSAGE).
+get_vulnerable(IID, LEVEL, MESSAGE) :- dangerous_function(IID, LEVEL, MESSAGE).
 

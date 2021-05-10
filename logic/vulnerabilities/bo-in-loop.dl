@@ -1,4 +1,6 @@
 //detect buffer overflows within loops
+.decl bo_in_loops(instructionid: _instructionid, level: symbol, message: symbol)
+bo_in_loops(IID, LEVEL, MESSAGE) :- is_loop_with_duplicate_increase(IID, LEVEL, MESSAGE).
 
 //detect duplicate variable increase
 .decl is_loop_with_duplicate_increase(loopConditionInstruction: _instructionid, level: symbol, message: symbol)

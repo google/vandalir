@@ -1,5 +1,10 @@
+//all out-of-bounds-reads
+.decl out_of_bounds_read(instructionid: _instructionid, level: symbol, message: symbol)
+out_of_bounds_read(IID, LEVEL, MESSAGE) :- is_strncpy_out_of_bounds_read(IID, LEVEL, MESSAGE).
+
 //strncpy vulnerable to out of bounds read
-is_vulnerable_strncpy_call_instruction(IID, LEVEL, MESSAGE) :- 
+.decl is_strncpy_out_of_bounds_read(instructionid: _instructionid, level: symbol, message: symbol)
+is_strncpy_out_of_bounds_read(IID, LEVEL, MESSAGE) :- 
 is_strncpy_call_instruction(IID),
 block(FID, BID, _), instruction(BID, IID, _, _),
 get_first_operand(IID, DEST), get_second_operand(IID, SRC), get_third_operand(IID, N), 
