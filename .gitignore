@@ -12,3 +12,5 @@
 llvm-ir/
 !/llvm-ir/test.ll
 profile
+/bin
+/jreports
