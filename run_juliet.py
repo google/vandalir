@@ -62,7 +62,7 @@ def run_file(cwe, badgood, filename, id, processes):
     command += "-j "+processes+" "
     subprocess.call(command, shell=True)
     report = get_report(badgood, filename, output_dir)
-    print("Succesfully analyzed "+filename+" id:"+id)
+    print("Analysis successful "+filename+" id:"+id)
 
     # clean up directories
     if(os.path.isdir(facts_dir)):
@@ -112,28 +112,22 @@ def run_cwe(cwe, badgood):
     # numOfFiles = len(glob.glob1(badgood_dir, "*.ll"))
     # processed = 0
 
-    small_file_list = list()
+    file_list = list()
     # full_report = list()
 
     for subdir, dirs, files in os.walk(badgood_dir):
         for filename in files:
             if(filename.endswith(".ll")):
                 # filepath = badgood_dir + filename
-                small_file_list.append(filename)
+                file_list.append(filename)
 
     pool = ThreadPool(THREADS)
     [pool.apply_async(run_file, args=(cwe, badgood, filename, str(id+1), "1"), callback=collect_reports)
-     for id, filename in enumerate(small_file_list)]
+     for id, filename in enumerate(file_list)]
     pool.close()
     pool.join()
-    print("Small files processed")
+    print("All "+badgood+" files processed")
 
-    # non parallel large file processing
-    '''
-    for id, filename in enumerate(large_file_list):
-        res = run_file(cwe, badgood, filename, str(id+1), str(1))
-        results.extend(res)
-    '''
     full_report_str = "".join(results)
     with open(juliet_report_path+'jreport_cwe'+cwe+'_'+badgood+'.csv', mode='w') as report:
         report.write(full_report_str)
@@ -163,7 +157,7 @@ def evaluate_all_cwes():
 
 def main():
     compile_datalog()
-    evaluate_bad("121")
+    evaluate_full("134")
 
 
 if __name__ == "__main__":

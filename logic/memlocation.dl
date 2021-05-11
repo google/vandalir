@@ -5,7 +5,7 @@ memtype(MEM) :- type(MEM).
 
 
 .decl memlocation(functionid: _functionid, memlocation: symbol, memtyp: symbol, memcategory: _memcategory)
-//.output memlocation(delimiter=",")
+.output memlocation(delimiter=",")
 //stack allocations
 
 //stack allocations of one element.
@@ -78,6 +78,7 @@ OPC = "call", get_function_for_call_instruction(FNAME, IID), function(_, FNAME, 
 LOC = VREG,
 CAT = "vreg",
 TYPE = RETTYPE.
+
 //vreg no load
 memlocation(FID, LOC, TYPE, CAT) :- instruction(BID, IID, VREG, OPC), block(FID, BID, _),
 OPC != "load", OPC != "alloca", OPC != "getelementptr", !is_heap_allocation_call(IID),
@@ -85,6 +86,7 @@ VREG != "%-1",
 LOC = VREG,
 CAT = "vreg", 
 TYPE = "unknown". 
+
 //vreg load
 memlocation(FID, LOC, TYPE, CAT) :- instruction(BID, IID, VREG, OPC), block(FID, BID, _),
 OPC = "load",
@@ -92,6 +94,7 @@ VREG != "%-1",
 LOC = VREG,
 CAT = "vreg", 
 get_first_operand(IID, TYPE).
+
 //vreg getelementptr
 memlocation(FID, LOC, TYPE, CAT) :- instruction(BID, _, VREG, OPC), block(FID, BID, _),
 OPC = "getelementptr",
@@ -108,8 +111,6 @@ CAT = "stack"
 //get_relative_argid(FID, ARGID, ARGID_REL),
 //function(FID, FNAME, _, _)
 .
-
-
 
 //helper relations
 
