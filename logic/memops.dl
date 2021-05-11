@@ -86,10 +86,14 @@ get_size_of_alloca(IID, VAL), get_first_operand(IID, ALLOCATYPE),
 //case getelementptr
 get_buffsize_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, IID, VREG, OPC), OPC = "getelementptr", 
 get_first_operand(IID, OV1), 
+get_second_operand(IID, INDEX),
+get_int_by_vreg(INDEXNUM, FID, INDEX),
+INDEXNUM = 0,
 get_last_operand(IID, TYPE), 
 !is_struct(OV1),
 !is_struct(TYPE),
 get_buffsize_by_vreg(VAL, FID, OV1).
+
 
 //case memequals
 get_buffsize_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, _, VREG, _),
