@@ -5,26 +5,37 @@
 //function arguments containing userinput
 
 //mode equal
-memlocation(FID, LOC, TYPE, CAT) :- 
-argument(FID, ARGID, LOC, TYPE), 
-get_relative_argid(FID, ARGID, ARGID_REL),
-function(FID, FNAME, _, _),
+memlocation(FID, LOC, TYPE, CAT) :-
+block(FID, BID, _),
+instruction(BID, IID, _, "call"),
+is_X_call_instruction(FNAME, IID),
+get_ith_operand(IID, ARGID_REL, LOC),
+
+argument(FIDFUNC, ARGID, _, TYPE), 
+get_relative_argid(FIDFUNC, ARGID, ARGID_REL),
+function(FIDFUNC, FNAME, _, _),
 userinput(FNAME, ARGID_REL, "=", _),
 get_size_of_userinput(SIZE, _, FNAME, ARGID_REL),
 CAT = cat("userinput_", to_string(SIZE))
 .
 
 //mode following
-memlocation(FID, LOC, TYPE, CAT) :- 
-argument(FID, ARGID, LOC, TYPE), 
-get_relative_argid(FID, ARGID, ARGID_REL),
-function(FID, FNAME, _, _),
+//TODO: check if it works
+memlocation(FID, LOC, TYPE, CAT) :-
+block(FID, BID, _),
+instruction(BID, IID, _, "call"),
+is_X_call_instruction(FNAME, IID),
+get_ith_operand(IID, ARGID_REL, LOC),
+argument(FIDFUNC, ARGID, _, TYPE), 
+get_relative_argid(FIDFUNC, ARGID, ARGID_REL),
+function(FIDFUNC, FNAME, _, _),
 userinput(FNAME, INPUT_ID, "+", _),
 get_size_of_userinput(SIZE, _, FNAME, ARGID_REL),
 CAT = cat("userinput_", to_string(SIZE)),
 ARGID_REL >= INPUT_ID 
 .
 
+/*//TODO: check if it works
 //mode return value
 memlocation(FID, LOC, TYPE, CAT) :- 
 function(FID, FNAME, _, TYPE),
@@ -34,6 +45,16 @@ INPUT_ID = 0,
 userinput(FNAME, INPUT_ID, "=", _),
 get_size_of_userinput(SIZE, IID, FNAME, INPUT_ID),
 CAT = cat("userinput_", to_string(SIZE))
+.
+*/
+//case memequals
+
+memlocation(FID, LOC, TYPE, CAT) :- 
+memlocation(FID2, LOC2, TYPE2, CAT2),
+contains("userinput_", CAT2),
+memequals(FID, LOC, FID2, LOC2),
+TYPE = TYPE2,
+CAT = CAT2
 .
 
 //load or getelementptr from userinput ==> is also userinput
@@ -84,9 +105,11 @@ CAT = cat("userinput_", to_string(SIZE))
 .
 
 
+//helper functions
+
 //helper to get size info for limited or unlimited userinput
 .decl get_size_of_userinput(size: number, instructionid: _instructionid, fname: symbol, argid_relative: number)
-//.output get_size_of_userinput
+.output get_size_of_userinput
 //case unlimited
 get_size_of_userinput(SIZE, IID, FNAME, ARGID_REL) :-
 userinput(FNAME, ARGID_REL, _, LIMIT),
@@ -131,6 +154,7 @@ FNAME != "fgets"
 
 //determine if memlocation may contain direct userinput and if so also return category
 .decl is_memloc_with_direct_userinput(functionid: _functionid, location: symbol, memcategory: _memcategory)
+
 is_memloc_with_direct_userinput(FID, LOC, CAT) :- 
 memlocation(FID, LOC, _, CAT),
 is_memcat_userinput_str(CAT)
@@ -150,14 +174,25 @@ is_memcat_userinput_str(STR) :- memlocation(_, _, _, STR), match("userinput_.*",
 
 //checks if given location may contain direct, as well as transitioning userinput
 .decl is_memloc_with_userinput(functionid: _functionid, location: symbol)
+.output is_memloc_with_userinput
 //case direct user input
-is_memloc_with_userinput(FID, LOC) :- is_memloc_with_direct_userinput(FID, LOC, _).
+is_memloc_with_userinput(FID, LOC) :- 
+is_memloc_with_direct_userinput(FID, LOC, _)
+.
 //case transitioning user input
-is_memloc_with_userinput(FID, LOC) :- transitions_userinput_to(FID, FROM, LOC), is_memloc_with_userinput(FID, FROM).
+is_memloc_with_userinput(FID, LOC) :- 
+transitions_userinput_to(FID, FROM, LOC), 
+is_memloc_with_userinput(FID, FROM).
+
 //case memequals
-is_memloc_with_userinput(FID, LOC) :- memequals(FID, LOC, FID2, LOC2), is_memloc_with_userinput(FID2, LOC2).
+is_memloc_with_userinput(FID, LOC) :- 
+memequals(FID, LOC, FID2, LOC2), 
+is_memloc_with_userinput(FID2, LOC2).
+
 //case points-to
-is_memloc_with_userinput(FID, LOC) :- points_to(FID, LOC, FID2, LOC2), is_memloc_with_userinput(FID2, LOC2).
+is_memloc_with_userinput(FID, LOC) :- 
+points_to(FID, LOC, FID2, LOC2), 
+is_memloc_with_userinput(FID2, LOC2).
 
 
 //an edge FROM->TO describes that userinput in FROM may spill into TO
