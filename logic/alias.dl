@@ -117,8 +117,8 @@ memequals(FID1, LOC1, FID2, LOC2) :-
 memequals(FID1, LOC1, _, _),
 memlocation(FID2, LOC2, _, _),
 FID1 = FID2,
-LOC1 = cat(LOC2, "_0")
-is_vreg(LOC2),
+LOC1 = cat(LOC2, "_0"),
+is_vreg(LOC2)
 .
 
 //help relations
