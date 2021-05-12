@@ -3,7 +3,7 @@
 //additional memlocations (these are only used as entry points to determine size limitations)
 
 //function arguments containing userinput
-/*
+
 //mode equal
 memlocation(FID, LOC, TYPE, CAT) :-
 block(FID, BID, _),
@@ -34,7 +34,7 @@ get_size_of_userinput(SIZE, _, FNAME, ARGID_REL),
 CAT = cat("userinput_", to_string(SIZE)),
 ARGID_REL >= INPUT_ID 
 .
-*/
+
 //mode main (following)
 memlocation(FID, LOC, TYPE, CAT) :-
 FNAME = "main",
@@ -223,6 +223,7 @@ is_memloc_with_userinput(FID2, LOC2).
 
 //an edge FROM->TO describes that userinput in FROM may spill into TO
 .decl transitions_userinput_to(functionid: _functionid, memlocationFrom: symbol, memlocationTo: symbol)
+.output transitions_userinput_to
 //case: transition userinput from argument to return value
 transitions_userinput_to(FID, FROM, TO) :-
 userinput_transitioning_function(FNAME, IN, OUT), OUT=0,
@@ -236,7 +237,7 @@ get_ith_operand(IID, IN, FROM)
 transitions_userinput_to(FID, FROM, TO) :-
 userinput_transitioning_function(FNAME, IN, OUT), OUT>0, IN>0,
 block(FID, BID, _),
-instruction(BID, IID, TO, _),
+instruction(BID, IID, _, _),
 is_X_call_instruction(FNAME, IID),
 get_ith_operand(IID, IN, FROM),
 get_ith_operand(IID, OUT, TO)
