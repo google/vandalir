@@ -26,7 +26,7 @@ USER_INPUT = [["main", "1", "+", "0"], ["scanf", "2", "+", "1"], ["fscanf", "3",
               ["fgets", "1", "=", "1"], ["fgetc", "0", "=", "1"], ["getc", "0", "=", "1"],
               ["gets", "1", "=", "0"], ["getenv", "0", "=", "0"], ["fread", "1", "=", "0"],
               ["_IO_getc", "0", "=", "1"], ["__isoc99_sscanf", "2", "+", "1"],
-              ["__isoc99_fscanf", "3", "+", "1"], ["recv", "1", "=", "1"],
+              ["__isoc99_fscanf", "3", "+", "1"], ["recv", "2", "=", "1"],
               ["_IO_getc", "0", "=", "1"]]
 
 # this limit describes the maximum number of elements in one array, that are used by the analysis
