@@ -3,7 +3,7 @@
 //additional memlocations (these are only used as entry points to determine size limitations)
 
 //function arguments containing userinput
-
+/*
 //mode equal
 memlocation(FID, LOC, TYPE, CAT) :-
 block(FID, BID, _),
@@ -20,12 +20,12 @@ CAT = cat("userinput_", to_string(SIZE))
 .
 
 //mode following
-//TODO: check if it works
 memlocation(FID, LOC, TYPE, CAT) :-
 block(FID, BID, _),
 instruction(BID, IID, _, "call"),
 is_X_call_instruction(FNAME, IID),
 get_ith_operand(IID, ARGID_REL, LOC),
+
 argument(FIDFUNC, ARGID, _, TYPE), 
 get_relative_argid(FIDFUNC, ARGID, ARGID_REL),
 function(FIDFUNC, FNAME, _, _),
@@ -34,19 +34,32 @@ get_size_of_userinput(SIZE, _, FNAME, ARGID_REL),
 CAT = cat("userinput_", to_string(SIZE)),
 ARGID_REL >= INPUT_ID 
 .
+*/
+//mode main (following)
+memlocation(FID, LOC, TYPE, CAT) :-
+FNAME = "main",
+argument(FID, ARGID, LOC, TYPE), 
+get_relative_argid(FID, ARGID, ARGID_REL),
+function(FID, FNAME, _, _),
+userinput(FNAME, INPUT_ID, "+", _),
+get_size_of_userinput(SIZE, _, FNAME, ARGID_REL),
+CAT = cat("userinput_", to_string(SIZE)),
+ARGID_REL >= INPUT_ID
+.
 
-/*//TODO: check if it works
 //mode return value
 memlocation(FID, LOC, TYPE, CAT) :- 
-function(FID, FNAME, _, TYPE),
+function(_, FNAME, _, TYPE),
+instruction(BID, IID, LOC, "call"),
+is_X_call_instruction(FNAME, IID),
 block(FID, BID, _),
-instruction(BID, IID, LOC, _),
+
 INPUT_ID = 0,
 userinput(FNAME, INPUT_ID, "=", _),
 get_size_of_userinput(SIZE, IID, FNAME, INPUT_ID),
 CAT = cat("userinput_", to_string(SIZE))
 .
-*/
+
 //case memequals
 
 memlocation(FID, LOC, TYPE, CAT) :- 
@@ -110,10 +123,23 @@ CAT = cat("userinput_", to_string(SIZE))
 //helper to get size info for limited or unlimited userinput
 .decl get_size_of_userinput(size: number, instructionid: _instructionid, fname: symbol, argid_relative: number)
 .output get_size_of_userinput
-//case unlimited
+
+//case unlimited (equal)
 get_size_of_userinput(SIZE, IID, FNAME, ARGID_REL) :-
-userinput(FNAME, ARGID_REL, _, LIMIT),
+userinput(FNAME, ARGID_REL, "=", LIMIT),
 get_function_for_call_instruction(FNAME, IID),
+LIMIT = 0,
+SIZE = MAXINT
+.
+
+//case unlimited (following)
+get_size_of_userinput(SIZE, IID, FNAME, ARGID_REL) :-
+userinput(FNAME, ARGID_REL_START, "+", LIMIT),
+get_function_for_call_instruction(FNAME, IID),
+ARGID_REL >= ARGID_REL_START,
+get_num_of_arguments_by_fname(ARGNUM, FNAME),
+ARGID_REL < ARGNUM+1,
+anumber(ARGID_REL),
 LIMIT = 0,
 SIZE = MAXINT
 .
@@ -142,7 +168,7 @@ get_second_operand(IID, N),
 get_int_by_vreg(SIZE, FID, N)
 . 
 
-//case limited: default
+//case limited: default (not following)
 get_size_of_userinput(SIZE, IID, FNAME, ARGID_REL) :-
 userinput(FNAME, ARGID_REL, _, LIMIT),
 get_function_for_call_instruction(FNAME, IID),
