@@ -3,6 +3,7 @@ import glob
 import os
 import shutil
 from multiprocessing.pool import ThreadPool
+import numpy as np
 
 
 juliet_path = "./test/Juliet/"
@@ -13,7 +14,7 @@ results = []
 
 PROCS_FOR_LARGE = 1
 LARGE_SIZE = 20000
-SKIP_LARGE = True
+SKIP_LARGE = False
 THREADS = 4
 
 
@@ -113,6 +114,7 @@ def run_cwe(cwe, badgood):
     # processed = 0
 
     file_list = list()
+    found_list = list()
     # full_report = list()
 
     for subdir, dirs, files in os.walk(badgood_dir):
@@ -128,9 +130,26 @@ def run_cwe(cwe, badgood):
     pool.join()
     print("All "+badgood+" files processed")
 
+    for res in results:
+        lines = res.split("\n")
+        for line in lines:
+            split = line.split(";")
+            filename = split[0]
+            filename = filename + "-bad.ll"
+            found_list.append(filename)
+
+    # create report(s)
     full_report_str = "".join(results)
-    with open(juliet_report_path+'jreport_cwe'+cwe+'_'+badgood+'.csv', mode='w') as report:
-        report.write(full_report_str)
+    if(badgood == "bad"):
+        with open(juliet_report_path+'jreport_cwe'+cwe+'_vulns.csv', mode='w') as report:
+            report.write(full_report_str)
+        false_negative_list = np.setdiff1d(file_list, found_list)
+        false_negatives_str = "\n".join(false_negative_list)
+        with open(juliet_report_path+'jreport_cwe'+cwe+'_fn.csv', mode='w') as report:
+            report.write(false_negatives_str)
+    elif(badgood == "good"):
+        with open(juliet_report_path+'jreport_cwe'+cwe+'_fp.csv', mode='w') as report:
+            report.write(full_report_str)
 
 
 def evaluate_good(cwe):
@@ -156,7 +175,7 @@ def evaluate_all_cwes():
 
 
 def main():
-    compile_datalog()
+    #compile_datalog()
     evaluate_full("134")
 
 
