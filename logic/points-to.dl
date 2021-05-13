@@ -14,14 +14,12 @@ points_to(SFID, SLOC, EFID, ELOC) :-
 memequals(EFID, ELOC, E2FID, E2LOC), 
 points_to(SFID, SLOC, E2FID, E2LOC).
 
-/*
 //case memequals: (s -> e && as <==> s && ae <==> e) ==> as -> ae
 points_to(SFID, SLOC, EFID, ELOC) :- 
 memequals(SFID, SLOC, S2FID, S2LOC), 
 points_to(S2FID, S2LOC, E2FID, E2LOC),
 memequals(EFID, ELOC, E2FID, E2LOC) 
 .
-*/
 
 
 //case store address to integer
@@ -29,6 +27,7 @@ points_to(SFID, SLOC, EFID, ELOC) :-
 block(FID, BID, _),
 instruction(BID, IID, _, OPC), OPC = "store",
 get_second_operand(IID, ELOC),
+!is_global(ELOC),
 get_fourth_operand(IID, SLOC),
 pointer_level(STYPE, STYPE_PLVL),
 memlocation(SFID, SLOC, _, _), 
@@ -37,9 +36,27 @@ get_first_operand(IID, ETYPE),
 get_third_operand(IID, STYPE),
 pointer_level(ETYPE, ETYPE_PLVL),
 ETYPE_PLVL < STYPE_PLVL,
-ETYPE != "unknown", //TODO: fix parser to include types
 SFID = FID,
 EFID = FID.
+
+//case store a pointer to global
+points_to(SFID, SLOC, EFID, ELOC) :- 
+block(FID, BID, _),
+instruction(BID, IID, _, OPC), OPC = "store",
+get_second_operand(IID, ELOC),
+is_global(ELOC),
+get_fourth_operand(IID, SLOC),
+pointer_level(STYPE, STYPE_PLVL),
+memlocation(SFID, SLOC, _, _), 
+memlocation(EFID, ELOC, _, _),
+get_first_operand(IID, ETYPE),
+get_third_operand(IID, STYPE),
+pointer_level(ETYPE, ETYPE_PLVL),
+ETYPE_PLVL < STYPE_PLVL,
+SFID = FID,
+EFID = -1
+.
+
 
 //case load 
 points_to(SFID, SLOC, EFID, ELOC) :-
