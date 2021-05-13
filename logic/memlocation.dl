@@ -48,20 +48,27 @@ LEVEL = NUMOPERANDS-2,
 memlocation_multidim_array_enumerator(IID, LEVEL, LOC, _).
 
 
-//heap allocations
-memlocation(FID, LOC, TYPE, CAT) :- instruction(BID, IID, LOC, _), block(FID, BID, _),
-is_heap_allocation_call(IID), CAT = "heap", 
-TYPE = "i8*".
 //global allocations of one element
 memlocation(FID, LOC, TYPE, CAT) :- 
 global(LOC, _, TYPE, SIZE, _),
 SIZE = 1,
 FID = -1, CAT = "global".
+
+//global functions
+memlocation(FID, LOC, TYPE, CAT) :-
+function(FIDGLOB, FNAME, "define", RETTYPE),
+FID = -1,
+LOC = cat("@",FNAME),
+get_arg_typelist_by_fid(ARGLIST, FIDGLOB),
+TYPE = cat(cat(cat(RETTYPE, " ("), ARGLIST), ")*"),
+CAT = "global".
+
 //global allocations of array (all element).
 memlocation(FID, LOC, TYPE, CAT) :- 
 global(LOC, _, BASETYPE, SIZE, _), TYPE = cat(BASETYPE, "*"),
 SIZE > 1,
 FID = -1, CAT = "arrayAll".
+
 //global allocations of array (index elements).
 memlocation(FID, LOCATION, TYPE, CAT) :- 
 global(LOC, _, BASETYPE, SIZE, _), 
@@ -101,6 +108,11 @@ OPC = "getelementptr",
 LOC = VREG,
 CAT = "vreg", 
 TYPE = "unknown".
+
+//heap allocations
+memlocation(FID, LOC, TYPE, CAT) :- instruction(BID, IID, LOC, _), block(FID, BID, _),
+is_heap_allocation_call(IID), CAT = "heap", 
+TYPE = "i8*".
 
 //function arguments
 //function arguments (not containing equal userinput)
