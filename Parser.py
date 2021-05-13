@@ -98,7 +98,18 @@ class Parser:
                 functiontype+"\";\""+str(function.type).split('(')[0].strip()+"\")"
             self.output(function_str)
 
+            # print(str(function.name))
+            # print(str(function))
+            # argument_str = str(function).split("@", 1)[1].split("(", 1)[1].rsplit(")", 1)[0]
+            # print(argument_str)
+
             for argument in function.arguments:
+                # argtype = argument.replace(" nocapture", "").replace(" noalias", "").replace(" immarg", "")
+                # argtype = argtype.replace(" writeonly", "").replace(" readonly", "")
+                # if(argtype == "..."):
+                #     continue
+                # print(argtype)
+
                 argumentRegisterStr = "%"+str(argumentRegister)
                 arguments_str = "argument("+str(self.functionid)+";"+str(self.argumentid) + \
                     ";"+argumentRegisterStr+";\""+str(argument.type)+"\")"
@@ -242,7 +253,12 @@ class Parser:
         start = fullInstruction.find("alloca ")+7
         end = fullInstruction.rfind(", align")
         allocaType = fullInstruction[start:end]
-        (allocaType, arraySize) = self.parseType(allocaType)
+        # print(fullInstruction)
+        # print(allocaType)
+
+        (allocaType, arraySize) = self.parseType(allocaType, mode=1)
+
+        # print(allocaType)
 
         operand_str = "operand("+str(self.instructionid)+";"+str(self.operandid)+";"+allocaType+")"
         self.output(operand_str)
@@ -255,32 +271,15 @@ class Parser:
 
     def parseLoadInstruction(self, instruction):
         operands = [None]*3
-        ops = str(instruction).strip()
-        ops = ops.replace("load ", "")
-
-        # remove (i8, i8)* kind of datatypes
-        while("(" in ops and ")" in ops):
-            LocOpenBracket = ops.find("(")
-            LocCloseBracket = ops.rfind(")")
-            before = ops[:LocOpenBracket]
-            after = ops[LocCloseBracket+1:]
-            while(after[0] == "*" or after[0] == " "):
-                after = after[1:]
-            # print("b:"+before)
-            # print("a:"+after)
-            # sys.exit(1)
-            ops = before+after
-
-        ops = ops.split(", ")
-        operands[0] = ops[0].strip()
-        if(" = " in operands[0]):
-            operands[0] = operands[0].split(" = ")[1].strip()
-        operand2_split = ops[1].strip().split(" ")
+        ops = str(str(instruction).strip().replace("load ", "").split(" = ")[1])
+        ops_split = ops.split(", ")
         # print(ops)
-        # print(operand2_split)
 
-        operands[1] = operand2_split[0]
-        operands[2] = operand2_split[1]
+        operands[0] = ops_split[0]
+        load_op = ops_split[1].rsplit(" ", 1)
+        operands[1] = load_op[0]
+        operands[2] = load_op[1]
+        # print(operands)
 
         for op in operands:
             op = str(op).strip()
@@ -291,18 +290,17 @@ class Parser:
     def parseStoreInstruction(self, instruction):
         operands = [None]*4
         ops = str(instruction).strip().replace("store ", "").split(", ")
-        operand1_split = ops[0].strip().split(" ")
-        operands[0] = operand1_split[0]
-        if(len(operand1_split) == 1):
-            operands[1] = ""
-        else:
-            operands[1] = operand1_split[1]
-        operand2_split = ops[1].strip().split(" ")
-        operands[2] = operand2_split[0]
-        if(len(operand2_split) == 1):
-            operands[3] = ""
-        else:
-            operands[3] = operand2_split[1]
+        src = ops[0]
+        dest = ops[1]
+        src = src.rsplit(" ", 1)
+        dest = dest.rsplit(" ", 1)
+
+        operands[0] = src[0]
+        operands[1] = src[1]
+        operands[2] = dest[0]
+        operands[3] = dest[1]
+        # print(ops)
+        # print(operands)
 
         for op in operands:
             if(len(op) == 0):
