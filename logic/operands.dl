@@ -14,6 +14,11 @@ is_struct(T) :- strlen(T) > 0, is_vreg(T), substr(T, 0, 8) = "%struct.", !is_poi
 .decl is_multidimensional(type: symbol)
 is_multidimensional(T) :- contains("x", T), opval(T).
 
+//returns fid and -1
+.decl fid_or_none(value: number, functionid: _functionid)
+fid_or_none(VAL, FID) :- function(FID, _, _, _), VAL=FID.
+fid_or_none(VAL, FID) :- function(FID, _, _, _), VAL=-1.
+
 //is given operand a concatenated memory location, used with arrays/structs
 //maximal depth currently: 3
 //.decl is_concatenated_location(type: symbol)
@@ -78,10 +83,28 @@ concatenated(FID, LOC) :- memlocation(FID, LOC, _, _).
 concatenated(FID, LOC) :- function(FID, _, _, _), is_global(LOC).
 concatenated(FID, LOC) :- FID = -1, is_global(LOC).
 
+//(first) part of a type
+.decl part_type(type: symbol)
+.output part_type(delimiter=",")
+part_type(TYPE) :- type(TYPE).
+part_type(TYPE) :- TYPE=substr(FULLTYPE, 0, I), type(FULLTYPE), anumber(I), I>0, I<=strlen(FULLTYPE).
+
+
 //get level of pointer (or pointer to pointer, etc.)
 .decl pointer_level(type: symbol, level: number)
-//.output pointer_level(delimiter=",")
-pointer_level(TYPE, LVL) :- type(TYPE), !contains("*", TYPE), LVL = 0.
-pointer_level(TYPE, LVL) :- type(TYPE), contains("*", TYPE), LVL=OLDLVL+1, 
+.output pointer_level(delimiter=",")
+pointer_level(TYPE, LVL) :- part_type(TYPE), !contains("*", TYPE), LVL = 0.
+
+//case next remove char is "*"
+pointer_level(TYPE, LVL) :- part_type(TYPE), contains("*", TYPE), 
+LVL=OLDLVL+1, 
+substr(TYPE, strlen(TYPE)-1, strlen(TYPE)) = "*",
+SUBSTR = substr(TYPE, 0, strlen(TYPE)-1),
+pointer_level(SUBSTR, OLDLVL).
+
+//case next remove char is NOT "*"
+pointer_level(TYPE, LVL) :- part_type(TYPE), contains("*", TYPE), 
+LVL=OLDLVL, 
+substr(TYPE, strlen(TYPE)-1, strlen(TYPE)) != "*",
 SUBSTR = substr(TYPE, 0, strlen(TYPE)-1),
 pointer_level(SUBSTR, OLDLVL).
