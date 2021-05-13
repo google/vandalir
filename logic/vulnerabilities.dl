@@ -10,7 +10,9 @@
 .output print_vulnerable(delimiter=";")
 
 print_vulnerable(LEVEL, FNAME, BBLOCK, VREG, MESSAGE) :- instruction(BID, IID, VREG, _), 
-get_vulnerable(IID, LEVEL, MESSAGE), block(FID, BID, BBLOCK), function(FID, FNAME, _, _).
+get_vulnerable(IID, LEVEL, MESSAGE), block(FID, BID, BBLOCK), function(FID, FNAME, _, _),
+LEVEL="Vulnerability"
+.
 
 
 

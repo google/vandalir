@@ -11,6 +11,6 @@ get_first_operand(IID, SRC),
 is_vreg(SRC),
 is_memloc_with_userinput(FID, SRC),
 MESSAGE = "atoi-family call with userinput: integer overflow/undefined behavior possible.",
-LEVEL = "Vulnerability"
+LEVEL = "Warning"
 .
 
