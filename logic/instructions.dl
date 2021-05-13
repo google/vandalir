@@ -247,7 +247,7 @@ get_num_of_arguments_by_fname(NUM, FNAME) :- NUM = count : {argument(FID, _, _, 
 
 //get list of argumenttypes
 .decl get_arg_typelist_by_fid(argtypelist: symbol, functionid: _functionid)
-.output get_arg_typelist_by_fid
+//.output get_arg_typelist_by_fid
 get_arg_typelist_by_fid(ARGLIST, FID) :- 
 function(FID, _, _, _), 
 get_arg_typelist_by_fid_rec(ARGLIST, FID, ARGID),
