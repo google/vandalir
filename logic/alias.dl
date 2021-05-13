@@ -18,7 +18,8 @@ memequals(FID1, LOC1, FID2, LOC2) :-
 points_to(PFID, PLOC, FID1, LOC1), 
 points_to(PFID, PLOC, FID2, LOC2).
 
-
+/*
+//TODO: is this bad/unnecessary?
 //case load pointer
 memequals(FID1, LOC1, FID2, LOC2) :-
 memlocation(FID1, LOC1, TYPE1, _), 
@@ -33,6 +34,7 @@ FID2 = FID,
 get_third_operand(IID, LOC2).
 
 //case store a pointer
+//TODO: is this bad/unnecessary?
 memequals(FID1, LOC1, FID2, LOC2) :- 
 block(FID, BID, _),
 instruction(BID, IID, _, OPC), OPC = "store",
@@ -45,7 +47,7 @@ pointer_level(TYPE2, TYPE2_PLVL),
 TYPE1_PLVL = TYPE2_PLVL,
 FID1 = FID,
 FID2 = FID.
-
+*/
 //case conversion instruction
 memequals(FID1, LOC1, FID2, LOC2) :-
 instruction(BID, IID, VREG, _), block(FID, BID, _), 
