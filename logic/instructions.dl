@@ -158,14 +158,28 @@ is_X_call_instruction(FNAME, IID) :- get_function_for_call_instruction(FNAME, II
 
 //if call instruction give called function name
 .decl get_function_for_call_instruction(functionname: symbol, instructionid: _instructionid)
-//a call instruction
-get_function_for_call_instruction(NAME, IID) :- is_call_instruction(IID),
-get_last_operand(IID, NAME).
+//.output get_function_for_call_instruction(delimiter=",")
+//regular call instruction (no function pointer)
+get_function_for_call_instruction(NAME, IID) :- 
+is_call_instruction(IID),
+get_last_operand(IID, NAME),
+!is_vreg(NAME).
+
+//call to function pointer
+get_function_for_call_instruction(NAME, IID) :- 
+is_call_instruction(IID),
+get_last_operand(IID, VREG),
+is_vreg(VREG),
+instruction(BID, IID, _, _), 
+block(FID, BID, _),
+memequals(FID, VREG, -1, GLOBNAME),
+NAME = substr(GLOBNAME, 1, strlen(GLOBNAME))
+.
 
 
 .decl get_fid_for_call_instruction(functionid: _functionid, instructionid: _instructionid)
 //.output get_fid_for_call_instruction(delimiter=",")
-get_fid_for_call_instruction(FID, IID) :- get_function_for_call_instruction(FNAME, IID), get_fid_by_fname(FID, FNAME).
+get_fid_for_call_instruction(FID, IID) :- get_function_for_call_instruction(FNAME, IID), function(FID, FNAME, _, _).
 
 
 .decl get_fid_by_fname(functionid: _functionid, fname: symbol)
@@ -192,7 +206,8 @@ get_num_operands(IID, OPCOUNT), SIZE = OPCOUNT-1.
 //get only heap allocation calls
 .decl is_heap_allocation_call(instructionid: _instructionid)
 is_heap_allocation_call(IID) :- 
-is_call_instruction(IID), get_function_for_call_instruction(FNAME, IID),
+is_call_instruction(IID), 
+get_last_operand(IID, FNAME),
 heap_allocation_instruction(FNAME).
 
 .decl heap_allocation_instruction(instruction: symbol)
@@ -229,3 +244,34 @@ get_num_of_arguments_by_fid(NUM, FID) :- NUM = count : {argument(FID, _, _, _)},
 //get number of arguments by function name
 .decl get_num_of_arguments_by_fname(argnum: number, functionname: symbol)
 get_num_of_arguments_by_fname(NUM, FNAME) :- NUM = count : {argument(FID, _, _, _)}, function(FID, FNAME, _, _).
+
+//get list of argumenttypes
+.decl get_arg_typelist_by_fid(argtypelist: symbol, functionid: _functionid)
+.output get_arg_typelist_by_fid
+get_arg_typelist_by_fid(ARGLIST, FID) :- 
+function(FID, _, _, _), 
+get_arg_typelist_by_fid_rec(ARGLIST, FID, ARGID),
+get_relative_argid(FID, ARGID, ARGID_REL),
+get_num_of_arguments_by_fid(ARGNUM, FID),
+ARGNUM = ARGID_REL
+.
+
+//recursive helper to get list of argumenttypes
+.decl get_arg_typelist_by_fid_rec(argtypelist: symbol, functionid: _functionid, argid: _argumentid)
+get_arg_typelist_by_fid_rec(ARGLIST, FID, ARGID) :- 
+function(FID, _, _, _), 
+argument(FID, ARGID, _, TYPE),
+get_relative_argid(FID, ARGID, ARGID_REL),
+ARGID_REL = 1,
+ARGLIST = TYPE
+.
+
+get_arg_typelist_by_fid_rec(ARGLIST, FID, ARGID) :- 
+function(FID, _, _, _), 
+argument(FID, ARGID, _, TYPE),
+get_relative_argid(FID, ARGID, ARGID_REL),
+ARGID_REL > 1,
+ARGLIST = cat(cat(OLDARGLIST,", "), TYPE),
+get_arg_typelist_by_fid_rec(OLDARGLIST, FID, ARGID-1)
+.
+
