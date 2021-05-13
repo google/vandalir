@@ -100,19 +100,25 @@ class Parser:
 
             # print(str(function.name))
             # print(str(function))
-            # argument_str = str(function).split("@", 1)[1].split("(", 1)[1].rsplit(")", 1)[0]
+            argument_str = str(function).split("@", 1)[1].split(") #", 1)[0].split("(", 1)[1]
+
+            r = re.compile(r'(?:[^,(]|\([^)]*\))+')
+            arguments = r.findall(argument_str)
+
             # print(argument_str)
 
-            for argument in function.arguments:
-                # argtype = argument.replace(" nocapture", "").replace(" noalias", "").replace(" immarg", "")
-                # argtype = argtype.replace(" writeonly", "").replace(" readonly", "")
+            for argument in arguments:
+                argtype = argument.replace(" nocapture", "").replace(" noalias", "").replace(" immarg", "")
+                argtype = argtype.replace(" writeonly", "").replace(" readonly", "").strip()
+                while(" %" in argtype):
+                    argtype = argtype.rsplit(" %")[0].strip()
                 # if(argtype == "..."):
                 #     continue
                 # print(argtype)
 
                 argumentRegisterStr = "%"+str(argumentRegister)
                 arguments_str = "argument("+str(self.functionid)+";"+str(self.argumentid) + \
-                    ";"+argumentRegisterStr+";\""+str(argument.type)+"\")"
+                    ";"+argumentRegisterStr+";\""+str(argtype)+"\")"
                 self.output(arguments_str)
                 self.argumentid += 1
                 argumentRegister += 1
@@ -271,17 +277,26 @@ class Parser:
 
     def parseLoadInstruction(self, instruction):
         operands = [None]*3
-        ops = str(str(instruction).strip().replace("load ", "").split(" = ")[1])
-        ops_split = ops.split(", ")
-        # print(ops)
+        ops = str(str(instruction).strip().replace("load ", "").split(" = ")[1]).split(", align")[0]
 
-        operands[0] = ops_split[0]
-        load_op = ops_split[1].rsplit(" ", 1)
-        operands[1] = load_op[0]
-        operands[2] = load_op[1]
+        r = re.compile(r'(?:[^,(]|\([^)]*\))+')
+        ops2 = r.findall(ops)
+        # print(ops)
+        try:
+            operands[0] = ops2[0]
+            operands[1] = ops2[0]+"*"
+            operands[2] = "%"+ops2[1].rsplit(" %")[1]
+        except:
+            print("Parsing Error in parseLoadInstruction")
+        # print(ops2)
         # print(operands)
 
         for op in operands:
+            if(op is None):
+                continue
+            if(len(op) == 0):
+                continue
+
             op = str(op).strip()
             operand_str = "operand("+str(self.instructionid)+";"+str(self.operandid)+";\""+op+"\")"
             self.output(operand_str)
@@ -289,20 +304,35 @@ class Parser:
 
     def parseStoreInstruction(self, instruction):
         operands = [None]*4
-        ops = str(instruction).strip().replace("store ", "").split(", ")
-        src = ops[0]
-        dest = ops[1]
+        ops = str(instruction).strip().replace("store ", "")
+        # print(ops)
+        r = re.compile(r'(?:[^,(]|\([^)]*\))+')
+        ops = r.findall(ops)
+
+        src = ops[0].strip()
+        dest = ops[1].strip()
+        # print(src)
+        # print(dest)
+
         src = src.rsplit(" ", 1)
         dest = dest.rsplit(" ", 1)
 
-        operands[0] = src[0]
-        operands[1] = src[1]
-        operands[2] = dest[0]
-        operands[3] = dest[1]
+        # print(ops)
+
+        try:
+
+            operands[0] = src[0].strip()
+            operands[1] = src[1].strip()
+            operands[2] = dest[0].strip()
+            operands[3] = dest[1].strip()
+        except:
+            print("Parsing Error in parseStoreInstruction")
         # print(ops)
         # print(operands)
 
         for op in operands:
+            if(op is None):
+                continue
             if(len(op) == 0):
                 continue
             op = str(op).strip()
