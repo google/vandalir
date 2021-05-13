@@ -84,26 +84,26 @@ concatenated(FID, LOC) :- function(FID, _, _, _), is_global(LOC).
 concatenated(FID, LOC) :- FID = -1, is_global(LOC).
 
 //(first) part of a type
-.decl part_type(type: symbol)
-//.output part_type(delimiter=",")
-part_type(TYPE) :- type(TYPE).
-part_type(TYPE) :- TYPE=substr(FULLTYPE, 0, I), type(FULLTYPE), anumber(I), I>0, I<=strlen(FULLTYPE).
+.decl part_operand(type: symbol)
+.output part_operand(delimiter=",")
+part_operand(TYPE) :- type(TYPE).
+part_operand(TYPE) :- TYPE=substr(FULLTYPE, 0, I), type(FULLTYPE), anumber(I), I>0, I<=strlen(FULLTYPE).
 
 
 //get level of pointer (or pointer to pointer, etc.)
 .decl pointer_level(type: symbol, level: number)
 .output pointer_level(delimiter=",")
-pointer_level(TYPE, LVL) :- part_type(TYPE), !contains("*", TYPE), LVL = 0.
+pointer_level(TYPE, LVL) :- part_operand(TYPE), !contains("*", TYPE), LVL = 0.
 
 //case next remove char is "*"
-pointer_level(TYPE, LVL) :- part_type(TYPE), contains("*", TYPE), 
+pointer_level(TYPE, LVL) :- part_operand(TYPE), contains("*", TYPE), 
 LVL=OLDLVL+1, 
 substr(TYPE, strlen(TYPE)-1, strlen(TYPE)) = "*",
 SUBSTR = substr(TYPE, 0, strlen(TYPE)-1),
 pointer_level(SUBSTR, OLDLVL).
 
 //case next remove char is NOT "*"
-pointer_level(TYPE, LVL) :- part_type(TYPE), contains("*", TYPE), 
+pointer_level(TYPE, LVL) :- part_operand(TYPE), contains("*", TYPE), 
 LVL=OLDLVL, 
 substr(TYPE, strlen(TYPE)-1, strlen(TYPE)) != "*",
 SUBSTR = substr(TYPE, 0, strlen(TYPE)-1),
