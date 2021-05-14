@@ -191,6 +191,7 @@ get_fid_by_fname(FID, FNAME) :- function(FID, FNAME, _, _).
 .decl get_size_of_alloca(instructionid: _instructionid, size: number)
 get_size_of_alloca(IID, SIZE) :- instruction(_, IID, _, OPC), OPC = "alloca",
 get_second_operand(IID, OV1),
+is_numeric(OV1),
 SIZE = to_number(OV1).
 
 .decl is_alloca_multidimensional(instructionid: _instructionid)

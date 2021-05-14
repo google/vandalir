@@ -196,6 +196,7 @@ LEVEL = 0,
 get_all_getelementptr_indices(I), //limit evaluated indices to thouse used by getelemeptr
 LOC = cat(cat(STARTLOC, "."), to_string(I)),
 get_ith_operand(IID, LEVEL+2, ELEMENTS_IN_LEVEL),
+is_numeric(ELEMENTS_IN_LEVEL),
 I>=0, I<to_number(ELEMENTS_IN_LEVEL), anumber(I).
 //recursive case
 memlocation_multidim_array_enumerator(IID, LEVEL, LOC, STARTLOC) :-
@@ -207,6 +208,7 @@ anumber(LEVEL),
 get_all_getelementptr_indices(I), //limit evaluated indices to thouse used by getelemeptr
 LOC = cat(cat(STARTLOC, "."), to_string(I)),
 get_ith_operand(IID, LEVEL+2, ELEMENTS_IN_LEVEL),
+is_numeric(ELEMENTS_IN_LEVEL),
 I>=0, I<to_number(ELEMENTS_IN_LEVEL), anumber(I),
 memlocation_multidim_array_enumerator(IID, LEVEL-1, STARTLOC, _).
 
