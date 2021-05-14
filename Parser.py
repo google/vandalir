@@ -291,6 +291,15 @@ class Parser:
         start = fullInstruction.find("alloca ")+7
         end = fullInstruction.rfind(", align")
         allocaType = fullInstruction[start:end]
+
+        r = re.compile(r'(?:[^,(]|\([^)]*\))+')
+        allocaTypeSplit = r.findall(allocaType)
+
+        if(len(allocaTypeSplit) == 2):
+            allocaTypeTemp = allocaTypeSplit[1].strip().rsplit(" ", 1)
+            if(len(allocaTypeTemp) == 2):
+                allocaType = "["+allocaTypeTemp[1]+" x "+allocaTypeTemp[0]+"]"
+
         # print(fullInstruction)
         # print(allocaType)
 
