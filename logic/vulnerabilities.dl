@@ -1,5 +1,6 @@
 #include "vulnerabilities/buffer-overflow.dl"
 #include "vulnerabilities/bo-in-loop.dl"
+#include "vulnerabilities/bo-in-arrays.dl"
 #include "vulnerabilities/out-of-bounds-read.dl"
 #include "vulnerabilities/integer-overflow.dl"
 #include "vulnerabilities/format-string.dl"
@@ -18,6 +19,7 @@ LEVEL="Vulnerability"
 
 .decl get_vulnerable(instructionid: _instructionid, LEVEL: symbol, message: symbol)
 get_vulnerable(IID, LEVEL, MESSAGE) :- buffer_overflow(IID, LEVEL, MESSAGE).
+get_vulnerable(IID, LEVEL, MESSAGE) :- bo_in_arrays(IID, LEVEL, MESSAGE).
 get_vulnerable(IID, LEVEL, MESSAGE) :- bo_in_loops(IID, LEVEL, MESSAGE).
 get_vulnerable(IID, LEVEL, MESSAGE) :- out_of_bounds_read(IID, LEVEL, MESSAGE).
 get_vulnerable(IID, LEVEL, MESSAGE) :- format_string_attacks(IID, LEVEL, MESSAGE).
