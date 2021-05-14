@@ -114,6 +114,7 @@ LEVEL = MAXNUM-1,
 get_gep_concatenated_memloc_str(IID, LEVEL, RESULTLOC),
 LOC2 = RESULTLOC.
 */
+
 //case getelemptr %reg_0 = %reg
 memequals(FID1, LOC1, FID2, LOC2) :-
 memequals(FID1, LOC1, _, _),
@@ -122,7 +123,25 @@ FID1 = FID2,
 LOC1 = cat(LOC2, "_0"),
 is_vreg(LOC2)
 .
+/*
+//case getelemptr %reg_0_0 = %reg
+memequals(FID1, LOC1, FID2, LOC2) :-
+memequals(FID1, LOC1, _, _),
+memlocation(FID2, LOC2, _, _),
+FID1 = FID2,
+LOC1 = cat(LOC2, "_0_0"),
+is_vreg(LOC2)
+.
 
+//case if x_0_0 exists => spawn x_0
+memequals(FID1, LOC1, FID2, LOC2) :-
+memequals(FID1, LOC1, _, _),
+FID1 = FID2,
+LOC1 = cat(LOC2, "_0"),
+LOC2 = cat(BASELOC, "_0"),
+is_vreg(BASELOC)
+.
+*/
 //help relations
 
 .decl get_gep_concatenated_memloc_str(instructionid: _instructionid, level: number, result: symbol)
