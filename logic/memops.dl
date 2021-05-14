@@ -206,6 +206,17 @@ MINSTR = cat("-", MIN),
 VAL = to_number(MINSTR)
 .
 
+//case rand max
+get_int_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, IID, VREG, OPC), OPC = "call",
+get_last_operand(IID, "rand"),
+VAL = 32767.
+
+//case rand min
+get_int_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, IID, VREG, OPC), OPC = "call",
+get_last_operand(IID, "rand"),
+VAL = 0.
+
+
 //case memequals
 get_int_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, _, VREG, _),
 memequals(FID, START_LOC, FID, END_LOC), 
