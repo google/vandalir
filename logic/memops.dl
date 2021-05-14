@@ -189,6 +189,23 @@ get_int_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, IID, VRE
 is_strlen_call_instruction(IID),
 VAL = 0.
 
+//case call atoi (max)
+get_int_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, IID, VREG, OPC), OPC = "call",
+get_last_operand(IID, "atoi"), get_first_operand(IID, BUFFVREG),
+get_buffsize_by_vreg(BUFFSIZE, FID, BUFFVREG),
+x_times_str(MAX, "9", BUFFSIZE),
+VAL = to_number(MAX)
+.
+
+//case call atoi (min)
+get_int_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, IID, VREG, OPC), OPC = "call",
+get_last_operand(IID, "atoi"), get_first_operand(IID, BUFFVREG),
+get_buffsize_by_vreg(BUFFSIZE, FID, BUFFVREG),
+x_times_str(MIN, "9", BUFFSIZE),
+MINSTR = cat("-", MIN),
+VAL = to_number(MINSTR)
+.
+
 //case memequals
 get_int_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, _, VREG, _),
 memequals(FID, START_LOC, FID, END_LOC), 
@@ -241,4 +258,25 @@ get_int_by_vreg(VAL, FID, NEWINT)
 get_global_str_value(VAL, GLOB) :-
 is_global_str(GLOB),
 global(GLOB, _, _, _, VAL)
+.
+
+
+//helper function for atoi => spawn: "9" ... "999999999" + negative
+.decl x_times_str(out: symbol, string: symbol, times: number)
+//.output x_times_str
+//x_times_str(OUT, STR, X) :- X<=0, STR="", OUT="", anumber(to_string(X)).
+x_times_str(OUT, STR, X) :- anumber(X), X=1, OUT=STR, STR="9".
+//recursion
+x_times_str(OUT, STR, X) :- 
+anumber(X), X>1, 
+OUT=cat(OLDOUT, STR), 
+x_times_str(OLDOUT, STR, X-1),
+X<9
+.
+//recursionMax = 8
+x_times_str(OUT, STR, X) :- 
+anumber(X), X>1, 
+OUT=OLDOUT,
+x_times_str(OLDOUT, STR, X-1),
+X>=9
 .
