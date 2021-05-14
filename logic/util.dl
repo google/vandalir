@@ -20,3 +20,5 @@ is_uneven(NUM) :- NUM%2=1, anumber(NUM).
 is_external_global_type(GT) :- GT = "global". 
 is_external_global_type(GT) :- GT = "common_global". 
 is_external_global_type(GT) :- GT = "external_global". 
+
+

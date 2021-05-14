@@ -159,6 +159,7 @@ is_X_call_instruction(FNAME, IID) :- get_function_for_call_instruction(FNAME, II
 //if call instruction give called function name
 .decl get_function_for_call_instruction(functionname: symbol, instructionid: _instructionid)
 //.output get_function_for_call_instruction(delimiter=",")
+
 //regular call instruction (no function pointer)
 get_function_for_call_instruction(NAME, IID) :- 
 is_call_instruction(IID),
