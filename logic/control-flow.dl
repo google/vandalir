@@ -140,3 +140,20 @@ is_instruction_behind_other(IID, IID_BEHIND) :- instruction(BID, IID, _, _), ins
 BID != BID_BEHIND,
 block(FID, BID, _), block(FID_BEHIND, BID_BEHIND, _),
 is_behind(FID, BID, FID_BEHIND, BID_BEHIND).
+
+
+//conditions if icmp
+
+//upper bounds
+.decl upperbound_conditions(condition: symbol)
+upperbound_conditions(SYM) :- SYM = "slt".
+upperbound_conditions(SYM) :- SYM = "sle".
+upperbound_conditions(SYM) :- SYM = "ult".
+upperbound_conditions(SYM) :- SYM = "ule".
+
+//lower bounds
+.decl lowerbound_conditions(condition: symbol)
+lowerbound_conditions(SYM) :- SYM = "sgt".
+lowerbound_conditions(SYM) :- SYM = "sge".
+lowerbound_conditions(SYM) :- SYM = "ugt".
+lowerbound_conditions(SYM) :- SYM = "uge".
