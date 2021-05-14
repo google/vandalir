@@ -18,6 +18,7 @@ get_buffsize_by_vreg(ARRAYSIZE, FID, DATAOBJ),
 INDEX2 >= ARRAYSIZE,
 !check_big(FID, BID, INDEX2VREG),
 LEVEL = "Vulnerability",
+ARRAYSIZE != 0, ARRAYSIZE != 1,
 MESSAGE = cat(cat(cat("possibly insufficient buffer size ", to_string(ARRAYSIZE), " detected for too big index access of ", to_string(INDEX2))))
 .
 
@@ -33,6 +34,7 @@ get_buffsize_by_vreg(ARRAYSIZE, FID, DATAOBJ),
 INDEX2 < 0,
 !check_small(FID, BID, INDEX2VREG),
 LEVEL = "Vulnerability",
+ARRAYSIZE != 0, ARRAYSIZE != 1,
 MESSAGE = cat(cat(cat("possibly insufficient buffer size ", to_string(ARRAYSIZE), " detected for too small index access (below zero) of ", to_string(INDEX2))))
 .
 
