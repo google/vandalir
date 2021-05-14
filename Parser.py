@@ -158,6 +158,8 @@ class Parser:
                         self.parseGetElementPtrInstruction(instruction)
                     elif(str(instruction.opcode) in CONV_INSTRUCTIONS):  # conversion instruction
                         self.parseConversionInstructions(instruction)
+                    elif(str(instruction.opcode) == "icmp"):  # icmp instruction
+                        self.parseICMPInstructions(instruction)
                     elif(str(instruction.opcode) == "br"):  # br instruction
                         for operand in instruction.operands:
                             processedOperands = self.preprocessOperand(instruction, operand)
@@ -212,6 +214,36 @@ class Parser:
                 operand_str = "operand("+str(self.instructionid)+";"+str(self.operandid)+";\""+procOp+"\")"
                 self.output(operand_str)
                 self.operandid += 1
+
+    def parseICMPInstructions(self, instruction):
+        instruction = str(instruction).split("icmp ")[1].strip()
+        condition = instruction.split(" ", 1)[0].strip()
+        ops = instruction.split(" ", 1)[1].strip()
+        r = re.compile(r'(?:[^,(]|\([^)]*\))+')
+        ops2 = r.findall(ops)
+
+        operands = [None]*3
+
+        try:
+            operands[0] = condition
+            operands[1] = "%"+ops2[0].strip().rsplit("%", 1)[1].strip()
+            operands[2] = ops2[1].strip()
+        except:
+            print("Parsing Error in parseICMPInstructions")
+
+        for op in operands:
+            if(op is None):
+                continue
+            if(len(op) == 0):
+                continue
+
+            op = str(op).strip()
+            operand_str = "operand("+str(self.instructionid)+";"+str(self.operandid)+";\""+op+"\")"
+            self.output(operand_str)
+            self.operandid += 1
+
+        # print(instruction)
+        # print(operands)
 
     def parseConversionInstructions(self, instruction):
         for operand in instruction.operands:
