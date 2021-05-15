@@ -323,13 +323,20 @@ class Parser:
         r = re.compile(r'(?:[^,(]|\([^)]*\))+')
         ops2 = r.findall(ops)
         # print(ops)
+        # print(ops2)
         try:
             operands[0] = ops2[0]
             operands[1] = ops2[0]+"*"
-            operands[2] = "%"+ops2[1].rsplit(" %")[1]
+            if(" %" in ops2[1]):
+                operands[2] = "%"+ops2[1].rsplit(" %")[1]
+            elif(" @" in ops2[1]):
+                operands[2] = "@"+ops2[1].rsplit(" @")[1]
+            else:
+                print("Parsing Error in parseLoadInstruction")
         except:
             print("Parsing Error in parseLoadInstruction")
-        # print(ops2)
+            # sys.exit()
+        
         # print(operands)
 
         for op in operands:
