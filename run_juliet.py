@@ -3,6 +3,7 @@ import os
 import shutil
 from multiprocessing.pool import ThreadPool
 import numpy as np
+import pathlib
 
 
 juliet_path = "./test/Juliet/"
@@ -22,7 +23,7 @@ C_CASES_ONLY = True
 
 def main():
     compile_datalog()
-    evaluate_full("242")
+    evaluate_full("121")
 
 
 # get report of current soufflé run
@@ -82,17 +83,25 @@ def run_file(cwe, badgood, filename, id, total, processes):
     return report
 
 
+def set_functors_path():
+    # setup LD_LIBRARY_PATH
+    absPath = str(pathlib.Path(__file__).parent.absolute())
+    os.environ['LD_LIBRARY_PATH'] = absPath+"/"+"logic/functors/"
+    # print(absPath+"/"+"logic/functors/")
+
+
 def compile_functors():
     command = "./make.sh "
     subprocess.call(command, shell=True, cwd="logic/functors/")
     print("Functors compiled.")
+    set_functors_path()
 
 
 def compile_datalog():
     compile_functors()
     print("Compiling Datalog...")
     command = "souffle \"logic/main.dl\" -o bin/analyzer -L logic/functors "
-    subprocess.call(command, shell=True)
+    subprocess.call(command, shell=True, cwd="./")
     print("Datalog compiled.")
 
 
@@ -206,6 +215,7 @@ def run_cwe(cwe, badgood):
 
 
 def evaluate_good(cwe, show=True):
+    set_functors_path()
     print("Processing CWE"+cwe+" good")
     num_total, num_vulns, num_false_neg, num_true_positives, num_false_positives = run_cwe(cwe, "good")
 
@@ -219,6 +229,7 @@ def evaluate_good(cwe, show=True):
 
 
 def evaluate_bad(cwe, show=True):
+    set_functors_path()
     print("Processing CWE"+cwe+" bad")
     num_total, num_vulns, num_false_neg, num_true_positives, num_false_positives = run_cwe(cwe, "bad")
 
@@ -227,23 +238,23 @@ def evaluate_bad(cwe, show=True):
         print("CWE: "+str(cwe))
         print("Testcases: "+str(num_total))
         print("Vulns: "+str(num_vulns))
-        print("True Positives: "+str(num_true_positives)+" ["+str(round(100*num_true_positives/num_total))+"%]")
-        print("False Negatives: "+str(num_false_neg)+" ["+str(round(100*num_false_neg/num_total))+"%]")
+        print("True Positives: "+str(num_true_positives)+" ["+str(round(100*num_true_positives/num_total, 1))+"%]")
+        print("False Negatives: "+str(num_false_neg)+" ["+str(round(100*num_false_neg/num_total, 1))+"%]")
         print("False Positives (in vulnerable): "+str(num_false_positives))
 
     return(num_total, num_vulns, num_false_neg, num_true_positives, num_false_positives)
 
 
 def evaluate_full(cwe):
-    num_total, num_vulns, num_false_neg, num_true_positives, num_bad_false_positives = evaluate_bad(cwe, False)
+    num_total, num_vulns, num_false_neg, num_true_positives, num_bad_false_positives = evaluate_bad(cwe, True)
     _, _, _, _, num_good_false_positives = evaluate_good(cwe, False)
 
     print("\n")
     print("CWE: "+str(cwe))
     print("Testcases: "+str(num_total))
     print("Vulns: "+str(num_vulns))
-    print("True Positives: "+str(num_true_positives)+" ["+str(round(100*num_true_positives/num_total))+"%]")
-    print("False Negatives: "+str(num_false_neg)+" ["+str(round(100*num_false_neg/num_total))+"%]")
+    print("True Positives: "+str(num_true_positives)+" ["+str(round(100*num_true_positives/num_total, 1))+"%]")
+    print("False Negatives: "+str(num_false_neg)+" ["+str(round(100*num_false_neg/num_total, 1))+"%]")
     print("False Positives (in vulnerable): "+str(num_bad_false_positives))
     print("False Positives (in patched): "+str(num_good_false_positives))
 
