@@ -1,13 +1,18 @@
 // introduce new functor f: number -> number
-.functor getStrEntry(symbol, number):symbol
+.functor f(number):number
 
 
-.decl INP(x:symbol)
-INP("blub").
+.decl A(x:number) 
+A(1). 
+A(@f(i)) :- A(i), @f(i) < 100.
 
-.decl A(x:symbol) 
-.output A
+.decl V(v:symbol)
+V("te_st").
+V("test2_0_1").
+V("test3_0_2_0_3").
+V("shefu0_;efw").
 
-A(X) :- X = "ja".
-A(X) :- X = @getStrEntry("blub,bla", 2).
 
+.decl split(inp: symbol, split: symbol)
+//.output split
+split(INP, SPLIT) :-SPLIT = @remove_one_zero(INP), V(INP).

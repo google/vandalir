@@ -5,8 +5,10 @@
 #define MAXINT 2147483647
 
 //framework
+#include "functors.dl"
 #include "config.dl"
 #include "util.dl"
+#include "test.dl"
 #include "instructions.dl"
 #include "operands.dl"
 #include "control-flow.dl"
