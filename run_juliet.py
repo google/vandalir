@@ -21,7 +21,7 @@ C_CASES_ONLY = True
 
 
 def main():
-    # compile_datalog()
+    compile_datalog()
     evaluate_full("242")
 
 
@@ -82,9 +82,16 @@ def run_file(cwe, badgood, filename, id, total, processes):
     return report
 
 
+def compile_functors():
+    command = "./make.sh "
+    subprocess.call(command, shell=True, cwd="logic/functors/")
+    print("Functors compiled.")
+
+
 def compile_datalog():
+    compile_functors()
     print("Compiling Datalog...")
-    command = "souffle \"logic/main.dl\" -o bin/analyzer"
+    command = "souffle \"logic/main.dl\" -o bin/analyzer -L logic/functors "
     subprocess.call(command, shell=True)
     print("Datalog compiled.")
 
