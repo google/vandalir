@@ -1,10 +1,42 @@
-import subprocess
-import glob
 import os
+from pathlib import Path
 
 
 path = "./"
-CWEs = ["121", "126", "242"]
+CWEs = ["121", "123", "126", "134", "242"]
+
+
+def get_file_list(cwe):
+    print("Creating file list for CWE"+cwe)
+
+    juliet_testcases_path = path+"testcases/"
+    cwe_testcase_path = ""
+    vuln_desc = ""
+
+    for p in Path(juliet_testcases_path).rglob('CWE'+cwe+'*'):
+        vuln_desc = str(p.name)
+        break
+
+    cwe_testcase_path = juliet_testcases_path+vuln_desc+"/"
+
+    c_list = list()
+
+    for p in Path(cwe_testcase_path).rglob(vuln_desc+'__*.c'):
+        filenameSplit = p.name.rsplit("_", 1)
+        filename = filenameSplit[0]+"_"+filenameSplit[1][:2]
+
+        # print(filename)
+        if("_wchar_" not in filename and "_w32_" not in filename):
+            c_list.append(filename)
+
+    c_list = list(set(c_list))
+    c_list.sort()
+    filestr = "\n".join(c_list)
+
+    with open(path+'bin/CWE'+cwe+'/filelist_CWE'+cwe+'.csv', mode='w') as filelist:
+        filelist.write(filestr)
+
+    print("Successfully created file list for CWE"+cwe)
 
 
 def configure():
@@ -30,6 +62,7 @@ def process_cwe(cwe):
     configure()
     generate(cwe)
     make(cwe)
+    get_file_list(cwe)
 
 
 def main():
