@@ -193,7 +193,7 @@ VAL = 0.
 get_int_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, IID, VREG, OPC), OPC = "call",
 get_last_operand(IID, "atoi"), get_first_operand(IID, BUFFVREG),
 get_buffsize_by_vreg(BUFFSIZE, FID, BUFFVREG),
-x_times_str(MAX, "9", BUFFSIZE),
+x_nines(MAX, BUFFSIZE),
 VAL = to_number(MAX)
 .
 
@@ -201,7 +201,7 @@ VAL = to_number(MAX)
 get_int_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, IID, VREG, OPC), OPC = "call",
 get_last_operand(IID, "atoi"), get_first_operand(IID, BUFFVREG),
 get_buffsize_by_vreg(BUFFSIZE, FID, BUFFVREG),
-x_times_str(MIN, "9", BUFFSIZE),
+x_nines(MIN, BUFFSIZE),
 MINSTR = cat("-", MIN),
 VAL = to_number(MINSTR)
 .
@@ -272,22 +272,13 @@ global(GLOB, _, _, _, VAL)
 .
 
 
-//helper function for atoi => spawn: "9" ... "999999999" + negative
-.decl x_times_str(out: symbol, string: symbol, times: number)
-//.output x_times_str
-//x_times_str(OUT, STR, X) :- X<=0, STR="", OUT="", anumber(to_string(X)).
-x_times_str(OUT, STR, X) :- anumber(X), X=1, OUT=STR, STR="9".
-//recursion
-x_times_str(OUT, STR, X) :- 
-anumber(X), X>1, 
-OUT=cat(OLDOUT, STR), 
-x_times_str(OLDOUT, STR, X-1),
-X<9
-.
-//recursionMax = 8
-x_times_str(OUT, STR, X) :- 
-anumber(X), X>1, 
-OUT=OLDOUT,
-x_times_str(OLDOUT, STR, X-1),
-X>=9
-.
+//helper function for atoi => spawn: "9" ... "99999999" + negative
+.decl x_nines(out: symbol, times: number)
+x_nines(OUT, X) :- X=1, OUT = "9".
+x_nines(OUT, X) :- X=2, OUT = "99".
+x_nines(OUT, X) :- X=3, OUT = "999".
+x_nines(OUT, X) :- X=4, OUT = "9999".
+x_nines(OUT, X) :- X=5, OUT = "99999".
+x_nines(OUT, X) :- X=6, OUT = "999999".
+x_nines(OUT, X) :- X=7, OUT = "9999999".
+x_nines(OUT, X) :- X>=8, anumber(X), OUT = "99999999".
