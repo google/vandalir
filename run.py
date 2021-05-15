@@ -42,6 +42,8 @@ def parse(filepath, facts_dir):
 
 def run(filepath, compile, profile, facts_dir, output_dir, thread_count):
 
+    compile_functors()
+
     if(not os.path.isdir(output_dir)):
         os.mkdir(output_dir)
 
@@ -49,6 +51,7 @@ def run(filepath, compile, profile, facts_dir, output_dir, thread_count):
     if(compile):
         command += "--compile "
     command += "-F \""+facts_dir+"\" -D \""+output_dir+"\" "
+    command += "-L logic/functors "
     if(profile):
         command += "-p ./profile "
     command += "-j "+thread_count
@@ -63,6 +66,12 @@ def run(filepath, compile, profile, facts_dir, output_dir, thread_count):
         subprocess.call("rm ./*.cpp", shell=True)
 
     print("Execution finished output written to output directory")
+
+
+def compile_functors():
+    command = "./make.sh "
+    subprocess.call(command, shell=True, cwd="logic/functors/")
+    # print("Functors compiled.")
 
 
 def main():
