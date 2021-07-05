@@ -203,6 +203,8 @@ class Parser:
             typeGEP = fullInstruction[fullInstruction.find("getelementptr ")+14:fullInstruction.find(", ")].strip()
         # print("GEP "+typeGEP)
         (returnType, size) = self.parseType(typeGEP)
+        returnType = returnType+"~"+size
+        # print("GEP2 "+returnType)
         allOperands = list(instruction.operands)
         allOperands.append(returnType)
 
@@ -328,9 +330,9 @@ class Parser:
             operands[0] = ops2[0]
             operands[1] = ops2[0]+"*"
             if(" %" in ops2[1]):
-                operands[2] = "%"+ops2[1].rsplit(" %")[1]
+                operands[2] = "%"+ops2[1].strip().rsplit(" %")[1]
             elif(" @" in ops2[1]):
-                operands[2] = "@"+ops2[1].rsplit(" @")[1]
+                operands[2] = "@"+ops2[1].strip().rsplit(" @")[1]
             else:
                 print("Parsing Error in parseLoadInstruction")
         except:
