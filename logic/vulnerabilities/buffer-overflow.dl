@@ -82,15 +82,15 @@ MESSAGE = cat(cat(cat("sprintf(dest %s src): possible insufficient buffer size "
 is_vulnerable_memcpy_call_instruction(IID, LEVEL, MESSAGE) :- is_memcpy_call_instruction(IID), 
 block(FID, BID, _), instruction(BID, IID, _, _),
 get_first_operand(IID, DEST), get_third_operand(IID, N),
-instruction(_, _, DEST, OPCDESTTYPE),
-OPCDESTTYPE != "bitcast",
+//instruction(_, _, DEST, OPCDESTTYPE),
+//OPCDESTTYPE != "bitcast",
 get_buffsize_by_vreg(DEST_SIZE, FID, DEST), 
 get_int_by_vreg(COPY_SIZE, FID, N),
 MESSAGE = cat(cat(cat("memcpy: possible insufficient buffer size ", to_string(DEST_SIZE)), " for n of size "), to_string(COPY_SIZE)),
 LEVEL = "Vulnerability",
 DEST_SIZE !=1, DEST_SIZE !=0,//this eliminates many false positives
 DEST_SIZE < COPY_SIZE.
-
+/*
 //case int array
 is_vulnerable_memcpy_call_instruction(IID, LEVEL, MESSAGE) :- 
 is_memcpy_call_instruction(IID), 
@@ -109,6 +109,7 @@ LEVEL = "Vulnerability",
 DEST_SIZE !=1, DEST_SIZE !=0,//this eliminates many false positives
 DEST_SIZE < COPY_SIZE.
 
+
 //case int64 array
 is_vulnerable_memcpy_call_instruction(IID, LEVEL, MESSAGE) :- 
 is_memcpy_call_instruction(IID), 
@@ -126,7 +127,7 @@ MESSAGE = cat(cat(cat("memcpy: possible insufficient buffer size ", to_string(DE
 LEVEL = "Vulnerability",
 DEST_SIZE !=1, DEST_SIZE !=0,//this eliminates many false positives
 DEST_SIZE < COPY_SIZE.
-
+*/
 //memmove vulnerable to bo
 .decl is_vulnerable_memmove_call_instruction(instructionid: _instructionid, level: symbol, message: symbol)
 
@@ -134,8 +135,8 @@ DEST_SIZE < COPY_SIZE.
 is_vulnerable_memmove_call_instruction(IID, LEVEL, MESSAGE) :- is_memmove_call_instruction(IID), 
 block(FID, BID, _), instruction(BID, IID, _, _),
 get_first_operand(IID, DEST), get_third_operand(IID, N), 
-instruction(_, _, DEST, OPCDESTTYPE),
-OPCDESTTYPE != "bitcast",
+//instruction(_, _, DEST, OPCDESTTYPE),
+//OPCDESTTYPE != "bitcast",
 get_buffsize_by_vreg(DEST_SIZE, FID, DEST), 
 get_int_by_vreg(COPY_SIZE, FID, N),
 MESSAGE = cat(cat(cat("memmove: possible insufficient buffer size ", to_string(DEST_SIZE)), " for n of size "), to_string(COPY_SIZE)),
@@ -143,6 +144,7 @@ LEVEL = "Vulnerability",
 DEST_SIZE !=1, DEST_SIZE !=0,//this eliminates many false positives
 DEST_SIZE < COPY_SIZE.
 
+/*
 //case int array
 is_vulnerable_memmove_call_instruction(IID, LEVEL, MESSAGE) :- is_memmove_call_instruction(IID), 
 block(FID, BID, _), instruction(BID, IID, _, _),
@@ -174,6 +176,7 @@ MESSAGE = cat(cat(cat("memmove: possible insufficient buffer size ", to_string(D
 LEVEL = "Vulnerability",
 DEST_SIZE !=1, DEST_SIZE !=0,//this eliminates many false positives
 DEST_SIZE < COPY_SIZE.
+*/
 
 //strcpy vulnerable to bo
 .decl is_vulnerable_strcpy_call_instruction(instructionid: _instructionid, level: symbol, message: symbol)
