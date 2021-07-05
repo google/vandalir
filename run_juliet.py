@@ -9,8 +9,8 @@ import pathlib
 juliet_path = "./test/Juliet/"
 juliet_report_path = "./jreports/"
 juliet_testcases_path = "../Juliet/testcases/"
-CWEs = ["121", "242"]
-
+CWEs = ["121", "129", "131", "135", "193", "805", "806", "134", "242"]
+PRINT_REPORTS = False
 
 results = []
 
@@ -22,9 +22,16 @@ C_CASES_ONLY = True
 
 
 def main():
+    create_logfile()
     compile_datalog()
-    evaluate_full("121")
+    evaluate_all_cwes()
+    # evaluate_full("805")
 
+
+def create_logfile():
+    if(PRINT_REPORTS):
+        f = open("./evaluation.txt", "w")
+        f.close()
 
 # get report of current soufflé run
 def get_report(badgood, filename, output_dir):
@@ -246,18 +253,29 @@ def evaluate_bad(cwe, show=True):
 
 
 def evaluate_full(cwe):
+    PRINT_REPORTS = True
+
     num_total, num_vulns, num_false_neg, num_true_positives, num_bad_false_positives = evaluate_bad(cwe, True)
     _, _, _, _, num_good_false_positives = evaluate_good(cwe, False)
 
-    print("\n")
-    print("CWE: "+str(cwe))
-    print("Testcases: "+str(num_total))
-    print("Vulns: "+str(num_vulns))
-    print("True Positives: "+str(num_true_positives)+" ["+str(round(100*num_true_positives/num_total, 1))+"%]")
-    print("False Negatives: "+str(num_false_neg)+" ["+str(round(100*num_false_neg/num_total, 1))+"%]")
-    print("False Positives (in vulnerable): "+str(num_bad_false_positives))
-    print("False Positives (in patched): "+str(num_good_false_positives))
+    printLogAndConsole("\n")
+    printLogAndConsole("CWE: "+str(cwe))
+    printLogAndConsole("Testcases: "+str(num_total))
+    printLogAndConsole("Vulns: "+str(num_vulns))
+    printLogAndConsole("True Positives: "+str(num_true_positives)+" ["+str(round(100*num_true_positives/num_total, 1))+"%]")
+    printLogAndConsole("False Negatives: "+str(num_false_neg)+" ["+str(round(100*num_false_neg/num_total, 1))+"%]")
+    printLogAndConsole("False Positives (in vulnerable): "+str(num_bad_false_positives))
+    printLogAndConsole("False Positives (in patched): "+str(num_good_false_positives))
 
+def printLogAndConsole(str):
+    res = ""
+    
+    if(PRINT_REPORTS):
+        res+=str+"\n"
+        f = open("./evaluation.txt", "a")
+        f.write(res)
+        f.close()
+    print(str)
 
 def evaluate_all_cwes():
     for cwe in CWEs:
