@@ -11,8 +11,13 @@ V("te_st").
 V("test2_0_1").
 V("test3_0_2_0_3").
 V("shefu0_;efw").
+V("te~st").
+V("test2~0~1").
+V("test3~0~2~0~3").
+V("shefu0~;efw").
 
 
 .decl split(inp: symbol, split: symbol)
-//.output split
-split(INP, SPLIT) :-SPLIT = @remove_one_zero(INP), V(INP).
+.output split
+//split(INP, SPLIT) :-SPLIT = @remove_one_zero(INP), V(INP).
+split(INP, SPLIT) :-SPLIT = @get_before_seperator(INP), V(INP).

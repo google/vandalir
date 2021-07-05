@@ -1,4 +1,6 @@
 //define all functors
 .functor get_before_underscore(symbol):symbol
 .functor get_behind_underscore(symbol):symbol
+.functor get_before_seperator(symbol):symbol
+.functor get_behind_seperator(symbol):symbol
 .functor remove_one_zero(symbol):symbol
