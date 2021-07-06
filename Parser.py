@@ -214,6 +214,7 @@ class Parser:
                 if(not procOp):  # skip empty operands
                     continue
                 operand_str = "operand("+str(self.instructionid)+";"+str(self.operandid)+";\""+procOp+"\")"
+                # print(procOp)
                 self.output(operand_str)
                 self.operandid += 1
 
@@ -330,16 +331,16 @@ class Parser:
             operands[0] = ops2[0]
             operands[1] = ops2[0]+"*"
             if(" %" in ops2[1]):
-                operands[2] = "%"+ops2[1].strip().rsplit(" %")[1]
+                operands[2] = "%"+ops2[1].rsplit(" %", 1)[1]
             elif(" @" in ops2[1]):
-                operands[2] = "@"+ops2[1].strip().rsplit(" @")[1]
+                operands[2] = "@"+ops2[1].rsplit(" @", 1)[1]
             else:
                 print("Parsing Error in parseLoadInstruction")
         except:
             print("Parsing Error in parseLoadInstruction")
             # sys.exit()
         
-        # print(operands)
+        #print(operands)
 
         for op in operands:
             if(op is None):
