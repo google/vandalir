@@ -24,9 +24,9 @@ const char *get_before_underscore(char *input) {
 	
 }
 
-const char *get_behind_underscore(char *input) {
-	char* input2 = (char*) malloc(strlen(input)*sizeof(char));
-	strcpy(input2, input);
+const char *get_behind_underscore(char *input2) {
+	//char* input2 = (char*) malloc(strlen(input)*sizeof(char));
+	//strcpy(input2, input);
 	
 	const char deli = '_';
 	char * const separate_at = strchr(input2, deli);
@@ -39,18 +39,18 @@ const char *get_behind_underscore(char *input) {
 	
 }
 
-const char *get_before_seperator(char *input) {
-	char* input2 = (char*) malloc(strlen(input)*sizeof(char));
-	strcpy(input2, input);
-	
-	const char deli = '~';
-	char * const separate_at = strchr(input2, deli);
+int32_t get_before_seperator(char *input) {
 
-	if(separate_at != NULL) {
-		*separate_at = '\0';
+	char *e;
+	e = strchr(input, '~');
+	
+	if(e == NULL) {
+		return -1;
 	}
 
-	return input2;
+	int32_t x;
+	x = (int32_t)(e - input);
+	return x;
 	
 }
 
