@@ -18,6 +18,10 @@ V("shefu0~;efw").
 
 
 .decl split(inp: symbol, split: symbol)
-.output split
+//.output split
 //split(INP, SPLIT) :-SPLIT = @remove_one_zero(INP), V(INP).
-split(INP, SPLIT) :-SPLIT = @get_before_seperator(INP), V(INP).
+split(INP, SPLIT) :-SPLIT = @get_behind_seperator(INP), V(INP).
+
+.decl split2(inp: symbol, split: symbol)
+.output split2
+split2(INP, SPLIT) :-SPLIT = substr(INP, @get_before_seperator(INP)+1, strlen(INP)), V(INP).

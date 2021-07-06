@@ -99,12 +99,11 @@ get_last_operand(IID, TYPE),
 get_buffsize_by_vreg(VAL, FID, OV1).
 
 //case getelementptr array
+/*
 get_buffsize_by_vreg(VAL, FID, VREG) :- 
 block(FID, BID, _), 
 instruction(BID, IID, VREG, OPC), 
 OPC = "getelementptr", 
-get_first_operand(IID, OV1),
-!is_struct(OV1), 
 get_second_operand(IID, INDEX),
 get_int_by_vreg(INDEXNUM, FID, INDEX),
 INDEXNUM = 0,
@@ -120,6 +119,7 @@ ACTUALTYPE = @get_before_seperator(TYPESTR2),
 datatype_factor(ACTUALTYPE, FACTOR),
 VAL = SIZE*FACTOR
 .
+*/
 
 //case getelementptr struct
 get_buffsize_by_vreg(VAL, FID, VREG) :-
@@ -133,20 +133,20 @@ VAL = sum VALELEM : get_struct_operand_size(VALELEM, STRUCTID, _)
 
 //case getelementptr array of structs
 get_buffsize_by_vreg(VAL, FID, VREG) :-
-block(FID, BID, _), instruction(BID, IID, VREG, OPC), OPC = "getelementptr", 
+block(FID, BID, _), 
+instruction(BID, IID, VREG, OPC), 
+OPC = "getelementptr", 
 get_last_operand(IID, TYPE),
 !is_pointer(TYPE),
 contains("~", TYPE),
-TYPESTR1 = cat(" ", TYPE),
-TYPESTR2 = cat(TYPE, " "),
-SIZESTR = @get_behind_seperator(TYPESTR1),
+//SIZESTR = @get_behind_seperator(TYPE),
+SIZESTR = substr(TYPE, @get_before_seperator(TYPE)+1, strlen(TYPE)),
 SIZE = to_number(SIZESTR),
-ACTUALTYPE = @get_before_seperator(TYPESTR2),
+ACTUALTYPE = substr(TYPE, 0, @get_before_seperator(TYPE)),
 is_struct(ACTUALTYPE),
 struct(STRUCTID, ACTUALTYPE, _),
 VALSTRUCT = sum VALELEM : get_struct_operand_size(VALELEM, STRUCTID, _),
 VAL = SIZE*VALSTRUCT
-//VAL = 42
 .
 
 
