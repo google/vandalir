@@ -14,7 +14,7 @@
 #include "control-flow.dl"
 #include "loops.dl"
 #include "memlocation.dl"
-#include "memlocation_structs.dl"
+#include "memlocation_structs_new.dl"
 
 //rules & analysis 
 #include "alias.dl"

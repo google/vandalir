@@ -1,3 +1,13 @@
+/*
+//structAll element for multi dimensional arrays of structs
+memlocation(FID, LOC, TYPE, CAT) :- 
+memlocation(FID, LOC, TYPE, CATOLD), 
+CATOLD = "arrayIndex",
+is_struct(TYPE),
+CAT = "structAll"
+.
+*/
+
 //structs (not contained within multidim arrays)
 //stack allocations of struct (all element), when a single struct is allocated
 memlocation(FID, LOC, TYPE, CAT) :- 
@@ -9,6 +19,7 @@ get_second_operand(IID, SIZE),
 is_numeric(SIZE), to_number(SIZE) = 1,
 is_struct(BASETYPE),
 CAT = "structAll".
+
 //stack allocations of struct (all element) when an array of structs is allocated
 memlocation(FID, LOCATION, TYPE, CAT) :- 
 instruction(BID, IID, LOC, OPC), block(FID, BID, _),
@@ -33,6 +44,7 @@ struct(_, STRUCTNAME, _),
 STRUCTNAME = ALLOCTYPE,
 TYPE = cat(BASETYPE,"*"), 
 memlocation_alloca_struct_subelements(FID, LOCATION, LOC, STRUCTNAME, BASETYPE, CAT).
+
 //stack allocations of subelements of a struct (index elements) when a 1-dim array of structs is allocated
 memlocation(FID, LOCATION, TYPE, CAT) :- 
 instruction(BID, IID, LOC, OPC), block(FID, BID, _),
@@ -56,16 +68,6 @@ is_struct(BASETYPE),
 get_num_operands(IID, NUMOPERANDS),
 LEVEL = NUMOPERANDS-2,
 memlocation_multidim_array_enumerator(IID, LEVEL, LOC, _).
-//stack allocations of array (index elements), which are structs (struct subelements)
-memlocation(FID, LOCATION, TYPE, CAT) :- instruction(BID, IID, _, OPC), block(FID, BID, _),
-OPC = "alloca", is_alloca_multidimensional(IID),
-get_first_operand(IID, ALLOCTYPE),
-is_struct(ALLOCTYPE),
-get_num_operands(IID, NUMOPERANDS),
-LEVEL = NUMOPERANDS-2,
-memlocation_multidim_array_enumerator(IID, LEVEL, STARTLOC, _),
-TYPE = cat(BASETYPE,"*"), 
-memlocation_alloca_struct_subelements(FID, LOCATION, STARTLOC, ALLOCTYPE, BASETYPE, CAT).
 
 
 
