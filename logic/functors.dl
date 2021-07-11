@@ -10,4 +10,5 @@
 .functor get_num_seperators(symbol):number 
 .functor get_num_xseperators(symbol):number
 .functor get_num_dots(symbol):number 
+.functor get_num_stars(symbol):number 
 .functor remove_one_zero(symbol):symbol

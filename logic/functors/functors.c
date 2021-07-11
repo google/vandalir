@@ -115,6 +115,16 @@ int32_t get_num_xseperators(char *input) {
 	
 }
 
+int32_t get_num_stars(char *input) {
+
+	int32_t i;
+
+	for (i=0; input[i]; input[i]=='*' ? i++ : *input++);
+	
+	return i;
+	
+}
+
 int32_t get_num_dots(char *input) {
 
 	int32_t i;

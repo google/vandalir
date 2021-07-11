@@ -96,19 +96,5 @@ part_operand(TYPE) :- TYPE=substr(FULLTYPE, 0, I), type(FULLTYPE), anumber(I), I
 
 //get level of pointer (or pointer to pointer, etc.)
 .decl pointer_level(type: symbol, level: number)
-.output pointer_level(delimiter=",")
-pointer_level(TYPE, LVL) :- part_operand(TYPE), !contains("*", TYPE), LVL = 0.
-
-//case next remove char is "*"
-pointer_level(TYPE, LVL) :- part_operand(TYPE), contains("*", TYPE), 
-LVL=OLDLVL+1, 
-substr(TYPE, strlen(TYPE)-1, strlen(TYPE)) = "*",
-SUBSTR = substr(TYPE, 0, strlen(TYPE)-1),
-pointer_level(SUBSTR, OLDLVL).
-
-//case next remove char is NOT "*"
-pointer_level(TYPE, LVL) :- part_operand(TYPE), contains("*", TYPE), 
-LVL=OLDLVL, 
-substr(TYPE, strlen(TYPE)-1, strlen(TYPE)) != "*",
-SUBSTR = substr(TYPE, 0, strlen(TYPE)-1),
-pointer_level(SUBSTR, OLDLVL).
+//.output pointer_level(delimiter=",")
+pointer_level(TYPE, LVL) :- part_operand(TYPE), LVL = @get_num_stars(TYPE).
