@@ -225,7 +225,8 @@ get_int_by_vreg(TMP, FID, OV2).
 //case call strlen (Maximum)
 get_int_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, IID, VREG, OPC), OPC = "call",
 get_first_operand(IID, OV1), is_strlen_call_instruction(IID),
-get_buffsize_by_vreg(VAL, FID, OV1).
+get_buffsize_by_vreg(VAL2, FID, OV1),
+VAL = VAL2-1.
 
 //case call strlen (TODO: Minimum with userinput (only) can be 0)
 get_int_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, IID, VREG, OPC), OPC = "call",
@@ -235,7 +236,8 @@ VAL = 0.
 //case call atoi (max)
 get_int_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, IID, VREG, OPC), OPC = "call",
 get_last_operand(IID, "atoi"), get_first_operand(IID, BUFFVREG),
-get_buffsize_by_vreg(BUFFSIZE, FID, BUFFVREG),
+get_buffsize_by_vreg(THEORETICALBUFFSIZE, FID, BUFFVREG),
+BUFFSIZE = THEORETICALBUFFSIZE-1,
 x_nines(MAX, BUFFSIZE),
 VAL = to_number(MAX)
 .
@@ -243,8 +245,9 @@ VAL = to_number(MAX)
 //case call atoi (min)
 get_int_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, IID, VREG, OPC), OPC = "call",
 get_last_operand(IID, "atoi"), get_first_operand(IID, BUFFVREG),
-get_buffsize_by_vreg(BUFFSIZE, FID, BUFFVREG),
-x_nines(MIN, BUFFSIZE),
+get_buffsize_by_vreg(THEORETICALBUFFSIZE, FID, BUFFVREG),
+BUFFSIZE = THEORETICALBUFFSIZE-1,
+x_nines(MIN, BUFFSIZE-1),
 MINSTR = cat("-", MIN),
 VAL = to_number(MINSTR)
 .
@@ -285,6 +288,7 @@ is_numeric(VREG),
 VAL = to_number(VREG), block(FID, _, _).
 
 //case store integer
+//TODO: does this help?
 get_int_by_vreg(VAL, FID, VREG) :- 
 block(FID, BID, _), 
 instruction(BID, IID, _, OPC), OPC = "store",
