@@ -116,7 +116,7 @@ loop_variable(CB, FID, VREGLV) :-
 block(FID, CB, _),
 loop(FID, CB, _),
 instruction(CB, IID, _, "icmp"),
-get_first_operand(IID, VREGLV),
+get_second_operand(IID, VREGLV),
 //check that it is an integer
 memlocation(FID, VREGLV, TYPE, _),
 TYPE = "i32"
@@ -127,7 +127,7 @@ loop_variable(CB, FID, VREGLV) :-
 block(FID, CB, _),
 loop(FID, CB, _),
 instruction(CB, IID, _, "icmp"),
-get_first_operand(IID, VREGLOAD),
+get_second_operand(IID, VREGLOAD),
 //check that it is an integer
 memlocation(FID, VREGLOAD, TYPE, _),
 TYPE = "i8",
