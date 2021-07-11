@@ -14,7 +14,11 @@ print_vulnerable(LEVEL, FNAME, BBLOCK, VREG, MESSAGE) :- instruction(BID, IID, V
 get_vulnerable(IID, LEVEL, MESSAGE), block(FID, BID, BBLOCK), function(FID, FNAME, _, _),
 LEVEL="Vulnerability"
 .
-
+/*
+get_vulnerable(IID, LEVEL, MESSAGE), block(FID, BID, BBLOCK), function(FID, FNAME, _, _),
+LEVEL="Warning"
+.
+*/
 
 
 .decl get_vulnerable(instructionid: _instructionid, LEVEL: symbol, message: symbol)

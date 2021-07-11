@@ -4,10 +4,10 @@ bo_in_loops(IID, LEVEL, MESSAGE) :- is_loop_with_duplicate_increase(IID, LEVEL, 
 
 //detect duplicate variable increase
 .decl is_loop_with_duplicate_increase(loopConditionInstruction: _instructionid, level: symbol, message: symbol)
-//.output is_loop_with_duplicate_increase(delimiter=",")
+.output is_loop_with_duplicate_increase(delimiter=",")
 
 //case head-controlled
-is_loop_with_duplicate_increase(CBIID, LEVEL, MESSAGE) :- 
+//is_loop_with_duplicate_increase(CBIID, LEVEL, MESSAGE) :- 
 TYPE = "head-controlled",
 loop(FID, CB, TYPE),
 loopCondition(FID, LASTBLOCK, CB, CBIID, TYPE),
@@ -22,7 +22,7 @@ is_increase_variable_instruction_of_variable(BLOCK, IID, VAR),
 is_increase_variable_instruction_of_variable(BLOCK2, IID2, VAR),
 IID != IID2,
 MESSAGE = "duplicate loop variable increase in loop, may result in memory error",
-LEVEL = "Warning"
+LEVEL = "Vulnerability"
 .
 
 //case foot-controlled
@@ -41,7 +41,7 @@ is_increase_variable_instruction_of_variable(BLOCK, IID, VAR),
 is_increase_variable_instruction_of_variable(BLOCK2, IID2, VAR),
 IID != IID2,
 MESSAGE = "duplicate loop variable increase in loop, may result in memory error",
-LEVEL = "Warning"
+LEVEL = "Vulnerability"
 .
 
 
