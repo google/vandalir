@@ -8,7 +8,11 @@ SUBSTR = substr(T, 1, strlen(T)), !contains("%", SUBSTR).
 
 //is given operand a struct
 .decl is_struct(type: symbol)
-is_struct(T) :- strlen(T) > 0, is_vreg(T), substr(T, 0, 8) = "%struct.", !is_pointer(T).
+is_struct(T) :- struct(_,T,_).
+
+//is pointer to a struct
+.decl is_structpointer(type: symbol)
+is_structpointer(T) :- strlen(T) > 0, substr(T, 0, 8) = "%struct.", is_pointer(T).
 
 //is given operand a multidimensional array
 .decl is_multidimensional(type: symbol)
