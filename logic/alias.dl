@@ -20,6 +20,7 @@ points_to(PFID, PLOC, FID2, LOC2).
 
 /*
 //TODO: is this bad/unnecessary?
+//looks really, really bad
 //case load pointer
 memequals(FID1, LOC1, FID2, LOC2) :-
 memlocation(FID1, LOC1, TYPE1, _), 
