@@ -21,4 +21,32 @@ is_external_global_type(GT) :- GT = "global".
 is_external_global_type(GT) :- GT = "common_global". 
 is_external_global_type(GT) :- GT = "external_global". 
 
+//contains all letters of the alphabet 
+.decl alowercaseletter(x: symbol)
+alowercaseletter("a").
+alowercaseletter("b").
+alowercaseletter("c").
+alowercaseletter("d").
+alowercaseletter("e").
+alowercaseletter("f").
+alowercaseletter("g").
+alowercaseletter("h").
+alowercaseletter("i").
+alowercaseletter("j").
+alowercaseletter("k").
+alowercaseletter("l").
+alowercaseletter("m").
+alowercaseletter("n").
+alowercaseletter("o").
+alowercaseletter("p").
+alowercaseletter("q").
+alowercaseletter("r").
+alowercaseletter("s").
+alowercaseletter("t").
+alowercaseletter("u").
+alowercaseletter("v").
+alowercaseletter("w").
+alowercaseletter("x").
+alowercaseletter("y").
+alowercaseletter("z").
 
