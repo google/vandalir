@@ -20,20 +20,83 @@ get_first_operand(IID, BASETYPE), TYPE = cat(BASETYPE,"*"),
 get_second_operand(IID, SIZE),
 is_numeric(SIZE), to_number(SIZE) > 1,
 is_struct(BASETYPE),
-CAT = cat("structAll~1~",BASETYPE),
+CAT = cat("structAll~1~", BASETYPE),
 NUM >= 0, NUM < to_number(SIZE), anumber(NUM),
 LOCATION = cat(cat(LOC, "."), to_string(NUM)).
 
 //subelements of structs
-//stack allocations of subelements of a struct, matching structAll
+
+//structIndex elements (no structs, no arrays)
 memlocation(FID, LOCATION, TYPE, CAT) :- 
 memlocation(FID, LOCATIONSTRUCT, _, CATSTRUCT),
 STRUCTALL = substr(CATSTRUCT, 0, 10),
 STRUCTALL = "structAll~",
 VALUES = substr(CATSTRUCT, 10, strlen(CATSTRUCT)),
-STRUCT = @get_behind_seperator(VALUES),
+STRUCTNAME = @get_behind_seperator(VALUES),
 TYPE = cat(BASETYPE,"*"),
-memlocation_alloca_struct_subelements(FID, LOCATION, LOCATIONSTRUCT, STRUCT, BASETYPE, CAT)
+struct(SID, STRUCTNAME, _),
+structoperand(SID, OPID, BASETYPE, OPSIZE),
+!is_struct(BASETYPE),
+!is_multidimensional(OPSIZE),
+to_number(OPSIZE) = 1,
+get_all_getelementptr_indices(OPID), //limit evaluated indices to those used by getelemeptr
+LOCATION = cat(cat(LOCATIONSTRUCT, "."), to_string(OPID)),
+CAT = "structIndex"
+.
+
+//structIndex elements, that are structs => spawn structAll
+memlocation(FID, LOCATION, TYPE, CAT) :- 
+memlocation(FID, LOCATIONSTRUCT, _, CATSTRUCT),
+STRUCTALL = substr(CATSTRUCT, 0, 10),
+STRUCTALL = "structAll~",
+VALUES = substr(CATSTRUCT, 10, strlen(CATSTRUCT)),
+STRUCTNAME = @get_behind_seperator(VALUES),
+TYPE = cat(BASETYPE,"*"),
+struct(SID, STRUCTNAME, _),
+structoperand(SID, OPID, BASETYPE, OPSIZE),
+is_struct(BASETYPE),
+!is_multidimensional(OPSIZE),
+to_number(OPSIZE) = 1,
+get_all_getelementptr_indices(OPID), //limit evaluated indices to those used by getelemeptr
+LOCATION = cat(cat(LOCATIONSTRUCT, "."), to_string(OPID)),
+CAT = cat("structAll~1~", BASETYPE)
+.
+
+//structIndex elements, that are arrays => spawn arrayAll
+memlocation(FID, LOCATION, TYPE, CAT) :- 
+memlocation(FID, LOCATIONSTRUCT, _, CATSTRUCT),
+STRUCTALL = substr(CATSTRUCT, 0, 10),
+STRUCTALL = "structAll~",
+VALUES = substr(CATSTRUCT, 10, strlen(CATSTRUCT)),
+STRUCTNAME = @get_behind_seperator(VALUES),
+struct(SID, STRUCTNAME, _),
+structoperand(SID, OPID, BASETYPE, OPSIZE),
+get_xth_entry_in_separated_str(SIZE, 1, _, OPSIZE),//get size of current array dimension
+to_number(SIZE) > 1,//it is an array
+//is_multidimensional(OPSIZE),
+get_all_getelementptr_indices(OPID),
+TYPE = cat(BASETYPE,"*"),
+OPIDSTR = to_string(OPID),
+LOCATION = cat(LOCATIONSTRUCT, ".", OPIDSTR),
+CAT = cat("arrayAll~",OPSIZE,"~",BASETYPE)
+.
+
+
+memlocation(FID, LOCATION, TYPE, CAT) :- 
+memlocation(FID, LOCATIONSTRUCT, _, CATSTRUCT),
+STRUCTALL = substr(CATSTRUCT, 0, 10),
+STRUCTALL = "structAll~",
+VALUES = substr(CATSTRUCT, 10, strlen(CATSTRUCT)),
+STRUCTNAME = @get_behind_seperator(VALUES),
+TYPE = cat(BASETYPE,"*"),
+struct(SID, STRUCTNAME, _),
+structoperand(SID, OPID, BASETYPE, OPSIZE),
+!is_struct(BASETYPE),
+!is_multidimensional(OPSIZE),
+to_number(OPSIZE) = 1,
+get_all_getelementptr_indices(OPID), //limit evaluated indices to those used by getelemeptr
+LOCATION = cat(cat(LOCATIONSTRUCT, "."), to_string(OPID)),
+CAT = "structIndex"
 .
 
 //subelements of arrays
@@ -58,7 +121,7 @@ ARRAYLEVEL = 0,
 get_xth_entry_in_separated_str(SIZE, 1, _, SIZESTR),
 CAT = "arrayIndex".
 
-//case only 1-dim array, which contains a struct => span structAll element
+//case only 1-dim array, which contains a struct => spawn structAll element
 memlocation(FID, LOCATION, TYPE, CAT) :- 
 memlocation_catstr_subset(FID, LOCSTRUCT, CATSTRUCT),
 ARRAYALL = substr(CATSTRUCT, 0, 9),
@@ -102,48 +165,7 @@ CAT = cat("arrayAll~",RESIDUAL,"~",BASETYPE).
 
 //helper relations
 
-//helper to generate subelements of struct
-.decl memlocation_alloca_struct_subelements(functionid: _functionid, outputmemlocation: symbol, startmemlocation: symbol, structname: symbol, memtype: symbol, memcategory: _memcategory)
-//input: FID, STARTLOC, STRUCTNAME, TYPE
-//output: OUTPUT(=final location), CAT
-//.output memlocation_alloca_struct_subelements(delimiter=",")
-
-//case: normal struct element, which is neither an array not another struct
-memlocation_alloca_struct_subelements(FID, OUTPUT, STARTLOC, STRUCTNAME, TYPE, CAT) :-
-struct(SID, STRUCTNAME, _),
-structoperand(SID, OPID, TYPE, OPSIZE),
-!is_struct(TYPE),
-!is_multidimensional(OPSIZE),
-to_number(OPSIZE) = 1,
-get_all_getelementptr_indices(OPID), //limit evaluated indices to those used by getelemeptr
-OUTPUT = cat(cat(STARTLOC, "."), to_string(OPID)),
-CAT = "structIndex",
-concatenated(FID, STARTLOC).
-
-//case struct subelement is a simple struct
-memlocation_alloca_struct_subelements(FID, OUTPUT, STARTLOC, STRUCTNAME, TYPE, CAT) :-
-struct(SID, STRUCTNAME, _),
-structoperand(SID, OPID, TYPE, OPSIZE),
-is_struct(TYPE),
-!is_multidimensional(OPSIZE),
-to_number(OPSIZE) = 1,
-get_all_getelementptr_indices(OPID), //limit evaluated indices to those used by getelemeptr
-OUTPUT = cat(cat(STARTLOC, "."), to_string(OPID)),
-CAT = cat("structAll~1~",TYPE),
-concatenated(FID, STARTLOC).
-
-//case is array => create arrayAll
-memlocation_alloca_struct_subelements(FID, OUTPUT, STARTLOC, STRUCTNAME, TYPE, CAT) :-
-struct(SID, STRUCTNAME, _),
-structoperand(SID, OPID, OPTYPE, OPSIZE),
-to_number(OPSIZE) > 1,
-get_all_getelementptr_indices(OPID), //limit evaluated indices to thouse used by getelemeptr
-OUTPUT = cat(cat(STARTLOC, "."), to_string(OPID)),
-TYPE = OPTYPE,
-CAT = cat("arrayAll~",OPSIZE,"~",OPTYPE),
-concatenated(FID, STARTLOC).
-
-//helper for helper
+//helper
 .decl get_xth_entry_in_separated_str(res: symbol, i: number, string: symbol, origstring: symbol)
 //base
 get_xth_entry_in_separated_str(RES, I, STR, OSTR) :-
