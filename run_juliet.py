@@ -9,9 +9,8 @@ import pathlib
 juliet_path = "./test/Juliet/"
 juliet_report_path = "./jreports/"
 juliet_testcases_path = "../Juliet/testcases/"
-CWEs = ["121", "129", "131", "135", "193", "805", "806", "134", "242"]
-PRINT_REPORTS = False
-
+CWEs = ["121", "129", "131", "193", "805", "806", "134", "242"]
+# in theory: "135" (no hits yet)
 results = []
 
 PROCS_FOR_LARGE = 1
@@ -19,19 +18,18 @@ LARGE_SIZE = 20000
 SKIP_LARGE = False
 THREADS = 4
 C_CASES_ONLY = True
+CREATE_LOG = False # this option is overwritten if evaluate_all_cwes() is used
 
 
 def main():
-    create_logfile()
     compile_datalog()
     evaluate_all_cwes()
     # evaluate_full("805")
 
 
 def create_logfile():
-    if(PRINT_REPORTS):
-        f = open("./evaluation.txt", "w")
-        f.close()
+    f = open("./evaluation.txt", "w")
+    f.close()
 
 # get report of current soufflé run
 def get_report(badgood, filename, output_dir):
@@ -253,7 +251,6 @@ def evaluate_bad(cwe, show=True):
 
 
 def evaluate_full(cwe):
-    PRINT_REPORTS = True
 
     num_total, num_vulns, num_false_neg, num_true_positives, num_bad_false_positives = evaluate_bad(cwe, True)
     _, _, _, _, num_good_false_positives = evaluate_good(cwe, False)
@@ -270,7 +267,7 @@ def evaluate_full(cwe):
 def printLogAndConsole(str):
     res = ""
     
-    if(PRINT_REPORTS):
+    if(CREATE_LOG):
         res+=str+"\n"
         f = open("./evaluation.txt", "a")
         f.write(res)
@@ -278,6 +275,10 @@ def printLogAndConsole(str):
     print(str)
 
 def evaluate_all_cwes():
+    global CREATE_LOG
+    CREATE_LOG = True
+
+    create_logfile()
     for cwe in CWEs:
         evaluate_full(cwe)
 
