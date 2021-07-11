@@ -1,10 +1,13 @@
 //define all functors
-.functor get_before_underscore(symbol):symbol
-.functor get_behind_underscore(symbol):symbol
+.functor get_before_dot(symbol):number 
+.functor get_before_last_dot(symbol):number 
+.functor get_behind_dot(symbol):symbol
+.functor get_behind_last_dot(symbol):symbol
 .functor get_before_seperator(symbol):number 
 .functor get_before_xseperator(symbol):number 
 .functor get_behind_seperator(symbol):symbol
 .functor get_behind_xseperator(symbol):symbol
 .functor get_num_seperators(symbol):number 
-.functor get_num_xseperators(symbol):number 
+.functor get_num_xseperators(symbol):number
+.functor get_num_dots(symbol):number 
 .functor remove_one_zero(symbol):symbol

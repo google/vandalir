@@ -90,81 +90,97 @@ is_vreg(LOC2).
 
 //first cases, where specific element of array could be located
 
-//case getelementptr
+//case getelementptr equal the return register with the constructed path
 memequals(FID1, LOC1, FID2, LOC2) :-
 block(FID1, BID, _), 
-FID1 = FID2, //equal functions
-//TYPE1 gives the "basetype" of the GEP used for calculation. NOT the actual return type! 
+FID1 = FID2, //equal functions 
 instruction(BID, IID, LOC1, OPC), OPC = "getelementptr", //LOC 1 is GEP instruction
-//get_first_operand(IID, DATAOBJ),
-get_num_operands(IID, MAXNUM),
-LEVEL = MAXNUM-1,
-get_gep_concatenated_memloc_str(IID, LEVEL, RESULTLOC),
+gep_str(IID, RESULTLOC),
 LOC2 = RESULTLOC.
+
+//case x <=> x.0
+memequals(FID1, LOC1, FID2, LOC2) :-
+memlocation(FID1, LOC1, _, _),
+FID2 = FID1,
+LOC2 = cat(LOC1, ".0"),
+memlocation(FID2, LOC2, _, _)
+.
+
+//case x <=> x.0.0
+memequals(FID1, LOC1, FID2, LOC2) :-
+memlocation(FID1, LOC1, _, _),
+FID2 = FID1,
+LOC2 = cat(LOC1, ".0.0"),
+memlocation(FID2, LOC2, _, _)
+.
+
+
 /*
-//TODO: this is broken!
-//case getelementptr, MEMLOC2 is global
+//case if x<=>y => %x_z <=> %y_z
 memequals(FID1, LOC1, FID2, LOC2) :-
-block(FID1, BID, _), 
-FID2 = -1, //FID2 can be -1 if global
-//TYPE1 gives the "basetype" of the GEP used for calculation. NOT the actual return type! 
-instruction(BID, IID, LOC1, OPC), OPC = "getelementptr", //LOC 1 is GEP instruction
-//get_first_operand(IID, DATAOBJ), 
-get_num_operands(IID, MAXNUM),
-LEVEL = MAXNUM-1,
-get_gep_concatenated_memloc_str(IID, LEVEL, RESULTLOC),
-LOC2 = RESULTLOC.
-*/
-
-//case getelemptr %reg_0 = %reg
-memequals(FID1, LOC1, FID2, LOC2) :-
-memequals(FID1, LOC1, _, _),
-contains("_0_", LOC1),
-LOC2 = @remove_one_zero(LOC1),
-FID2 = FID1
-.
-
-
-//case getelemptr %reg_0_0 = %reg
-memequals(FID1, LOC1, FID2, LOC2) :-
-memequals(FID1, LOC1, _, _),
-memlocation(FID2, LOC2, _, _),
-FID1 = FID2,
-LOC1 = cat(LOC2, "_0_0"),
-is_vreg(LOC2)
-.
-
-//case if x_0_0 exists => spawn x_0
-memequals(FID1, LOC1, FID2, LOC2) :-
-memequals(FID1, LOC1, _, _),
-FID1 = FID2,
-LOC1 = cat(LOC2, "_0"),
-LOC2 = cat(BASELOC, "_0"),
-is_vreg(BASELOC)
-.
-
-//case if %x<=>%y => %x_z <=> %y_z
-memequals(FID1, LOC1, FID2, LOC2) :-
+memequals(FID1, X, FID2, Y),
+X != Y,
+LOC1 = cat(X, ".", Z),
+LOC2 = cat(Y, ".", Z),
+X = substr(LOC1, 0, @get_before_last_dot(LOC1)),
+Y = substr(LOC2, 0, @get_before_last_dot(LOC2)),
 memequals(FID1, LOC1, _, _),
 memequals(FID2, LOC2, _, _),
-LOC1 = cat(X, "_", Z),
-LOC2 = cat(Y, "_", Z),
-X = @get_before_underscore(LOC1),
-Y = @get_before_underscore(LOC2),
-Z = @get_behind_underscore(LOC1),
+Z = @get_behind_last_dot(LOC1),
 is_vreg(X),
-is_vreg(Y),
-memequals(FID1, X, FID2, Y)
+is_vreg(Y)
 .
+*/
 
 //help relations
-.decl gep_str(res: symbol)
-//.output gep_str
-gep_str(RES) :-
-get_gep_concatenated_memloc_str(_, _, STR),
-contains("_", STR),
-RES = @get_behind_underscore(STR)
+
+//wrapper around get_gep_concatenated_memloc_str, that sets correct level and removes useless results
+.decl gep_str(instructionid: _instructionid, result: symbol)
+.output gep_str
+//case depth = 1 ==> keep leading zero index
+gep_str(IID, RES) :-
+get_num_operands(IID, MAXNUM),
+LEVEL = MAXNUM-1,
+get_gep_concatenated_memloc_str(IID, LEVEL, RES),
+contains(".", RES),
+!is_struct(RES),
+!is_structpointer(RES),
+DEPTH = @get_num_dots(RES),
+DEPTH = 1
 .
+
+//case depth > 1 ==> no leading zero
+gep_str(IID, RES) :-
+get_num_operands(IID, MAXNUM),
+LEVEL = MAXNUM-1,
+get_gep_concatenated_memloc_str(IID, LEVEL, RES),
+contains(".", RES),
+!is_struct(RES),
+!is_structpointer(RES),
+DEPTH = @get_num_dots(RES),
+DEPTH > 1,
+INDICES = @get_behind_dot(RES),
+FIRSTINDEX = substr(INDICES, 0, 2),
+FIRSTINDEX != "0."
+.
+//case depth > 1 ==> remove leading zero index
+gep_str(IID, RESULT) :-
+get_num_operands(IID, MAXNUM),
+LEVEL = MAXNUM-1,
+get_gep_concatenated_memloc_str(IID, LEVEL, RES),
+contains(".", RES),
+!is_struct(RES),
+!is_structpointer(RES),
+DEPTH = @get_num_dots(RES),
+DEPTH > 1,
+INDICES = @get_behind_dot(RES),
+FIRSTINDEX = substr(INDICES, 0, 2),
+FIRSTINDEX = "0.",
+NEWINDICES = substr(INDICES, 2, strlen(INDICES)),
+BASEREGISTER = substr(RES, 0, @get_before_dot(RES)),
+RESULT = cat(BASEREGISTER, ".", NEWINDICES)
+.
+
 
 .decl get_gep_concatenated_memloc_str(instructionid: _instructionid, level: number, result: symbol)
 //.output get_gep_concatenated_memloc_str
@@ -183,7 +199,7 @@ LEVEL<=MAXOP-1, //last operand is reserved for return type info
 get_gep_concatenated_memloc_str(IID, LEVEL-1, BASELOC),
 get_ith_operand(IID, LEVEL, NEWINDEX),
 is_numeric(NEWINDEX),
-RES = cat(cat(BASELOC, "_"), NEWINDEX)
+RES = cat(cat(BASELOC, "."), NEWINDEX)
 .
 
 //case non-numeric operand, but can be evaluated via get_int_by_vreg
@@ -199,10 +215,13 @@ get_ith_operand(IID, LEVEL, NEWINDEX),
 is_vreg(NEWINDEX),
 get_int_by_vreg(NEWINDEXNUMBER, FID, NEWINDEX),
 NEWINDEXNUMBERSTR = to_string(NEWINDEXNUMBER),
-RES = cat(cat(BASELOC, "_"), NEWINDEXNUMBERSTR)
+is_numeric(NEWINDEXNUMBERSTR),
+RES = cat(cat(BASELOC, "."), NEWINDEXNUMBERSTR)
 .
 
 //case non-numeric operand, not evaluated
+//removed because only numeric operands are of interest
+/*
 get_gep_concatenated_memloc_str(IID, LEVEL, RES) :-
 get_num_operands(IID, MAXOP),
 LEVEL>1, 
@@ -211,8 +230,9 @@ get_gep_concatenated_memloc_str(IID, LEVEL-1, BASELOC),
 get_ith_operand(IID, LEVEL, NEWINDEX),
 !is_numeric(NEWINDEX),
 is_vreg(NEWINDEX),
-RES = cat(cat(BASELOC, "_"), NEWINDEX)
+RES = cat(cat(BASELOC, "."), NEWINDEX)
 .
+*/
 
 
 //get the vreg of all return instructions of one function

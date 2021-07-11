@@ -9,27 +9,53 @@ int32_t f(int32_t x) {
     return x + 1;
 }
 
-const char *get_before_underscore(char *input) {
-	char* input2 = (char*) malloc(strlen(input)*sizeof(char));
-	strcpy(input2, input);
-	
-	const char deli = '_';
-	char * const separate_at = strchr(input2, deli);
+int32_t get_before_dot(char *input) {
 
-	if(separate_at != NULL) {
-		*separate_at = '\0';
+	char *e;
+	e = strchr(input, '.');
+	
+	if(e == NULL) {
+		return -1;
 	}
 
-	return input2;
+	int32_t x;
+	x = (int32_t)(e - input);
+	return x;
 	
 }
 
-const char *get_behind_underscore(char *input2) {
-	//char* input2 = (char*) malloc(strlen(input)*sizeof(char));
-	//strcpy(input2, input);
+int32_t get_before_last_dot(char *input) {
+
+	char *e;
+	e = strrchr(input, '.');
 	
-	const char deli = '_';
+	if(e == NULL) {
+		return -1;
+	}
+
+	int32_t x;
+	x = (int32_t)(e - input);
+	return x;
+	
+}
+
+const char *get_behind_dot(char *input2) {
+	
+	const char deli = '.';
 	char * const separate_at = strchr(input2, deli);
+
+	if(separate_at != NULL) {
+		return separate_at+1;
+	}
+
+	return "";
+	
+}
+
+const char *get_behind_last_dot(char *input2) {
+	
+	const char deli = '.';
+	char * const separate_at = strrchr(input2, deli);
 
 	if(separate_at != NULL) {
 		return separate_at+1;
@@ -84,6 +110,16 @@ int32_t get_num_xseperators(char *input) {
 	int32_t i;
 
 	for (i=0; input[i]; input[i]=='x' ? i++ : *input++);
+	
+	return i;
+	
+}
+
+int32_t get_num_dots(char *input) {
+
+	int32_t i;
+
+	for (i=0; input[i]; input[i]=='.' ? i++ : *input++);
 	
 	return i;
 	

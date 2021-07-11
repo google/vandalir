@@ -142,6 +142,7 @@ CAT = "stack"
 
 //helper function that enumerates all getelementptr indices
 .decl get_all_getelementptr_indices(index: number)
+//.output get_all_getelementptr_indices
 get_all_getelementptr_indices(INDEX) :-
 instruction(BID, IID, _, OPC), block(_, BID, _),
 OPC = "getelementptr",
