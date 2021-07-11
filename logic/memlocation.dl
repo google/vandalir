@@ -233,35 +233,3 @@ get_ith_operand(IID, LEVEL+2, ELEMENTS_IN_LEVEL),
 is_numeric(ELEMENTS_IN_LEVEL),
 I>=0, I<to_number(ELEMENTS_IN_LEVEL), anumber(I),
 memlocation_multidim_array_enumerator(IID, LEVEL-1, STARTLOC, _).
-
-
-
-
-
-//case MultiDim Array
-/*
-memlocation_alloca_struct_subelements(OUTPUT, STARTLOC, STRUCTNAME, TYPE, CAT) :-
-struct(SID, STRUCTNAME, _),
-structoperand(SID, OPID, OPTYPE, OPSIZE),
-!is_struct(OPTYPE),
-is_multidimensional(OPSIZE),
-
-
-
-
-.decl memlocation_struct_subelement_multidim_array_enumerator(, level: number, location: symbol, startlocation: symbol)
-memlocation_struct_subelement_multidim_array_enumerator(LEVEL, LOC, STARTLOC) :-
-LEVEL = 0, 
-LOC = cat(cat(STARTLOC, "."), to_string(I)),
-get_ith_operand(IID, LEVEL+2, ELEMENTS_IN_LEVEL),
-I>=0, I<to_number(ELEMENTS_IN_LEVEL), anumber(I).
-//recursive case
-memlocation_struct_subelement_multidim_array_enumerator(IID, LEVEL, LOC, STARTLOC) :-
-get_num_operands(IID, NUMOPERANDS),
-LEVEL < NUMOPERANDS-1,
-anumber(LEVEL), 
-LOC = cat(cat(STARTLOC, "."), to_string(I)),
-get_ith_operand(IID, LEVEL+2, ELEMENTS_IN_LEVEL),
-I>=0, I<to_number(ELEMENTS_IN_LEVEL), anumber(I),
-memlocation_struct_subelement_multidim_array_enumerator(IID, LEVEL-1, STARTLOC, _).
-*/
