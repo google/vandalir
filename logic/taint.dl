@@ -65,11 +65,8 @@ CAT = cat("userinput_", to_string(SIZE))
 
 //case memequals
 taintlocation(FID, LOC, TYPE, CAT) :- 
-taintlocation(FID2, LOC2, TYPE2, CAT2),
-contains("userinput_", CAT2),
-memequals(FID, LOC, FID2, LOC2),
-TYPE = TYPE2,
-CAT = CAT2
+taintlocation(FID2, LOC2, TYPE, CAT),
+memequals(FID, LOC, FID2, LOC2)
 .
 
 //load or getelementptr from userinput ==> is also userinput
@@ -83,7 +80,8 @@ LOC = VREG,
 get_first_operand(IID, TYPE),
 //ensure it does contain user input:
 get_third_operand(IID, LOADEDLOC),
-is_memloc_with_direct_userinput(FID, LOADEDLOC, CAT).
+taintlocation(FID, LOADEDLOC, _, CAT)
+.
 
 // getelementptr instruction
 taintlocation(FID, LOC, TYPE, CAT) :- 
@@ -93,7 +91,7 @@ LOC = VREG,
 TYPE = "unknown",
 //ensure it does contain user input:
 get_first_operand(IID, DATAOBJ),
-is_memloc_with_direct_userinput(FID, DATAOBJ, CAT)
+taintlocation(FID, DATAOBJ, _, CAT)
 .
 
 //library mode (=libmode)
