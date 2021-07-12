@@ -1,16 +1,18 @@
 //user input "tainting":
 
-//additional memlocations (these are only used as entry points to determine size limitations)
+//taintlocation mimics memlocation
+
 
 //function arguments containing userinput
 
 //mode equal
-memlocation(FID, LOC, TYPE, CAT) :-
+.decl taintlocation(functionid: _functionid, memloc: symbol, memtyp: symbol, memcategory: _memcategory)
+.output taintlocation(delimiter=",")
+taintlocation(FID, LOC, TYPE, CAT) :-
 block(FID, BID, _),
 instruction(BID, IID, _, "call"),
 is_X_call_instruction(FNAME, IID),
 get_ith_operand(IID, ARGID_REL, LOC),
-
 argument(FIDFUNC, ARGID, _, TYPE), 
 get_relative_argid(FIDFUNC, ARGID, ARGID_REL),
 function(FIDFUNC, FNAME, _, _),
@@ -20,7 +22,7 @@ CAT = cat("userinput_", to_string(SIZE))
 .
 
 //mode following
-memlocation(FID, LOC, TYPE, CAT) :-
+taintlocation(FID, LOC, TYPE, CAT) :-
 block(FID, BID, _),
 instruction(BID, IID, _, "call"),
 is_X_call_instruction(FNAME, IID),
@@ -36,7 +38,7 @@ ARGID_REL >= INPUT_ID
 .
 
 //mode main (following)
-memlocation(FID, LOC, TYPE, CAT) :-
+taintlocation(FID, LOC, TYPE, CAT) :-
 FNAME = "main",
 argument(FID, ARGID, LOC, TYPE), 
 get_relative_argid(FID, ARGID, ARGID_REL),
@@ -48,22 +50,22 @@ ARGID_REL >= INPUT_ID
 .
 
 //mode return value
-memlocation(FID, LOC, TYPE, CAT) :- 
+taintlocation(FID, LOC, TYPE, CAT) :- 
 function(_, FNAME, _, TYPE),
 instruction(BID, IID, LOC, "call"),
 is_X_call_instruction(FNAME, IID),
 block(FID, BID, _),
-
 INPUT_ID = 0,
 userinput(FNAME, INPUT_ID, "=", _),
 get_size_of_userinput(SIZE, IID, FNAME, INPUT_ID),
 CAT = cat("userinput_", to_string(SIZE))
 .
 
-//case memequals
 
-memlocation(FID, LOC, TYPE, CAT) :- 
-memlocation(FID2, LOC2, TYPE2, CAT2),
+
+//case memequals
+taintlocation(FID, LOC, TYPE, CAT) :- 
+taintlocation(FID2, LOC2, TYPE2, CAT2),
 contains("userinput_", CAT2),
 memequals(FID, LOC, FID2, LOC2),
 TYPE = TYPE2,
@@ -73,7 +75,7 @@ CAT = CAT2
 //load or getelementptr from userinput ==> is also userinput
 
 // load instruction
-memlocation(FID, LOC, TYPE, CAT) :- 
+taintlocation(FID, LOC, TYPE, CAT) :- 
 instruction(BID, IID, VREG, OPC), block(FID, BID, _),
 OPC = "load",
 VREG != "%-1",
@@ -84,7 +86,7 @@ get_third_operand(IID, LOADEDLOC),
 is_memloc_with_direct_userinput(FID, LOADEDLOC, CAT).
 
 // getelementptr instruction
-memlocation(FID, LOC, TYPE, CAT) :- 
+taintlocation(FID, LOC, TYPE, CAT) :- 
 instruction(BID, IID, VREG, OPC), block(FID, BID, _),
 OPC = "getelementptr",
 LOC = VREG,
@@ -97,7 +99,7 @@ is_memloc_with_direct_userinput(FID, DATAOBJ, CAT)
 //library mode (=libmode)
 
 //libmode: all function arguments that are pointer may contain userinput
-memlocation(FID, LOC, TYPE, CAT) :- 
+taintlocation(FID, LOC, TYPE, CAT) :- 
 Config_LibraryMode(1),
 function(FID, _, "define", _), //only defined functions
 argument(FID, _, LOC, TYPE), 
@@ -107,7 +109,7 @@ CAT = cat("userinput_", to_string(SIZE))
 .
 
 //libmode: all public available globals that are pointers may contain userinput
-memlocation(FID, LOC, TYPE, CAT) :- 
+taintlocation(FID, LOC, TYPE, CAT) :- 
 Config_LibraryMode(1),
 global(LOC, GT, TYPE, _, _),
 is_pointer(TYPE),
@@ -178,24 +180,24 @@ FNAME != "fgets"
 .
 
 
-//determine if memlocation may contain direct userinput and if so also return category
+//determine if taintlocation may contain direct userinput and if so also return category
 .decl is_memloc_with_direct_userinput(functionid: _functionid, location: symbol, memcategory: _memcategory)
 
 is_memloc_with_direct_userinput(FID, LOC, CAT) :- 
-memlocation(FID, LOC, _, CAT),
+taintlocation(FID, LOC, _, CAT),
 is_memcat_userinput_str(CAT)
 .
 
 is_memloc_with_direct_userinput(FID, LOC, CAT) :- 
 memequals(FID, LOC, FID2, LOC2),
-memlocation(FID2, LOC2, _, CAT),
+taintlocation(FID2, LOC2, _, CAT),
 is_memcat_userinput_str(CAT)
 .
 
 //determine if given string is a valid userinput memlocation of the type "userinput_X"
 .decl is_memcat_userinput_str(inp: symbol)
 //.output is_memcat_userinput_str
-is_memcat_userinput_str(STR) :- memlocation(_, _, _, STR), match("userinput_.*", STR).
+is_memcat_userinput_str(STR) :- taintlocation(_, _, _, STR), match("userinput_.*", STR).
 
 
 //checks if given location may contain direct, as well as transitioning userinput

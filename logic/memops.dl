@@ -172,7 +172,7 @@ VAL = MAXINT.
 //case direct user input (minimum length => limited or unlimited may have a length of 0)
 get_buffsize_by_vreg(VAL, FID, VREG) :-
 memlocation(FID, VREG, TYPE, _),
-is_memloc_with_direct_userinput(FID, VREG, _),
+is_memloc_with_userinput(FID, VREG),
 is_pointer(TYPE),
 VAL = 0.
 
