@@ -226,7 +226,9 @@ get_int_by_vreg(TMP, FID, OV2).
 get_int_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, IID, VREG, OPC), OPC = "call",
 get_first_operand(IID, OV1), is_strlen_call_instruction(IID),
 get_buffsize_by_vreg(VAL2, FID, OV1),
-VAL = VAL2-1.
+VAL = VAL2-1,
+VAL>0
+.
 
 //case call strlen (TODO: Minimum with userinput (only) can be 0)
 get_int_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, IID, VREG, OPC), OPC = "call",
@@ -247,6 +249,7 @@ get_int_by_vreg(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, IID, VRE
 get_last_operand(IID, "atoi"), get_first_operand(IID, BUFFVREG),
 get_buffsize_by_vreg(THEORETICALBUFFSIZE, FID, BUFFVREG),
 BUFFSIZE = THEORETICALBUFFSIZE-1,
+BUFFSIZE > 1,
 x_nines(MIN, BUFFSIZE-1),
 MINSTR = cat("-", MIN),
 VAL = to_number(MINSTR)
