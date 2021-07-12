@@ -129,13 +129,10 @@ is_heap_allocation_call(IID), CAT = "heap",
 TYPE = "i8*".
 
 //function arguments
-//function arguments (not containing equal userinput)
-//TODO: might be a good idea to exclude userinput ==> no duplicates?
+
 memlocation(FID, LOC, TYPE, CAT) :- 
 argument(FID, _, LOC, TYPE), 
 CAT = "stack"
-//get_relative_argid(FID, ARGID, ARGID_REL),
-//function(FID, FNAME, _, _)
 .
 
 //helper relations
