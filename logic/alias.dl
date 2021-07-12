@@ -112,21 +112,31 @@ LOC2 = RESULTLOC.
 memequals(FID1, LOC1, FID2, LOC2) :-
 memlocation(FID1, LOC1, _, _),
 FID2 = FID1,
-LOC2 = cat(LOC1, ".0"),
-memlocation(FID2, LOC2, _, _)
+LOC2 = cat(LOC1, ".0")
 .
 
 //case x <=> x.0.0
 memequals(FID1, LOC1, FID2, LOC2) :-
 memlocation(FID1, LOC1, _, _),
 FID2 = FID1,
-LOC2 = cat(LOC1, ".0.0"),
-memlocation(FID2, LOC2, _, _)
+LOC2 = cat(LOC1, ".0.0")
 .
 
 
-/*
-//case if x<=>y => %x_z <=> %y_z
+//case if x<=>y => x.z <=> y.z
+memequals(FID1, LOC1, FID2, LOC2) :-
+memlocation(FID1, X, _, _),
+memlocation(FID2, Y, _, _),
+memequals(FID1, X, FID2, Y),
+anumber(Z),
+NUM = to_string(Z),
+LOC1 = cat(X, ".", NUM),
+LOC2 = cat(Y, ".", NUM),
+memlocation(FID1, LOC1, _, _)
+.
+
+/**
+//case if x<=>y => x.z <=> y.z
 memequals(FID1, LOC1, FID2, LOC2) :-
 memequals(FID1, X, FID2, Y),
 X != Y,
