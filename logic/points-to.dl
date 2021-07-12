@@ -86,7 +86,7 @@ get_second_operand(IID, STYPE),
 pointer_level(STYPE, STYPE_PLVL),
 pointer_level(ETYPE, ETYPE_PLVL),
 ETYPE_PLVL < STYPE_PLVL,
-ETYPE_PLVL >= 1,
+//ETYPE_PLVL >= 1, //does not seem to make much sense
 VREG = ELOC, 
 get_third_operand(IID, SLOC), 
 SFID = FID,
