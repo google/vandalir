@@ -13,10 +13,20 @@ memequals(FID1, LOC1, FIDX, LOCX),
 memequals(FID2, LOC2, FIDX, LOCX)
 .
 
-//case points-to: (x -> a && x -> b) ==> (a <==> b)
+//case load: (x = *a) && (a->b) ==> (x <==> b)
+memequals(FID1, X, FID2, B) :- 
+memlocation(FID1, X, _, _), 
+memlocation(FID2, B, _, _),
+instruction(BID, IID, VREG, OPC), block(FID1, BID, _), OPC = "load",
+get_third_operand(IID, A), 
+VREG = X,
+points_to(FID1, A, FID2, B)
+.
+
+//case points-to: (a -> x && b -> x) ==> (a <==> b)
 memequals(FID1, LOC1, FID2, LOC2) :- 
-points_to(PFID, PLOC, FID1, LOC1), 
-points_to(PFID, PLOC, FID2, LOC2).
+points_to(FID1, LOC1, FIDX, LOCX), 
+points_to(FID2, LOC2, FIDX, LOCX).
 
 /*
 //TODO: is this bad/unnecessary?
