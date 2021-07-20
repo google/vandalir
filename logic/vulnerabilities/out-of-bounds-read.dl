@@ -12,6 +12,6 @@ get_int_by_vreg(COPY_SIZE, FID, N),
 get_buffsize_by_vreg(DEST_SIZE, FID, DEST), 
 get_buffsize_by_vreg(SRC_SIZE, FID, SRC), 
 DEST_SIZE = COPY_SIZE,
-LEVEL = "Vulnerability",
+LEVEL = "Warning",
 MESSAGE = "strncpy: out of bounds read.",
 SRC_SIZE >= COPY_SIZE.
