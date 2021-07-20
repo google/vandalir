@@ -15,12 +15,11 @@ memequals(FID2, LOC2, FIDX, LOCX)
 
 //case load: (x = *a) && (a->b) ==> (x <==> b)
 memequals(FID1, X, FID2, B) :- 
-memlocation(FID1, X, _, _), 
-memlocation(FID2, B, _, _),
-instruction(BID, IID, VREG, OPC), block(FID1, BID, _), OPC = "load",
+instruction(BID, IID, X, OPC), block(FID1, BID, _), OPC = "load",
 get_third_operand(IID, A), 
-VREG = X,
-points_to(FID1, A, FID2, B)
+memlocation(FID1, X, _, _), 
+points_to(FID1, A, FID2, B),
+memlocation(FID2, B, _, _)
 .
 
 //case points-to: (a -> x && b -> x) ==> (a <==> b)
@@ -122,7 +121,7 @@ FID2 = FID1,
 LOC2 = cat(LOC1, ".0.0")
 .
 
-
+/*
 //case if x<=>y => x.z <=> y.z
 memequals(FID1, LOC1, FID2, LOC2) :-
 memlocation(FID1, X, _, _),
@@ -134,8 +133,8 @@ LOC1 = cat(X, ".", NUM),
 LOC2 = cat(Y, ".", NUM),
 memlocation(FID1, LOC1, _, _)
 .
+*/
 
-/**
 //case if x<=>y => x.z <=> y.z
 memequals(FID1, LOC1, FID2, LOC2) :-
 memequals(FID1, X, FID2, Y),
@@ -150,7 +149,7 @@ Z = @get_behind_last_dot(LOC1),
 is_vreg(X),
 is_vreg(Y)
 .
-*/
+
 
 //help relations
 
