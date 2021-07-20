@@ -73,7 +73,7 @@ get_int_by_vreg(SIZE, FID, OV2).
 
 //get size of buffer by virtual register
 .decl get_buffsize_by_vreg(size: number, functionid: _functionid, _vreg: symbol)
-.output get_buffsize_by_vreg(delimiter=",")
+//.output get_buffsize_by_vreg(delimiter=",")
 
 //case alloca (end recursion)
 get_buffsize_by_vreg(VAL, FID, VREG) :- 
@@ -191,7 +191,7 @@ VAL = sum SIZE : get_struct_operand_size(SIZE, STRUCTID, _)
 .
 
 .decl get_struct_operand_size(value: number, structid: _structid, structoperandid:_structoperandid)
-.output get_struct_operand_size(delimiter=",")
+//.output get_struct_operand_size(delimiter=",")
 get_struct_operand_size(VAL, STRUCTID, STROPID) :- 
 structoperand(STRUCTID, STROPID, STRDTYPE, VALSTR),
 datatype_factor(STRDTYPE, FACTOR),
@@ -200,7 +200,7 @@ VAL = to_number(VALSTR)*FACTOR
 
 //get possible integer values (wrapper, which supports constants as vreg)
 .decl get_int_by_vreg(value: number, functionid: _functionid, _vreg: symbol)
-.output get_int_by_vreg(delimiter=",")
+//.output get_int_by_vreg(delimiter=",")
 
 //case is int
 get_int_by_vreg(VAL, FID, VREG) :- 
@@ -215,7 +215,6 @@ get_int_by_vreg_internal(VAL, FID, VREG).
 //get possible integer values
 .decl get_int_by_vreg_internal(value: number, functionid: _functionid, _vreg: symbol)
 //case add
-//TODO: broken, currently no fix available, as it creates infinite loops
 get_int_by_vreg_internal(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, IID, VREG, OPC), OPC = "add",
 get_first_operand(IID, OV1), get_second_operand(IID, OV2),
 is_numeric(OV2),
@@ -223,9 +222,18 @@ is_numeric(OV2),
 !is_numeric(OV1), 
 VAL=TMP+to_number(OV2), get_int_by_vreg_internal(TMP, FID, OV1).
 
+//case mul
+get_int_by_vreg_internal(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, IID, VREG, OPC), OPC = "mul",
+get_first_operand(IID, OV1), get_second_operand(IID, OV2),
+is_numeric(OV2),
+!is_numeric(VREG),
+!is_numeric(OV1), 
+VAL=TMP*to_number(OV2), get_int_by_vreg_internal(TMP, FID, OV1).
+
+
 //case sub (sub number from vreg)
 get_int_by_vreg_internal(VAL, FID, VREG) :- block(FID, BID, _), instruction(BID, IID, VREG, OPC), OPC = "sub",
-get_first_operand(IID, OV1), get_third_operand(IID, OV2),
+get_first_operand(IID, OV1), get_second_operand(IID, OV2),
 is_numeric(OV2),  
 VAL=TMP-to_number(OV2), get_int_by_vreg_internal(TMP, FID, OV1).
 
@@ -350,7 +358,7 @@ datatype_factor(DTYPE, FACTOR) :- datatype_factor_helper(DTYPE, FACTOR).
 //datatype_factor(DTYPE, FACTOR) :- opval(DTYPE), !datatype_factor_helper(DTYPE, FACTOR), FACTOR = 1.
 
 .decl datatype_factor_helper(datatype: symbol, factor: number)
-.output datatype_factor_helper(delimiter=",")
+//.output datatype_factor_helper(delimiter=",")
 datatype_factor_helper(DTYPE, FACTOR) :- DTYPE = "i8", FACTOR = 1.
 datatype_factor_helper(DTYPE, FACTOR) :- DTYPE = "i16", FACTOR = 2.
 datatype_factor_helper(DTYPE, FACTOR) :- DTYPE = "i32", FACTOR = 4.
