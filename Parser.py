@@ -209,7 +209,9 @@ class Parser:
         allOperands.append(returnType)
 
         for operand in allOperands:
+            # print(operand)
             processedOperands = self.preprocessOperand(instruction, operand)
+            # print(processedOperands)
             for procOp in processedOperands:
                 if(not procOp):  # skip empty operands
                     continue

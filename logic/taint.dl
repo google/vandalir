@@ -93,6 +93,15 @@ TYPE = "unknown",
 get_first_operand(IID, DATAOBJ),
 taintlocation(FID, DATAOBJ, _, CAT)
 .
+/*
+//TODO: check if i am useful
+//tainted->x ==> x is also tainted
+taintlocation(FID2, LOC2, TYPE, CAT) :- 
+points_to(FID, LOC, FID2, LOC2),
+taintlocation(FID, LOC, _, _),
+TYPE = "unknown", CAT = "userinput"
+.
+*/
 
 //library mode (=libmode)
 
