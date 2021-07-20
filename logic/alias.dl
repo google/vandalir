@@ -1,7 +1,7 @@
 //find equal memory location (alias analysis)
 .decl memequals(functionid1: _functionid, memlocation1: symbol, 
 functionid2: _functionid, memlocation2: symbol)
-.output memequals(delimiter=",")
+//.output memequals(delimiter=",")
 
 //case: (a <==> b) ==> (b <==> a)
 memequals(FID1, LOC1, FID2, LOC2) :- 
@@ -121,7 +121,7 @@ FID2 = FID1,
 LOC2 = cat(LOC1, ".0.0")
 .
 
-/*
+
 //case if x<=>y => x.z <=> y.z
 memequals(FID1, LOC1, FID2, LOC2) :-
 memlocation(FID1, X, _, _),
@@ -133,8 +133,8 @@ LOC1 = cat(X, ".", NUM),
 LOC2 = cat(Y, ".", NUM),
 memlocation(FID1, LOC1, _, _)
 .
-*/
 
+/*
 //case if x<=>y => x.z <=> y.z
 memequals(FID1, LOC1, FID2, LOC2) :-
 memequals(FID1, X, FID2, Y),
@@ -149,13 +149,12 @@ Z = @get_behind_last_dot(LOC1),
 is_vreg(X),
 is_vreg(Y)
 .
-
-
+*/
 //help relations
 
 //wrapper around get_gep_concatenated_memloc_str, that sets correct level and removes useless results
 .decl gep_str(instructionid: _instructionid, result: symbol)
-.output gep_str
+//.output gep_str
 //case depth = 1 ==> keep leading zero index
 gep_str(IID, RES) :-
 get_num_operands(IID, MAXNUM),
