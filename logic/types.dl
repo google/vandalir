@@ -14,7 +14,7 @@
 type(T) :- T = OV, operand(_,_,OV).
 
 .decl opval(type: symbol)
-.output opval
+//.output opval
 opval(T) :- T = OV, strlen(T) > 0, operand(_,_,OV).
 opval(T) :- T = OV, strlen(T) > 0, structoperand(_,_,_,OV).
 

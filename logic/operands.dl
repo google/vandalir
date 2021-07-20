@@ -89,7 +89,7 @@ concatenated(FID, LOC) :- FID = -1, is_global(LOC).
 
 //(first) part of a type
 .decl part_operand(type: symbol)
-.output part_operand(delimiter=",")
+//.output part_operand(delimiter=",")
 part_operand(TYPE) :- type(TYPE).
 part_operand(TYPE) :- TYPE=substr(FULLTYPE, 0, I), type(FULLTYPE), anumber(I), I>0, I<=strlen(FULLTYPE).
 

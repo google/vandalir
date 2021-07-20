@@ -7,7 +7,9 @@
 
 //mode equal
 .decl taintlocation(functionid: _functionid, memloc: symbol, memtyp: symbol, memcategory: _memcategory)
-.output taintlocation(delimiter=",")
+//.output taintlocation(delimiter=",")
+
+//mode one argument
 taintlocation(FID, LOC, TYPE, CAT) :-
 block(FID, BID, _),
 instruction(BID, IID, _, "call"),
@@ -131,7 +133,7 @@ CAT = cat("userinput_", to_string(SIZE))
 
 //helper to get size info for limited or unlimited userinput
 .decl get_size_of_userinput(size: number, instructionid: _instructionid, fname: symbol, argid_relative: number)
-.output get_size_of_userinput
+//.output get_size_of_userinput
 
 //case unlimited (equal)
 get_size_of_userinput(SIZE, IID, FNAME, ARGID_REL) :-
@@ -209,7 +211,7 @@ is_memcat_userinput_str(STR) :- taintlocation(_, _, _, STR), match("userinput_.*
 
 //checks if given location may contain direct, as well as transitioning userinput
 .decl is_memloc_with_userinput(functionid: _functionid, location: symbol)
-.output is_memloc_with_userinput
+//.output is_memloc_with_userinput
 //case direct user input
 is_memloc_with_userinput(FID, LOC) :- 
 is_memloc_with_direct_userinput(FID, LOC, _)
@@ -232,7 +234,7 @@ is_memloc_with_userinput(FID2, LOC2).
 
 //an edge FROM->TO describes that userinput in FROM may spill into TO
 .decl transitions_userinput_to(functionid: _functionid, memlocationFrom: symbol, memlocationTo: symbol)
-.output transitions_userinput_to
+//.output transitions_userinput_to
 //case: transition userinput from argument to return value
 transitions_userinput_to(FID, FROM, TO) :-
 userinput_transitioning_function(FNAME, IN, OUT), OUT=0,
