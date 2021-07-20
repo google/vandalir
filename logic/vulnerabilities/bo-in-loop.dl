@@ -1,6 +1,84 @@
 //detect buffer overflows within loops
 .decl bo_in_loops(instructionid: _instructionid, level: symbol, message: symbol)
 bo_in_loops(IID, LEVEL, MESSAGE) :- is_loop_with_duplicate_increase(IID, LEVEL, MESSAGE).
+bo_in_loops(IID, LEVEL, MESSAGE) :- oob_array_access_in_loop(IID, LEVEL, MESSAGE).
+
+//detect out of bounds array access of index, which is loop variable e.g. arr[i]
+.decl oob_array_access_in_loop(instructionid: _instructionid, level: symbol, message: symbol)
+
+//case head-controlled <x boundary
+oob_array_access_in_loop(IID, LEVEL, MESSAGE) :-
+//get loop
+loop(FID, CB, TYPE),
+TYPE = "head-controlled",
+loopCondition(FID, LASTBLOCK, CB, _, TYPE),
+loop_variable(CB, FID, LOOPVAR),
+
+instruction(CB, COMPINSTRUCTION, _, "icmp"),
+get_first_operand(COMPINSTRUCTION, COND),
+smaller_condition(COND),
+get_second_operand(COMPINSTRUCTION, VARIABLE),
+get_third_operand(COMPINSTRUCTION, VALUE),
+
+memequals(FID, LOOPVAR, FID, VARIABLE),
+get_int_by_vreg(MAXBOUNDARY_TEMP, FID, VALUE),
+MAXBOUNDARY = (MAXBOUNDARY_TEMP-1),
+//get array access
+instruction(GEPBID, GEPIID, _, OPC), OPC="getelementptr",
+block(FID, GEPBID, _),
+get_first_operand(GEPIID, ARRAY),
+get_ith_operand(GEPIID, I, VAL),
+I>1,
+is_vreg(VAL),
+memequals(FID, VAL, FID, LOOPVAR),
+
+downwardPath(FID, CB, LASTBLOCK),
+blockInDownwardPath(FID, CB, LASTBLOCK, GEPBID),
+//loop boundary larger than arraysize
+ARRAYSIZE = max ASIZE : get_buffsize_by_vreg(ASIZE, FID, ARRAY),
+ARRAYSIZE-1 < MAXBOUNDARY,
+IID = GEPIID,
+
+LEVEL = "Vulnerability",
+MESSAGE = cat("Array access within a loop with the loop variable [arr[i]] is out of bounds for i=",to_string(MAXBOUNDARY)," and array size: ", to_string(ARRAYSIZE),".")
+.
+
+//case head-controlled <=x boundary
+oob_array_access_in_loop(IID, LEVEL, MESSAGE) :-
+//get loop
+loop(FID, CB, TYPE),
+TYPE = "head-controlled",
+loopCondition(FID, LASTBLOCK, CB, _, TYPE),
+loop_variable(CB, FID, LOOPVAR),
+
+instruction(CB, COMPINSTRUCTION, _, "icmp"),
+get_first_operand(COMPINSTRUCTION, COND),
+smaller_equal_condition(COND),
+get_second_operand(COMPINSTRUCTION, VARIABLE),
+get_third_operand(COMPINSTRUCTION, VALUE),
+
+memequals(FID, LOOPVAR, FID, VARIABLE),
+get_int_by_vreg(MAXBOUNDARY_TEMP, FID, VALUE),
+MAXBOUNDARY = (MAXBOUNDARY_TEMP),
+//get array access
+instruction(GEPBID, GEPIID, _, OPC), OPC="getelementptr",
+block(FID, GEPBID, _),
+get_first_operand(GEPIID, ARRAY),
+get_ith_operand(GEPIID, I, VAL),
+I>1,
+is_vreg(VAL),
+memequals(FID, VAL, FID, LOOPVAR),
+
+downwardPath(FID, CB, LASTBLOCK),
+blockInDownwardPath(FID, CB, LASTBLOCK, GEPBID),
+//loop boundary larger than arraysize
+get_buffsize_by_vreg(ARRAYSIZE, FID, ARRAY),
+ARRAYSIZE-1 < MAXBOUNDARY,
+IID = GEPIID,
+
+LEVEL = "Vulnerability",
+MESSAGE = cat("Array access within a loop with the loop variable [arr[i]] is out of bounds for i=",to_string(MAXBOUNDARY)," and array size: ", to_string(ARRAYSIZE),".")
+.
 
 //detect duplicate variable increase
 .decl is_loop_with_duplicate_increase(loopConditionInstruction: _instructionid, level: symbol, message: symbol)
