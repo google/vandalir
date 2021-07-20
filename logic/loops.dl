@@ -111,15 +111,26 @@ X>=EDGEEND
 
 .decl loop_variable(conditionBlock: _blockid, functionid: _functionid, loopVariable: symbol)
 //.output loop_variable(delimiter=",")
-//case: condition block, direct integer
+//case: condition block, direct integer i32
 loop_variable(CB, FID, VREGLV) :- 
 block(FID, CB, _),
 loop(FID, CB, _),
 instruction(CB, IID, _, "icmp"),
 get_second_operand(IID, VREGLV),
-//check that it is an integer
+//check that it is an i32
 memlocation(FID, VREGLV, TYPE, _),
 TYPE = "i32"
+.
+
+//case: condition block, direct integer i64
+loop_variable(CB, FID, VREGLV) :- 
+block(FID, CB, _),
+loop(FID, CB, _),
+instruction(CB, IID, _, "icmp"),
+get_second_operand(IID, VREGLV),
+//check that it is an i64
+memlocation(FID, VREGLV, TYPE, _),
+TYPE = "i64"
 .
 
 //case: condition block, pointer to string is loop variable
@@ -128,7 +139,7 @@ block(FID, CB, _),
 loop(FID, CB, _),
 instruction(CB, IID, _, "icmp"),
 get_second_operand(IID, VREGLOAD),
-//check that it is an integer
+//check that it is a char
 memlocation(FID, VREGLOAD, TYPE, _),
 TYPE = "i8",
 instruction(CB, IIDLOAD, VREGLOAD, "load"),
