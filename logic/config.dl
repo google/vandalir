@@ -8,3 +8,11 @@
 //is library mode enabled
 .decl Config_LibraryMode(enabled: number)
 Config_LibraryMode(NUM) :- configuration("libraryMode", NUM).
+
+//show Vulnerabilities
+.decl Config_ShowVulnerabilities(enabled: number)
+Config_ShowVulnerabilities(NUM) :- configuration("showVulnerabilities", NUM).
+
+//show Warnings
+.decl Config_ShowWarnings(enabled: number)
+Config_ShowWarnings(NUM) :- configuration("showWarnings", NUM).

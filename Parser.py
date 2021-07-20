@@ -37,12 +37,14 @@ MAXDEPTH = 4
 
 
 # configuration Datalog
-
 # set library mode (all output facing parameters may contain userinput)
 DLC_LIBRARYMODE = ("libraryMode", False)
+DLC_SHOWVULNERABILITIES = ("showVulnerabilities", True)
+DLC_SHOWWARNINGS = ("showWarnings", False)
+
 
 # build config array
-DATALOG_CONFIG = [DLC_LIBRARYMODE]
+DATALOG_CONFIG = [DLC_LIBRARYMODE, DLC_SHOWVULNERABILITIES, DLC_SHOWWARNINGS]
 
 # implementation
 
