@@ -151,6 +151,16 @@ upperbound_conditions(SYM) :- SYM = "sle".
 upperbound_conditions(SYM) :- SYM = "ult".
 upperbound_conditions(SYM) :- SYM = "ule".
 
+//larger
+.decl smaller_condition(condition: symbol)
+smaller_condition(SYM) :- SYM = "slt".
+smaller_condition(SYM) :- SYM = "ult".
+
+//larger equal
+.decl smaller_equal_condition(condition: symbol)
+smaller_equal_condition(SYM) :- SYM = "sle".
+smaller_equal_condition(SYM) :- SYM = "ule".
+
 //lower bounds
 .decl lowerbound_conditions(condition: symbol)
 lowerbound_conditions(SYM) :- SYM = "sgt".
