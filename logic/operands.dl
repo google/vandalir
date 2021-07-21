@@ -18,6 +18,10 @@ is_structpointer(T) :- strlen(T) > 0, substr(T, 0, 8) = "%struct.", is_pointer(T
 .decl is_multidimensional(type: symbol)
 is_multidimensional(T) :- contains("x", T), opval(T).
 
+.decl is_inttype(type: symbol)
+is_inttype("i32").
+is_inttype("i64").
+
 //returns fid and -1
 .decl fid_or_none(value: number, functionid: _functionid)
 fid_or_none(VAL, FID) :- function(FID, _, _, _), VAL=FID.

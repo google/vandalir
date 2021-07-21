@@ -310,13 +310,16 @@ VAL = to_number(LOC2)
 
 
 //case store integer
-//TODO: does this help?
 get_int_by_vreg_internal(VAL, FID, VREG) :- 
 block(FID, BID, _), 
 instruction(BID, IID, _, OPC), OPC = "store",
+get_first_operand(IID, TYPE),
+is_inttype(TYPE), 
 get_second_operand(IID, NEWINT), 
-get_fourth_operand(IID, VREG), 
-get_int_by_vreg_internal(VAL, FID, NEWINT)
+get_fourth_operand(IID, VREG),
+is_numeric(NEWINT),
+NEWINT != "0", 
+VAL = to_number(NEWINT)
 .
 
 //case load integer
