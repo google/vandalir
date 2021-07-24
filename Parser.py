@@ -26,8 +26,10 @@ USER_INPUT = [["main", "1", "+", "0"], ["scanf", "2", "+", "1"], ["fscanf", "3",
               ["fgets", "1", "=", "1"], ["fgetc", "0", "=", "1"], ["getc", "0", "=", "1"],
               ["gets", "1", "=", "0"], ["getenv", "0", "=", "0"], ["fread", "1", "=", "0"],
               ["_IO_getc", "0", "=", "1"], ["__isoc99_sscanf", "2", "+", "1"],
-              ["__isoc99_fscanf", "3", "+", "1"], ["recv", "2", "=", "1"],
-              ["_IO_getc", "0", "=", "1"]]
+              ["__isoc99_fscanf", "3", "+", "1"], ["recv", "2", "=", "1"], 
+              ["recvfrom", "2", "=", "1"], ["recvmsg", "2", "=", "1"],
+              ["setbuf", "2", "=", "1"], ["setbuffer", "2", "=", "1"],
+              ["setvbuf", "2", "=", "1"], ["_IO_getc", "0", "=", "1"]]
 
 # this limit describes the maximum number of elements in one array, that are used by the analysis
 LIMIT = 1000
@@ -40,7 +42,7 @@ MAXDEPTH = 4
 # set library mode (all output facing parameters may contain userinput)
 DLC_LIBRARYMODE = ("libraryMode", False)
 DLC_SHOWVULNERABILITIES = ("showVulnerabilities", True)
-DLC_SHOWWARNINGS = ("showWarnings", False)
+DLC_SHOWWARNINGS = ("showWarnings", True)
 
 
 # build config array
