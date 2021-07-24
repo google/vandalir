@@ -124,6 +124,7 @@ LOC2 = cat(LOC1, ".0.0")
 
 //case if x<=>y => x.z <=> y.z
 memequals(FID1, LOC1, FID2, LOC2) :-
+Config_deepAlias(1),
 memlocation(FID1, X, _, _),
 memlocation(FID2, Y, _, _),
 memequals(FID1, X, FID2, Y),

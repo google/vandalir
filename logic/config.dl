@@ -16,3 +16,7 @@ Config_ShowVulnerabilities(NUM) :- configuration("showVulnerabilities", NUM).
 //show Warnings
 .decl Config_ShowWarnings(enabled: number)
 Config_ShowWarnings(NUM) :- configuration("showWarnings", NUM).
+
+//deep Alias
+.decl Config_deepAlias(enabled: number)
+Config_deepAlias(NUM) :- configuration("deepAlias", NUM).
