@@ -18,6 +18,7 @@ MESSAGE = cat(FNAME," detected and user input is provided to its #", to_string(R
 .
 
 //issue warning if the minimal number of regular arguments is not met and critical arg(containing the formatstring) seems to be generated dynamically
+//case param is vreg
 is_vulnerable_format_string_instruction(IID, LEVEL, MESSAGE) :-
 get_formatstring_arg(FNAME, RELARGNUM),
 block(FID, BID, _),
@@ -29,9 +30,10 @@ block(FID, BID2, _),
 instruction(BID2, IID2, FSLOC, _),
 IID2 > 0, //is a real not an artificial vreg
 LEVEL = "Warning",
-MESSAGE = cat(FNAME, " detected and its formatstring argument is not global.")
+MESSAGE = cat(FNAME, " detected and its formatstring argument is not static.")
 .
 
+//case param is get && get is vreg
 //issue warning if the minimal number of regular arguments is not met and critical arg(containing the formatstring) seems to be generated dynamically
 is_vulnerable_format_string_instruction(IID, LEVEL, MESSAGE) :-
 get_formatstring_arg(FNAME, RELARGNUM),
@@ -41,12 +43,48 @@ is_X_call_instruction(FNAME, IID),
 get_ith_operand(IID, RELARGNUM, FSLOC),
 is_vreg(FSLOC),
 block(FID, BID2, _),
-instruction(BID2, IID_GEP, FSLOC, "getelementptr"),
-get_first_operand(IID_GEP, FORMATSTR_VREG),
-is_vreg(FORMATSTR_VREG),
-!is_global(FORMATSTR_VREG),
+instruction(BID2, IID2, FSLOC, _),
+get_first_operand(IID2, OBJECT),
+is_vreg(OBJECT),
+IID2 < 0, //is a an artificial vreg
 LEVEL = "Warning",
-MESSAGE = cat(FNAME, " detected and its formatstring argument is not global.")
+MESSAGE = cat(FNAME, " detected and its formatstring argument is not static.")
+.
+
+//case param is get && get is global (not static)
+//issue warning if the minimal number of regular arguments is not met and critical arg(containing the formatstring) seems to be generated dynamically
+is_vulnerable_format_string_instruction(IID, LEVEL, MESSAGE) :-
+get_formatstring_arg(FNAME, RELARGNUM),
+block(FID, BID, _),
+instruction(BID, IID, _, _), 
+is_X_call_instruction(FNAME, IID),
+get_ith_operand(IID, RELARGNUM, FSLOC),
+is_vreg(FSLOC),
+block(FID, BID2, _),
+instruction(BID2, IID2, FSLOC, _),
+get_first_operand(IID2, OBJECT),
+is_global(OBJECT),
+!global(OBJECT, "private_unnamed_addr", _, _, _),
+IID2 < 0, //is a an artificial vreg
+LEVEL = "Warning",
+MESSAGE = cat(FNAME, " detected and its formatstring argument is not static.")
+.
+
+//issue warning if the minimal number of regular arguments is not met and critical arg(containing the formatstring) seems to be generated dynamically
+//case param is global
+is_vulnerable_format_string_instruction(IID, LEVEL, MESSAGE) :-
+get_formatstring_arg(FNAME, RELARGNUM),
+block(FID, BID, _),
+instruction(BID, IID, _, _), 
+is_X_call_instruction(FNAME, IID),
+get_ith_operand(IID, RELARGNUM, FSLOC),
+is_global(FSLOC),
+!global(FSLOC, "private_unnamed_addr", _, _, _),
+block(FID, BID2, _),
+instruction(BID2, IID2, FSLOC, _),
+IID2 > 0, //is a real not an artificial vreg
+LEVEL = "Warning",
+MESSAGE = cat(FNAME, " detected and its formatstring argument is not static.")
 .
 
 
