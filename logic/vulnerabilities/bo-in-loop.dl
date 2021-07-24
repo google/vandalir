@@ -38,7 +38,7 @@ blockInDownwardPath(FID, CB, LASTBLOCK, GEPBID),
 ARRAYSIZE = max ASIZE : get_buffsize_by_vreg(ASIZE, FID, ARRAY),
 ARRAYSIZE-1 < MAXBOUNDARY,
 IID = GEPIID,
-
+ARRAYSIZE > 2,
 LEVEL = "Vulnerability",
 MESSAGE = cat("Array access within a loop with the loop variable [arr[i]] is out of bounds for i=",to_string(MAXBOUNDARY)," and array size: ", to_string(ARRAYSIZE),".")
 .
@@ -74,6 +74,7 @@ blockInDownwardPath(FID, CB, LASTBLOCK, GEPBID),
 //loop boundary larger than arraysize
 get_buffsize_by_vreg(ARRAYSIZE, FID, ARRAY),
 ARRAYSIZE-1 < MAXBOUNDARY,
+ARRAYSIZE > 2,
 IID = GEPIID,
 
 LEVEL = "Vulnerability",
@@ -99,7 +100,7 @@ is_increase_variable_instruction_of_variable(BLOCK, IID, VAR),
 //second increase instruction
 is_increase_variable_instruction_of_variable(BLOCK2, IID2, VAR),
 IID != IID2,
-MESSAGE = "duplicate loop variable increase in loop, may result in memory error",
+MESSAGE = "duplicate loop variable increase in loop may result in memory error",
 LEVEL = "Vulnerability"
 .
 
@@ -118,7 +119,7 @@ is_increase_variable_instruction_of_variable(BLOCK, IID, VAR),
 //second increase instruction
 is_increase_variable_instruction_of_variable(BLOCK2, IID2, VAR),
 IID != IID2,
-MESSAGE = "duplicate loop variable increase in loop, may result in memory error",
+MESSAGE = "duplicate loop variable increase in loop may result in memory error",
 LEVEL = "Vulnerability"
 .
 
