@@ -11,16 +11,17 @@
 #include "test.dl"
 #include "instructions.dl"
 #include "operands.dl"
-#include "control-flow.dl"
+#include "control_flow.dl"
 #include "loops.dl"
 #include "memlocation.dl"
 #include "memlocation_structs.dl"
 
 //rules & analysis 
 #include "alias.dl"
-#include "points-to.dl"
+#include "points_to.dl"
 #include "taint.dl"
 #include "memops.dl"
+#include "value_analysis.dl"
 
 
 //vulnerable detection
