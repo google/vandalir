@@ -14,3 +14,6 @@ llvm-ir/
 profile
 /bin
 /jreports
+/output_realworld
+calc_unique.py
+log.txt
