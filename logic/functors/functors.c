@@ -97,9 +97,10 @@ int32_t get_before_xseperator(char *input) {
 
 int32_t get_num_seperators(char *input) {
 
+	char *input2 = input;
 	int32_t i;
 
-	for (i=0; input[i]; input[i]=='~' ? i++ : *input++);
+	for (i=0; input2[i]; input2[i]=='~' ? i++ : *input2++);
 	
 	return i;
 	
@@ -107,9 +108,11 @@ int32_t get_num_seperators(char *input) {
 
 int32_t get_num_xseperators(char *input) {
 
+
+	char *input2 = input;
 	int32_t i;
 
-	for (i=0; input[i]; input[i]=='x' ? i++ : *input++);
+	for (i=0; input2[i]; input2[i]=='x' ? i++ : *input2++);
 	
 	return i;
 	
@@ -117,9 +120,10 @@ int32_t get_num_xseperators(char *input) {
 
 int32_t get_num_stars(char *input) {
 
+	char *input2 = input;
 	int32_t i;
 
-	for (i=0; input[i]; input[i]=='*' ? i++ : *input++);
+	for (i=0; input2[i]; input2[i]=='*' ? i++ : *input2++);
 	
 	return i;
 	
@@ -127,9 +131,10 @@ int32_t get_num_stars(char *input) {
 
 int32_t get_num_dots(char *input) {
 
+	char *input2 = input;
 	int32_t i;
-
-	for (i=0; input[i]; input[i]=='.' ? i++ : *input++);
+	
+	for (i=0; input2[i]; input2[i]=='.' ? i++ : *input2++);
 	
 	return i;
 	
