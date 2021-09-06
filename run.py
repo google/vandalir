@@ -2,6 +2,7 @@ import argparse
 import sys
 import os
 import subprocess
+import pathlib
 
 
 def parseArgs(parser):
@@ -40,14 +41,10 @@ def parse(filepath, facts_dir):
     else:
         print("Unsupported file type. File extension needs to be .c, .bc or .ll")
 
-def compile_datalog():
-    print("Compiling Datalog...")
-    command = "souffle \"logic/main.dl\" -o bin/analyzer -L logic/functors "
-    subprocess.call(command, shell=True, cwd="./")
-    print("Datalog compiled.")
-
 
 def run(filepath, compile, previous_compile, profile, facts_dir, output_dir, thread_count):
+
+    set_functors_path()
 
     if(not os.path.isdir(output_dir)):
             os.mkdir(output_dir)
@@ -61,7 +58,7 @@ def run(filepath, compile, previous_compile, profile, facts_dir, output_dir, thr
         command = "bin/analyzer "+filepath+" "
         command += "-F "+facts_dir+" "
         command += "-D "+output_dir+" "
-        command += "-j "+thread_count+" "
+        command += "-j "+thread_count        
 
         subprocess.call(command, shell=True)
 
@@ -88,11 +85,23 @@ def run(filepath, compile, previous_compile, profile, facts_dir, output_dir, thr
 
     print("Execution finished output written to output directory")
 
+def set_functors_path():
+    # setup LD_LIBRARY_PATH
+    absPath = str(pathlib.Path(__file__).parent.absolute())
+    os.environ['LD_LIBRARY_PATH'] = absPath+"/"+"logic/functors/"
+    # print(absPath+"/"+"logic/functors/")
 
 def compile_functors():
     command = "./make.sh "
     subprocess.call(command, shell=True, cwd="logic/functors/")
     # print("Functors compiled.")
+    set_functors_path()
+
+def compile_datalog(thread_count=4):
+    print("Compiling Datalog...")
+    command = "souffle \"logic/main.dl\" -o bin/analyzer -L logic/functors -j "+str(thread_count)
+    subprocess.call(command, shell=True, cwd="./")
+    print("Datalog compiled.")
 
 
 def main():

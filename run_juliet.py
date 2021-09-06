@@ -105,7 +105,7 @@ def compile_functors():
 def compile_datalog():
     compile_functors()
     print("Compiling Datalog...")
-    command = "souffle \"logic/main.dl\" -o bin/analyzer -L logic/functors "
+    command = "souffle \"logic/main.dl\" -o bin/analyzer -L logic/functors -j "+str(THREADS)
     subprocess.call(command, shell=True, cwd="./")
     print("Datalog compiled.")
 
