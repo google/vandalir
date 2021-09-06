@@ -15,12 +15,14 @@ memequals(EFID, ELOC, E2FID, E2LOC),
 points_to(SFID, SLOC, E2FID, E2LOC).
 
 //case memequals: (s -> e && as <==> s && ae <==> e) ==> as -> ae
-points_to(SFID, SLOC, EFID, ELOC) :- 
+//probably this case is already covered by the two previous ones (?)
+/*
+points_to(SFID, SLOC, EFID, ELOC) :-
+points_to(S2FID, S2LOC, E2FID, E2LOC), 
 memequals(SFID, SLOC, S2FID, S2LOC), 
-points_to(S2FID, S2LOC, E2FID, E2LOC),
-memequals(EFID, ELOC, E2FID, E2LOC) 
+memequals(EFID, ELOC, E2FID, E2LOC)
 .
-
+*/
 
 //case store address to integer
 points_to(SFID, SLOC, EFID, ELOC) :- 
