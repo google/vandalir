@@ -7,6 +7,7 @@ import subprocess
 def parseArgs(parser):
     parser.add_argument('file', action='store', help='file that should be analyzed')
     parser.add_argument('-c', action='store_true', dest='compile', default=False, help='use compilation in Soufflé')
+    parser.add_argument('-pc', action='store_true', dest='previous_compile', default=False, help='use previous compiled version')
     parser.add_argument('-p', action='store_true', dest='profile', default=False, help='use the Soufflé profiler')
     parser.add_argument('-f', action='store', dest='facts_dir', default="facts",
                         help='specify facts directory (default: facts)')
@@ -39,24 +40,44 @@ def parse(filepath, facts_dir):
     else:
         print("Unsupported file type. File extension needs to be .c, .bc or .ll")
 
+def compile_datalog():
+    print("Compiling Datalog...")
+    command = "souffle \"logic/main.dl\" -o bin/analyzer -L logic/functors "
+    subprocess.call(command, shell=True, cwd="./")
+    print("Datalog compiled.")
 
-def run(filepath, compile, profile, facts_dir, output_dir, thread_count):
 
-    compile_functors()
+def run(filepath, compile, previous_compile, profile, facts_dir, output_dir, thread_count):
 
     if(not os.path.isdir(output_dir)):
-        os.mkdir(output_dir)
+            os.mkdir(output_dir)
 
-    command = "souffle \"logic/main.dl\" "
     if(compile):
-        command += "--compile "
-    command += "-F \""+facts_dir+"\" -D \""+output_dir+"\" "
-    command += "-L logic/functors "
-    if(profile):
-        command += "-p ./profile "
-    command += "-j "+thread_count
+        compile_datalog()
+    
+    if((previous_compile or compile) and not profile):
+        #execute previously compiled
 
-    subprocess.call(command, shell=True)
+        command = "bin/analyzer "+filepath+" "
+        command += "-F "+facts_dir+" "
+        command += "-D "+output_dir+" "
+        command += "-j "+thread_count+" "
+
+        subprocess.call(command, shell=True)
+
+    else:
+        compile_functors()
+
+        command = "souffle \"logic/main.dl\" "
+        command += "-F \""+facts_dir+"\" -D \""+output_dir+"\" "
+        command += "-L logic/functors "
+        if(compile or previous_compile):
+            command += "--compile "
+        if(profile):
+            command += "-p ./profile "
+        command += "-j "+thread_count
+
+        subprocess.call(command, shell=True)
 
     if(profile):
         command = "souffle-profile \"./profile\" -j"
@@ -77,6 +98,7 @@ def compile_functors():
 def main():
     filepath = args.file
     compile = args.compile
+    previous_compile = args.previous_compile
     profile = args.profile
 
     facts_dir = args.facts_dir
@@ -86,7 +108,7 @@ def main():
         thread_count = 4
 
     parse(filepath, facts_dir)
-    run(filepath, compile, profile, facts_dir, output_dir, thread_count)
+    run(filepath, compile, previous_compile, profile, facts_dir, output_dir, thread_count)
 
 
 if __name__ == "__main__":
