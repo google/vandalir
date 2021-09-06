@@ -1,7 +1,7 @@
 //find equal memory location (alias analysis)
 .decl memequals(functionid1: _functionid, memlocation1: symbol, 
 functionid2: _functionid, memlocation2: symbol)
-//.output memequals(delimiter=",")
+.output memequals(delimiter=",")
 
 //case: (a <==> b) ==> (b <==> a)
 memequals(FID1, LOC1, FID2, LOC2) :- 
