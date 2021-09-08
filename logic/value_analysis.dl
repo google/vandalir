@@ -1,3 +1,4 @@
+//maximum depth of value analysis
 #define VA_MAXDEPTH 10
 
 //get possible integer values (wrapper, which supports constants as vreg)

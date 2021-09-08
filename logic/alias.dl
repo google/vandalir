@@ -6,13 +6,13 @@ functionid2: _functionid, memlocation2: symbol)
 //case: (a <==> b) ==> (b <==> a)
 memequals(FID1, LOC1, FID2, LOC2) :- 
 memequals(FID2, LOC2, FID1, LOC1).
-
+/*
 //case: [(a <==> x) && (x <==> b)] ==> (a <==> b)
 memequals(FID1, LOC1, FID2, LOC2) :- 
 memequals(FID1, LOC1, FIDX, LOCX),
 memequals(FID2, LOC2, FIDX, LOCX)
 .
-
+*/
 //case load: (x = *a) && (a->b) ==> (x <==> b)
 memequals(FID1, X, FID2, B) :- 
 instruction(BID, IID, X, OPC), block(FID1, BID, _), OPC = "load",
@@ -164,7 +164,7 @@ get_gep_concatenated_memloc_str(IID, LEVEL, RES),
 contains(".", RES),
 !is_struct(RES),
 !is_structpointer(RES),
-DEPTH = @get_num_dots(RES),
+DEPTH = @get_num_seperators(RES, "."),
 DEPTH = 1
 .
 
@@ -176,9 +176,9 @@ get_gep_concatenated_memloc_str(IID, LEVEL, RES),
 contains(".", RES),
 !is_struct(RES),
 !is_structpointer(RES),
-DEPTH = @get_num_dots(RES),
+DEPTH = @get_num_seperators(RES, "."),
 DEPTH > 1,
-INDICES = @get_behind_dot(RES),
+INDICES = @get_behind(RES, "."),
 FIRSTINDEX = substr(INDICES, 0, 2),
 FIRSTINDEX != "0."
 .
@@ -190,13 +190,13 @@ get_gep_concatenated_memloc_str(IID, LEVEL, RES),
 contains(".", RES),
 !is_struct(RES),
 !is_structpointer(RES),
-DEPTH = @get_num_dots(RES),
+DEPTH = @get_num_seperators(RES, "."),
 DEPTH > 1,
-INDICES = @get_behind_dot(RES),
+INDICES = @get_behind(RES, "."),
 FIRSTINDEX = substr(INDICES, 0, 2),
 FIRSTINDEX = "0.",
 NEWINDICES = substr(INDICES, 2, strlen(INDICES)),
-BASEREGISTER = substr(RES, 0, @get_before_dot(RES)),
+BASEREGISTER = substr(RES, 0, @get_before(RES, ".")),
 RESULT = cat(BASEREGISTER, ".", NEWINDICES)
 .
 

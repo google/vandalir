@@ -2,10 +2,6 @@
 .functor f(number):number
 
 
-.decl A(x:number) 
-A(1). 
-A(@f(i)) :- A(i), @f(i) < 100.
-
 .decl V(v:symbol)
 V("te_st").
 V("test2_0_1").
@@ -18,20 +14,21 @@ V("shefu0~;efw").
 
 
 .decl split(inp: symbol, split: symbol)
-//.output split
+.output split
 //split(INP, SPLIT) :-SPLIT = @remove_one_zero(INP), V(INP).
-split(INP, SPLIT) :-SPLIT = @get_behind_seperator(INP), V(INP).
-/*
-.decl split2(inp: symbol, split: symbol)
-//.output split2
-//split2(INP, SPLIT) :-SPLIT = substr(INP, @get_before_seperator(INP)+1, strlen(INP)), V(INP).
+split(INP, SPLIT) :-SPLIT = @get_behind(INP, "~"), V(INP).
 
+.decl split2(inp: symbol, split: symbol)
+.output split2
+split2(INP, SPLIT) :-SPLIT = substr(INP, 0, @get_before(INP, "~")), V(INP).
+
+/*
 split2(IN, OUT) :-
 memlocation(_, _, _, CATSTRUCT),
 ARRAYALL = substr(CATSTRUCT, 0, 9),
 ARRAYALL = "arrayAll~",
 VALUES = substr(CATSTRUCT, 9, strlen(CATSTRUCT)),
-SIZESTR = substr(VALUES, 0, @get_before_seperator(VALUES)),
+SIZESTR = substr(VALUES, 0, @get_before(VALUES, "~")),
 IN = SIZESTR,
 get_xth_entry_in_separated_str(ELEMENTS_IN_LEVEL, 2, _, SIZESTR),
 OUT = ELEMENTS_IN_LEVEL.//"42".//ELEMENTS_IN_LEVEL.

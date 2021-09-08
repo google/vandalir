@@ -101,4 +101,4 @@ part_operand(TYPE) :- TYPE=substr(FULLTYPE, 0, I), type(FULLTYPE), anumber(I), I
 //get level of pointer (or pointer to pointer, etc.)
 .decl pointer_level(type: symbol, level: number)
 //.output pointer_level(delimiter=",")
-pointer_level(TYPE, LVL) :- part_operand(TYPE), LVL = @get_num_stars(TYPE).
+pointer_level(TYPE, LVL) :- part_operand(TYPE), LVL = @get_num_seperators(TYPE, "*").
