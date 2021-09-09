@@ -65,7 +65,7 @@ memlocation_multidim_array_enumerator(IID, LEVEL, LOC, _).
 //global allocations of one element
 memlocation(FID, LOC, TYPE, CAT) :- 
 global(LOC, _, TYPE, SIZE, _),
-SIZE = 1,
+SIZE = "1",
 FID = -1, CAT = "global".
 
 //global functions
@@ -78,14 +78,20 @@ TYPE = cat(cat(cat(RETTYPE, " ("), ARGLIST), ")*"),
 CAT = "global".
 
 //global allocations of array (all element).
+//TODO add case with not numeric SIZESTR (e.g. 2x12)
 memlocation(FID, LOC, TYPE, CAT) :- 
-global(LOC, _, BASETYPE, SIZE, _), TYPE = cat(BASETYPE, "*"),
+global(LOC, _, BASETYPE, SIZESTR, _), TYPE = cat(BASETYPE, "*"),
+is_numeric(SIZESTR),
+SIZE = to_number(SIZESTR),
 SIZE > 1,
 FID = -1, CAT = "arrayAll".
 
 //global allocations of array (index elements).
+//TODO add case with not numeric SIZESTR (e.g. 2x12)
 memlocation(FID, LOCATION, TYPE, CAT) :- 
-global(LOC, _, BASETYPE, SIZE, _), 
+global(LOC, _, BASETYPE, SIZESTR, _),
+is_numeric(SIZESTR),
+SIZE = to_number(SIZESTR), 
 TYPE = cat(BASETYPE, "*"),
 SIZE > 1,
 memlocation_global_array_enumerator(FID, LOC, NUM, BASETYPE, CAT),
@@ -188,13 +194,18 @@ memlocation_alloca_array_enumerator(FID, LOC, NUM2, TYPE, CAT).
 //TODO: this one seems quite ugly, might benefit from a rewrite
 .decl memlocation_global_array_enumerator(functionid: _functionid, memlocation: symbol, enumerator: number, memtyp: symbol, memcategory: _memcategory)
 //.output memlocation_global_array_enumerator(delimiter=",")
+//TODO add cases with global SIZESTR not numeric e.g. (2x12)
 memlocation_global_array_enumerator(FID, LOC, NUM, TYPE, CAT) :-
-global(LOC, _, TYPE, SIZE, _),
+global(LOC, _, TYPE, SIZESTR, _),
+is_numeric(SIZESTR),
+SIZE = to_number(SIZESTR),
 NUM = 0, NUM<SIZE,
 SIZE > 1,
 FID = -1, CAT = "arrayIndex".
 memlocation_global_array_enumerator(FID, LOC, NUM, TYPE, CAT) :-
-global(LOC, _, TYPE, SIZE, _),
+global(LOC, _, TYPE, SIZESTR, _),
+is_numeric(SIZESTR),
+SIZE = to_number(SIZESTR),
 NUM > 0, NUM<SIZE, NUM = NUM2+1,
 SIZE > 1,
 memlocation_global_array_enumerator(FID, LOC, NUM2, TYPE, CAT),

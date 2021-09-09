@@ -55,6 +55,7 @@ MESSAGE = cat(cat(cat("snprintf: possible insufficient buffer size ", to_string(
 .decl is_vulnerable_sprintf_call_instruction(instructionid: _instructionid, level: symbol, message: symbol)
 //.output is_vulnerable_sprintf_call_instruction
 //case %str in format string, no other %
+//TODO: add case with non numeric GLOBSIZESTR e.g. (2x12)
 is_vulnerable_sprintf_call_instruction(IID, LEVEL, MESSAGE) :- 
 is_X_call_instruction("sprintf", IID),
 block(FID, BID, _), instruction(BID, IID, _, _), 
@@ -64,7 +65,9 @@ get_second_operand(IID, FORMATSTR_GEP),
 instruction(_, IID_GEP, FORMATSTR_GEP, "getelementptr"),
 get_first_operand(IID_GEP, FORMATSTR_GLOB),
 is_global(FORMATSTR_GLOB),
-global(FORMATSTR_GLOB, _, _, GLOBSIZE, FORMATSTR),
+global(FORMATSTR_GLOB, _, _, GLOBSIZESTR, FORMATSTR),
+is_numeric(GLOBSIZESTR),
+GLOBSIZE = to_number(GLOBSIZESTR),
 contains("%s", FORMATSTR),
 get_buffsize_by_vreg(SRC_SIZE, FID, SRC),
 get_buffsize_by_vreg(DEST_SIZE, FID, DEST),

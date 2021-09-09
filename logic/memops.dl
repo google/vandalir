@@ -179,7 +179,9 @@ VAL = 0.
 //case global
 get_buffsize_by_vreg(VAL, FID, VREG) :-
 is_global(VREG),
-global(VREG, _, _, VAL, _),
+global(VREG, _, _, SIZE, _),
+is_numeric(SIZE),
+VAL = to_number(SIZE),
 function(FID, _, _, _)
 .
 
