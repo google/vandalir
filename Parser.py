@@ -235,10 +235,18 @@ class Parser:
 
         try:
             operands[0] = condition
-            operands[1] = "%"+ops2[0].strip().rsplit("%", 1)[1].strip()
+            if(not "%" in ops2[0] and " " in ops2[0].strip()):
+                operands[1] = ops2[0].strip().rsplit(" ", 1)[1].strip()
+            else:
+                operands[1] = "%"+ops2[0].strip().rsplit("%", 1)[1].strip()
             operands[2] = ops2[1].strip()
+            # print(operands)
         except:
             print("Parsing Error in parseICMPInstructions")
+            print(instruction)
+            # print(ops)
+            # print(ops2)
+            # sys.exit()
 
         for op in operands:
             if(op is None):
