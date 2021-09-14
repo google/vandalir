@@ -15,6 +15,7 @@
 #include "loops.dl"
 #include "memlocation.dl"
 #include "memlocation_structs.dl"
+#include "memlocation_arrays.dl"
 
 //rules & analysis 
 #include "alias.dl"

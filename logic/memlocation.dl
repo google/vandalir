@@ -15,52 +15,7 @@ get_first_operand(IID, TYPE), is_numeric(SIZE), to_number(SIZE) = 1,
 !is_struct(TYPE),
 get_second_operand(IID, SIZE).
 
-//1-dim arrays
-//stack allocations of array (all element).
-memlocation(FID, LOC, TYPE, CAT) :- instruction(BID, IID, LOC, OPC), block(FID, BID, _),
-OPC = "alloca", CAT = "arrayAll",  !is_alloca_multidimensional(IID),
-get_first_operand(IID, BASETYPE), TYPE = cat(BASETYPE,"*"), 
-is_numeric(SIZE), to_number(SIZE) > 1,
-get_second_operand(IID, SIZE).
 
-//stack allocations of array (index elements).
-memlocation(FID, LOCATION, TYPE, CAT) :- 
-memlocation_alloca_array_enumerator(FID, LOC, NUM, BASETYPE, CAT),
-TYPE = cat(BASETYPE,"*"),
-!is_struct(BASETYPE),
-get_all_getelementptr_indices(NUM), //limit evaluated indices to those used by getelemeptr
-LOCATION = cat(cat(LOC, "."), to_string(NUM)).
-
-
-//multi-dim arrays
-//stack allocations of array (all element).
-
-memlocation(FID, LOC, TYPE, CAT) :- instruction(BID, IID, _, OPC), block(FID, BID, _),
-OPC = "alloca", CAT = "arrayAll",  is_alloca_multidimensional(IID),
-get_first_operand(IID, BASETYPE), TYPE = cat(BASETYPE,"*"),  
-memlocation_multidim_array_enumerator(IID, _, _, LOC).
-
-//stack allocations of array (index elements), which are no structs
-memlocation(FID, LOC, TYPE, CAT) :- instruction(BID, IID, _, OPC), block(FID, BID, _),
-!is_struct(TYPE),
-TYPEPART = substr(TYPE,0,strlen(TYPE)-1),
-!is_struct(TYPEPART),
-OPC = "alloca", CAT = "arrayIndex",  is_alloca_multidimensional(IID),
-get_first_operand(IID, BASETYPE), TYPE = cat(BASETYPE,"*"), 
-get_num_operands(IID, NUMOPERANDS),
-LEVEL = NUMOPERANDS-2,
-memlocation_multidim_array_enumerator(IID, LEVEL, LOC, _).
-
-//stack allocations of array (index elements), which are structs
-memlocation(FID, LOC, TYPE, CAT) :- instruction(BID, IID, _, OPC), block(FID, BID, _),
-TYPEPART = substr(TYPE,0,strlen(TYPE)-1),
-is_struct(TYPEPART),
-//is_pointer(TYPE),
-OPC = "alloca", CAT = "structAll",  is_alloca_multidimensional(IID),
-get_first_operand(IID, BASETYPE), TYPE = cat(BASETYPE,"*"), 
-get_num_operands(IID, NUMOPERANDS),
-LEVEL = NUMOPERANDS-2,
-memlocation_multidim_array_enumerator(IID, LEVEL, LOC, _).
 
 //global allocations of one element
 memlocation(FID, LOC, TYPE, CAT) :- 
@@ -76,28 +31,6 @@ LOC = cat("@",FNAME),
 get_arg_typelist_by_fid(ARGLIST, FIDGLOB),
 TYPE = cat(cat(cat(RETTYPE, " ("), ARGLIST), ")*"),
 CAT = "global".
-
-//global allocations of array (all element).
-//TODO add case with not numeric SIZESTR (e.g. 2x12)
-memlocation(FID, LOC, TYPE, CAT) :- 
-global(LOC, _, BASETYPE, SIZESTR, _), TYPE = cat(BASETYPE, "*"),
-is_numeric(SIZESTR),
-SIZE = to_number(SIZESTR),
-SIZE > 1,
-FID = -1, CAT = "arrayAll".
-
-//global allocations of array (index elements).
-//TODO add case with not numeric SIZESTR (e.g. 2x12)
-memlocation(FID, LOCATION, TYPE, CAT) :- 
-global(LOC, _, BASETYPE, SIZESTR, _),
-is_numeric(SIZESTR),
-SIZE = to_number(SIZESTR), 
-TYPE = cat(BASETYPE, "*"),
-SIZE > 1,
-memlocation_global_array_enumerator(FID, LOC, NUM, BASETYPE, CAT),
-//NUM = SIZE-1,
-get_all_getelementptr_indices(NUM), //limit evaluated indices to thouse used by getelemeptr
-LOCATION = cat(cat(LOC, "."), to_string(NUM)).
 
 //vreg function call
 memlocation(FID, LOC, TYPE, CAT) :- instruction(BID, IID, VREG, OPC), block(FID, BID, _),
@@ -167,78 +100,3 @@ get_all_getelementptr_indices_str(SYM) :-
 is_numeric(SYM), 
 RES = to_number(SYM), 
 get_all_getelementptr_indices(RES).
-
-
-//recursive helper function to enumerate alloca arrays
-.decl memlocation_alloca_array_enumerator(functionid: _functionid, memlocation: symbol, enumerator: number, memtyp: symbol, memcategory: _memcategory)
-//not structs
-memlocation_alloca_array_enumerator(FID, LOC, NUM, TYPE, CAT) :- 
-instruction(BID, IID, LOC, OPC), block(FID, BID, _),
-!is_struct(TYPE),
-!is_alloca_multidimensional(IID),
-OPC = "alloca", CAT = "arrayIndex",  
-get_second_operand(IID, SIZE), is_numeric(SIZE), to_number(SIZE) > 1,
-get_first_operand(IID, TYPE), NUM = 0, NUM<to_number(SIZE).
-
-memlocation_alloca_array_enumerator(FID, LOC, NUM, TYPE, CAT) :- 
-instruction(BID, IID, LOC, OPC), block(FID, BID, _),
-!is_struct(TYPE),
-!is_alloca_multidimensional(IID),
-OPC = "alloca", CAT = "arrayIndex",  
-get_second_operand(IID, SIZE), is_numeric(SIZE), to_number(SIZE) > 1,
-get_first_operand(IID, TYPE), NUM > 0, NUM<to_number(SIZE), NUM = NUM2+1,
-memlocation_alloca_array_enumerator(FID, LOC, NUM2, TYPE, CAT).
-
-
-//recursive helper function to enumerate global arrays
-//TODO: this one seems quite ugly, might benefit from a rewrite
-.decl memlocation_global_array_enumerator(functionid: _functionid, memlocation: symbol, enumerator: number, memtyp: symbol, memcategory: _memcategory)
-//.output memlocation_global_array_enumerator(delimiter=",")
-//TODO add cases with global SIZESTR not numeric e.g. (2x12)
-memlocation_global_array_enumerator(FID, LOC, NUM, TYPE, CAT) :-
-global(LOC, _, TYPE, SIZESTR, _),
-is_numeric(SIZESTR),
-SIZE = to_number(SIZESTR),
-NUM = 0, NUM<SIZE,
-SIZE > 1,
-FID = -1, CAT = "arrayIndex".
-memlocation_global_array_enumerator(FID, LOC, NUM, TYPE, CAT) :-
-global(LOC, _, TYPE, SIZESTR, _),
-is_numeric(SIZESTR),
-SIZE = to_number(SIZESTR),
-NUM > 0, NUM<SIZE, NUM = NUM2+1,
-SIZE > 1,
-memlocation_global_array_enumerator(FID, LOC, NUM2, TYPE, CAT),
-FID = -1, CAT = "arrayIndex".
-
-//recursive helper to enumerate multidimensional arrays
-.decl memlocation_multidim_array_enumerator(instructionid: _instructionid, level: number, location: symbol, startlocation: symbol)
-//.output memlocation_multidim_array_enumerator(delimiter=";")
-//input: IID, LEVEL(not always)
-//output: LOC
-//intern: STARTLOC (only for recursion)
-
-//case level=0
-memlocation_multidim_array_enumerator(IID, LEVEL, LOC, STARTLOC) :-
-instruction(_, IID, STARTLOC, OPC), OPC = "alloca",
-get_alloca_arraylevel(IID, ARRAYLEVEL), ARRAYLEVEL > 1,
-LEVEL = 0, 
-get_all_getelementptr_indices(I), //limit evaluated indices to thouse used by getelemeptr
-LOC = cat(cat(STARTLOC, "."), to_string(I)),
-get_ith_operand(IID, LEVEL+2, ELEMENTS_IN_LEVEL),
-is_numeric(ELEMENTS_IN_LEVEL),
-I>=0, I<to_number(ELEMENTS_IN_LEVEL), anumber(I).
-
-//recursive case
-memlocation_multidim_array_enumerator(IID, LEVEL, LOC, STARTLOC) :-
-instruction(_, IID, _, OPC), OPC = "alloca",
-get_alloca_arraylevel(IID, ARRAYLEVEL), ARRAYLEVEL > 1, 
-get_num_operands(IID, NUMOPERANDS),
-LEVEL < NUMOPERANDS-1,
-anumber(LEVEL), 
-get_all_getelementptr_indices(I), //limit evaluated indices to thouse used by getelemeptr
-LOC = cat(cat(STARTLOC, "."), to_string(I)),
-get_ith_operand(IID, LEVEL+2, ELEMENTS_IN_LEVEL),
-is_numeric(ELEMENTS_IN_LEVEL),
-I>=0, I<to_number(ELEMENTS_IN_LEVEL), anumber(I),
-memlocation_multidim_array_enumerator(IID, LEVEL-1, STARTLOC, _).
