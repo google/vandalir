@@ -6,13 +6,13 @@ functionid2: _functionid, memlocation2: symbol)
 //case: (a <==> b) ==> (b <==> a)
 memequals(FID1, LOC1, FID2, LOC2) :- 
 memequals(FID2, LOC2, FID1, LOC1).
-/*
+
 //case: [(a <==> x) && (x <==> b)] ==> (a <==> b)
 memequals(FID1, LOC1, FID2, LOC2) :- 
 memequals(FID1, LOC1, FIDX, LOCX),
 memequals(FID2, LOC2, FIDX, LOCX)
 .
-*/
+
 //case load: (x = *a) && (a->b) ==> (x <==> b)
 memequals(FID1, X, FID2, B) :- 
 instruction(BID, IID, X, OPC), block(FID1, BID, _), OPC = "load",
