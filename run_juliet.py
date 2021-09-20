@@ -16,7 +16,7 @@ results = []
 PROCS_FOR_LARGE = 1
 LARGE_SIZE = 20000
 SKIP_LARGE = False
-THREADS = 4
+THREADS = 24
 C_CASES_ONLY = True
 CREATE_LOG = False # this option is overwritten if evaluate_all_cwes() is used
 
