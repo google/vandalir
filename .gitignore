@@ -15,5 +15,6 @@ profile
 /bin
 /jreports
 /output_realworld
+/facts_truncate
 calc_unique.py
 log.txt
