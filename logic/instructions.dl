@@ -277,3 +277,16 @@ ARGLIST = cat(cat(OLDARGLIST,", "), TYPE),
 get_arg_typelist_by_fid_rec(OLDARGLIST, FID, ARGID-1)
 .
 
+
+//global relations
+
+
+//get size of global
+//currently supports only numeric sizes
+.decl get_size_of_global(globalname: symbol, size: number)
+//case numeric global
+get_size_of_global(GLOBAL, SIZE) :-
+global(GLOBAL, _, _, SIZESTR, _),
+is_numeric(SIZESTR),
+SIZE = to_number(SIZESTR)
+.

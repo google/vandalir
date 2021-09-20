@@ -80,16 +80,18 @@ instruction(BID, IID, LOC, OPC), block(FID, BID, _),
 !is_struct(TYPE),
 !is_alloca_multidimensional(IID),
 OPC = "alloca", CAT = "arrayIndex",  
-get_second_operand(IID, SIZE), is_numeric(SIZE), to_number(SIZE) > 1,
-get_first_operand(IID, TYPE), NUM = 0, NUM<to_number(SIZE).
+get_size_of_alloca(IID, SIZE), 
+SIZE > 1,
+get_first_operand(IID, TYPE), NUM = 0, NUM<SIZE.
 
 memlocation_alloca_array_enumerator(FID, LOC, NUM, TYPE, CAT) :- 
 instruction(BID, IID, LOC, OPC), block(FID, BID, _),
 !is_struct(TYPE),
 !is_alloca_multidimensional(IID),
 OPC = "alloca", CAT = "arrayIndex",  
-get_second_operand(IID, SIZE), is_numeric(SIZE), to_number(SIZE) > 1,
-get_first_operand(IID, TYPE), NUM > 0, NUM<to_number(SIZE), NUM = NUM2+1,
+get_size_of_alloca(IID, SIZE), 
+SIZE > 1,
+get_first_operand(IID, TYPE), NUM > 0, NUM<SIZE, NUM = NUM2+1,
 memlocation_alloca_array_enumerator(FID, LOC, NUM2, TYPE, CAT).
 
 
@@ -99,16 +101,15 @@ memlocation_alloca_array_enumerator(FID, LOC, NUM2, TYPE, CAT).
 //.output memlocation_global_array_enumerator(delimiter=",")
 //TODO add cases with global SIZESTR not numeric e.g. (2x12)
 memlocation_global_array_enumerator(FID, LOC, NUM, TYPE, CAT) :-
-global(LOC, _, TYPE, SIZESTR, _),
-is_numeric(SIZESTR),
-SIZE = to_number(SIZESTR),
+global(LOC, _, TYPE, _, _),
+get_size_of_global(LOC, SIZE),
 NUM = 0, NUM<SIZE,
 SIZE > 1,
 FID = -1, CAT = "arrayIndex".
+
 memlocation_global_array_enumerator(FID, LOC, NUM, TYPE, CAT) :-
-global(LOC, _, TYPE, SIZESTR, _),
-is_numeric(SIZESTR),
-SIZE = to_number(SIZESTR),
+global(LOC, _, TYPE, _, _),
+get_size_of_global(LOC, SIZE),
 NUM > 0, NUM<SIZE, NUM = NUM2+1,
 SIZE > 1,
 memlocation_global_array_enumerator(FID, LOC, NUM2, TYPE, CAT),
