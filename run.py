@@ -49,10 +49,10 @@ def run(filepath, compile, previous_compile, profile, facts_dir, output_dir, thr
     if(not os.path.isdir(output_dir)):
             os.mkdir(output_dir)
 
-    if(compile):
+    if(compile and not profile):
         compile_datalog()
     
-    if((previous_compile or compile) and not profile):
+    if((previous_compile) and not profile):
         #execute previously compiled
 
         command = "bin/analyzer "+filepath+" "
