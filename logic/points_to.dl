@@ -1,7 +1,7 @@
 //points-to analysis
 .decl points_to(functionid1: _functionid, memlocation1: symbol,
 functionid2: _functionid, memlocation2: symbol)
-//.output points_to(delimiter=",")
+.output points_to_core(delimiter=",")
 
 //memequals cases (not strictly necessary?)
 //cases memequals: (s -> e && as <==> s) ==> as -> e
@@ -14,18 +14,25 @@ points_to(SFID, SLOC, EFID, ELOC) :-
 memequals(EFID, ELOC, E2FID, E2LOC), 
 points_to(SFID, SLOC, E2FID, E2LOC).
 
+//all others
+points_to(SFID, SLOC, EFID, ELOC) :- 
+points_to_core(SFID, SLOC, EFID, ELOC).
+
 //case memequals: (s -> e && as <==> s && ae <==> e) ==> as -> ae
 //probably this case is already covered by the two previous ones (?)
 /*
-points_to(SFID, SLOC, EFID, ELOC) :-
-points_to(S2FID, S2LOC, E2FID, E2LOC), 
+points_to_core(SFID, SLOC, EFID, ELOC) :-
+points_to_core(S2FID, S2LOC, E2FID, E2LOC), 
 memequals(SFID, SLOC, S2FID, S2LOC), 
 memequals(EFID, ELOC, E2FID, E2LOC)
 .
 */
 
+.decl points_to_core(functionid1: _functionid, memlocation1: symbol,
+functionid2: _functionid, memlocation2: symbol)
+
 //case store address to integer
-points_to(SFID, SLOC, EFID, ELOC) :- 
+points_to_core(SFID, SLOC, EFID, ELOC) :- 
 block(FID, BID, _),
 instruction(BID, IID, _, OPC), OPC = "store",
 get_second_operand(IID, ELOC),
@@ -42,7 +49,7 @@ SFID = FID,
 EFID = FID.
 
 //case store a pointer to global
-points_to(SFID, SLOC, EFID, ELOC) :- 
+points_to_core(SFID, SLOC, EFID, ELOC) :- 
 block(FID, BID, _),
 instruction(BID, IID, _, OPC), OPC = "store",
 get_second_operand(IID, ELOC),
@@ -60,7 +67,7 @@ EFID = -1
 .
 
 //case store address in a global
-points_to(SFID, SLOC, EFID, ELOC) :- 
+points_to_core(SFID, SLOC, EFID, ELOC) :- 
 block(FID, BID, _),
 instruction(BID, IID, _, OPC), OPC = "store",
 get_second_operand(IID, ELOC),
@@ -79,7 +86,7 @@ EFID = FID
 
 
 //case load 
-points_to(SFID, SLOC, EFID, ELOC) :-
+points_to_core(SFID, SLOC, EFID, ELOC) :-
 memlocation(SFID, SLOC, _, _), 
 memlocation(EFID, ELOC, _, _),
 instruction(BID, IID, VREG, OPC), block(FID, BID, _), OPC = "load",
@@ -95,7 +102,7 @@ SFID = FID,
 EFID = FID.
 
 //case load from global
-points_to(SFID, SLOC, EFID, ELOC) :-
+points_to_core(SFID, SLOC, EFID, ELOC) :-
 memlocation(SFID, SLOC, _, _), 
 memlocation(EFID, ELOC, _, _),
 instruction(BID, IID, VREG, OPC), block(FID, BID, _), OPC = "load",
@@ -116,7 +123,7 @@ EFID = FID.
 /*
 //TODO: check if this is still needed?
 //case load with STYPE="unknown"
-points_to(SFID, SLOC, EFID, ELOC) :-
+points_to_core(SFID, SLOC, EFID, ELOC) :-
 memlocation(SFID, SLOC, _, _), 
 memlocation(EFID, ELOC, _, _),
 get_first_operand(IID, ETYPE),

@@ -3,18 +3,32 @@
 functionid2: _functionid, memlocation2: symbol)
 .output memequals(delimiter=",")
 
+
 //case: (a <==> b) ==> (b <==> a)
 memequals(FID1, LOC1, FID2, LOC2) :- 
-memequals(FID2, LOC2, FID1, LOC1).
+memequals_transitivity(FID2, LOC2, FID1, LOC1).
+//all other
+memequals(FID1, LOC1, FID2, LOC2) :- 
+memequals_transitivity(FID1, LOC1, FID2, LOC2).
+
+.decl memequals_transitivity(functionid1: _functionid, memlocation1: symbol, 
+functionid2: _functionid, memlocation2: symbol)
 
 //case: [(a <==> x) && (x <==> b)] ==> (a <==> b)
-memequals(FID1, LOC1, FID2, LOC2) :- 
-memequals(FID1, LOC1, FIDX, LOCX),
-memequals(FID2, LOC2, FIDX, LOCX)
+memequals_transitivity(FID1, LOC1, FID2, LOC2) :- 
+memequals_transitivity(FID1, LOC1, FIDX, LOCX),
+memequals_transitivity(FID2, LOC2, FIDX, LOCX)
 .
+//all other
+memequals_transitivity(FID1, LOC1, FID2, LOC2) :- 
+memequals_core(FID1, LOC1, FID2, LOC2).
+
+.decl memequals_core(functionid1: _functionid, memlocation1: symbol, 
+functionid2: _functionid, memlocation2: symbol)
+
 
 //case load: (x = *a) && (a->b) ==> (x <==> b)
-memequals(FID1, X, FID2, B) :- 
+memequals_core(FID1, X, FID2, B) :- 
 instruction(BID, IID, X, OPC), block(FID1, BID, _), OPC = "load",
 get_third_operand(IID, A), 
 memlocation(FID1, X, _, _), 
@@ -22,16 +36,19 @@ points_to(FID1, A, FID2, B),
 memlocation(FID2, B, _, _)
 .
 
+//introduces false positives due to points-to SETS
+/*
 //case points-to: (a -> x && b -> x) ==> (a <==> b)
-memequals(FID1, LOC1, FID2, LOC2) :- 
+memequals_core(FID1, LOC1, FID2, LOC2) :- 
 points_to(FID1, LOC1, FIDX, LOCX), 
 points_to(FID2, LOC2, FIDX, LOCX).
+*/
 
 /*
 //TODO: is this bad/unnecessary?
 //looks really, really bad
 //case load pointer
-memequals(FID1, LOC1, FID2, LOC2) :-
+memequals_core(FID1, LOC1, FID2, LOC2) :-
 memlocation(FID1, LOC1, TYPE1, _), 
 memlocation(FID2, LOC2, TYPE2, _),
 instruction(BID, IID, LOC1, OPC), block(FID, BID, _), OPC = "load",
@@ -45,7 +62,7 @@ get_third_operand(IID, LOC2).
 
 //case store a pointer
 //TODO: is this bad/unnecessary?
-memequals(FID1, LOC1, FID2, LOC2) :- 
+memequals_core(FID1, LOC1, FID2, LOC2) :- 
 block(FID, BID, _),
 instruction(BID, IID, _, OPC), OPC = "store",
 get_second_operand(IID, LOC2),
@@ -59,7 +76,7 @@ FID1 = FID,
 FID2 = FID.
 */
 //case conversion instruction
-memequals(FID1, LOC1, FID2, LOC2) :-
+memequals_core(FID1, LOC1, FID2, LOC2) :-
 instruction(BID, IID, VREG, _), block(FID, BID, _), 
 is_conversion_instruction(IID),
 get_first_operand(IID, VREG_ORIG),
@@ -69,7 +86,7 @@ FID1 = FID,
 FID2 = FID.
 
 //case function return
-memequals(FID1, LOC1, FID2, LOC2) :-
+memequals_core(FID1, LOC1, FID2, LOC2) :-
 get_fid_for_call_instruction(FID, IID),
 get_ret_register(FID, VREG_RETVAL),
 instruction(BID, IID, VREG, _), block(FID_CALL, BID, _),
@@ -79,13 +96,13 @@ FID1 = FID,
 FID2 = FID_CALL.
 
 //case function arguments
-memequals(FID1, LOC1, FID2, LOC2) :-
+memequals_core(FID1, LOC1, FID2, LOC2) :-
 get_call_argument_and_function_register(_, CFID, CARG, FID, VREG, _),
 FID1 = CFID, LOC1=CARG,
 FID2 = FID, LOC2=VREG.
 
 //case phi instruction first case
-memequals(FID1, LOC1, FID2, LOC2) :-
+memequals_core(FID1, LOC1, FID2, LOC2) :-
 block(FID1, BID, _),
 instruction(BID, IID, LOC1, "phi"),
 FID2 = FID1,
@@ -100,7 +117,7 @@ is_vreg(LOC2).
 //first cases, where specific element of array could be located
 
 //case getelementptr equal the return register with the constructed path
-memequals(FID1, LOC1, FID2, LOC2) :-
+memequals_core(FID1, LOC1, FID2, LOC2) :-
 block(FID1, BID, _), 
 FID1 = FID2, //equal functions 
 instruction(BID, IID, LOC1, OPC), OPC = "getelementptr", //LOC 1 is GEP instruction
@@ -108,14 +125,14 @@ gep_str(IID, RESULTLOC),
 LOC2 = RESULTLOC.
 
 //case x <=> x.0
-memequals(FID1, LOC1, FID2, LOC2) :-
+memequals_core(FID1, LOC1, FID2, LOC2) :-
 memlocation(FID1, LOC1, _, _),
 FID2 = FID1,
 LOC2 = cat(LOC1, ".0")
 .
 
 //case x <=> x.0.0
-memequals(FID1, LOC1, FID2, LOC2) :-
+memequals_core(FID1, LOC1, FID2, LOC2) :-
 memlocation(FID1, LOC1, _, _),
 FID2 = FID1,
 LOC2 = cat(LOC1, ".0.0")
@@ -123,29 +140,30 @@ LOC2 = cat(LOC1, ".0.0")
 
 
 //case if x<=>y => x.z <=> y.z
-memequals(FID1, LOC1, FID2, LOC2) :-
+memequals_core(FID1, LOC1, FID2, LOC2) :-
 Config_deepAlias(1),
 memlocation(FID1, X, _, _),
 memlocation(FID2, Y, _, _),
-memequals(FID1, X, FID2, Y),
+memequals_core(FID1, X, FID2, Y),
 anumber(Z),
+Z <= MAXDEEP,
 NUM = to_string(Z),
 LOC1 = cat(X, ".", NUM),
-LOC2 = cat(Y, ".", NUM),
-memlocation(FID1, LOC1, _, _)
+memlocation(FID1, LOC1, _, _),
+LOC2 = cat(Y, ".", NUM)
 .
 
 /*
 //case if x<=>y => x.z <=> y.z
-memequals(FID1, LOC1, FID2, LOC2) :-
-memequals(FID1, X, FID2, Y),
+memequals_core(FID1, LOC1, FID2, LOC2) :-
+memequals_core(FID1, X, FID2, Y),
 X != Y,
 LOC1 = cat(X, ".", Z),
 LOC2 = cat(Y, ".", Z),
 X = substr(LOC1, 0, @get_before_last_dot(LOC1)),
 Y = substr(LOC2, 0, @get_before_last_dot(LOC2)),
-memequals(FID1, LOC1, _, _),
-memequals(FID2, LOC2, _, _),
+memequals_core(FID1, LOC1, _, _),
+memequals_core(FID2, LOC2, _, _),
 Z = @get_behind_last_dot(LOC1),
 is_vreg(X),
 is_vreg(Y)
