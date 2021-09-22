@@ -3,6 +3,7 @@
 
 //Constants and Macros
 #define MAXINT 2147483647
+#define MAXDEEP 100
 
 //framework
 #include "functors.dl"
