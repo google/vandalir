@@ -1,5 +1,5 @@
 //maximum depth of value analysis
-#define VA_MAXDEPTH 10
+#define VA_MAXDEPTH 20
 
 //get possible integer values (wrapper, which supports constants as vreg)
 .decl get_int_by_vreg(value: number, functionid: _functionid, _vreg: symbol)
@@ -7,62 +7,105 @@
 
 //case initializing wrapper
 get_int_by_vreg(VAL, FID, VREG) :-
-get_int_by_vreg_internal(VAL, FID, VREG, 1).
+get_int_by_vreg_internal(VAL, FID, VREG, _, 1).
 
 
 //get possible integer values
-.decl get_int_by_vreg_internal(value: number, functionid: _functionid, _vreg: symbol, depth: number)
-
-//case is int
-get_int_by_vreg_internal(VAL, FID, VREG, DEPTH) :-
-anumber(DEPTH), 
-is_numeric(VREG),
-VAL = to_number(VREG), block(FID, _, _).
+.decl get_int_by_vreg_internal(value: number, functionid: _functionid, _vreg: symbol, iidsetvalue: _instructionid, depth: number)
 
 //case add
-get_int_by_vreg_internal(VAL, FID, VREG, DEPTH) :- 
+get_int_by_vreg_internal(VAL, FID, VREG, IID, DEPTH) :- 
 anumber(DEPTH),
 block(FID, BID, _), instruction(BID, IID, VREG, OPC), OPC = "add",
 get_first_operand(IID, OV1), get_second_operand(IID, OV2),
 is_numeric(OV2),
 !is_numeric(VREG),
 !is_numeric(OV1),
-DEPTH < VA_MAXDEPTH, 
-VAL=TMP+to_number(OV2), get_int_by_vreg_internal(TMP, FID, OV1, DEPTH+1).
+DEPTH < VA_MAXDEPTH,
+is_instruction_before_other(IID, IID2),//IID2 is before IID 
+VAL=TMP+to_number(OV2), get_int_by_vreg_internal(TMP, FID, OV1, IID2, DEPTH+1).
 
 //case mul
-get_int_by_vreg_internal(VAL, FID, VREG, DEPTH) :- 
+get_int_by_vreg_internal(VAL, FID, VREG, IID, DEPTH) :- 
 anumber(DEPTH),
 block(FID, BID, _), instruction(BID, IID, VREG, OPC), OPC = "mul",
 get_first_operand(IID, OV1), get_second_operand(IID, OV2),
 is_numeric(OV2),
 !is_numeric(VREG),
 !is_numeric(OV1), 
-DEPTH < VA_MAXDEPTH, 
-VAL=TMP*to_number(OV2), get_int_by_vreg_internal(TMP, FID, OV1, DEPTH+1).
+DEPTH < VA_MAXDEPTH,
+is_instruction_before_other(IID, IID2),//IID2 is before IID 
+VAL=TMP*to_number(OV2), get_int_by_vreg_internal(TMP, FID, OV1, IID2, DEPTH+1).
 
 
 //case sub (sub number from vreg)
-get_int_by_vreg_internal(VAL, FID, VREG, DEPTH) :- 
+get_int_by_vreg_internal(VAL, FID, VREG, IID, DEPTH) :- 
 anumber(DEPTH),
 block(FID, BID, _), instruction(BID, IID, VREG, OPC), OPC = "sub",
 get_first_operand(IID, OV1), get_second_operand(IID, OV2),
 is_numeric(OV2), 
-DEPTH < VA_MAXDEPTH,  
-VAL=TMP-to_number(OV2), get_int_by_vreg_internal(TMP, FID, OV1, DEPTH+1).
+DEPTH < VA_MAXDEPTH,
+is_instruction_before_other(IID, IID2),//IID2 is before IID  
+VAL=TMP-to_number(OV2), get_int_by_vreg_internal(TMP, FID, OV1, IID2, DEPTH+1).
 
 //case sub2 (sub vreg from number)
-get_int_by_vreg_internal(VAL, FID, VREG, DEPTH) :-
+get_int_by_vreg_internal(VAL, FID, VREG, IID, DEPTH) :-
 anumber(DEPTH), 
 block(FID, BID, _), instruction(BID, IID, VREG, OPC), OPC = "sub",
 get_first_operand(IID, OV1), get_second_operand(IID, OV2),
 is_numeric(OV1),  
 VAL=to_number(OV1)-TMP, 
 DEPTH < VA_MAXDEPTH, 
-get_int_by_vreg_internal(TMP, FID, OV2, DEPTH+1).
+is_instruction_before_other(IID, IID2),//IID2 is before IID
+get_int_by_vreg_internal(TMP, FID, OV2, IID2, DEPTH+1).
+
+//get core cases
+get_int_by_vreg_internal(VAL, FID, VREG, IID, DEPTH) :-
+get_int_by_vreg_internal_core(VAL, FID, VREG, IID, DEPTH).
+
+//case store integer
+get_int_by_vreg_internal_core(VAL, FID, VREG, IID, DEPTH) :- 
+anumber(DEPTH),
+block(FID, BID, _), 
+instruction(BID, IID, _, OPC), OPC = "store",
+get_first_operand(IID, TYPE),
+is_inttype(TYPE), 
+get_second_operand(IID, NEWINT), 
+get_fourth_operand(IID, VREG),
+!is_numeric(NEWINT),
+is_instruction_before_other(IID, IID2),//IID2 is before IID
+get_int_by_vreg_internal(VAL, FID, NEWINT, IID2, DEPTH+1)
+.
+
+//case load integer
+get_int_by_vreg_internal(VAL, FID, VREG, IID, DEPTH) :- 
+anumber(DEPTH),
+block(FID, BID, _), 
+instruction(BID, IID, VREG, OPC), OPC = "load",
+get_third_operand(IID, NEWINT), 
+DEPTH < VA_MAXDEPTH, 
+!is_numeric(NEWINT),
+is_instruction_before_other(IID, IID2),//IID2 is before IID
+get_int_by_vreg_internal(VAL, FID, NEWINT, IID2, DEPTH+1)
+.
+
+//speculative cases:
+
+
+//case memequals
+get_int_by_vreg_internal(VAL, FID, VREG, IID, DEPTH) :- block(FID, BID, _), instruction(BID, _, VREG, _),
+anumber(DEPTH),
+memequals(FID, START_LOC, FID, END_LOC), 
+START_LOC = VREG,
+DEPTH < VA_MAXDEPTH,
+block(FID, BID, _),
+instruction(BID, IID, START_LOC, _),
+is_instruction_before_other(IID, IID2),//IID2 is before IID
+get_int_by_vreg_internal_core(VAL, FID, END_LOC, IID2, DEPTH+1).
+
 
 //case call strlen (Maximum)
-get_int_by_vreg_internal(VAL, FID, VREG, DEPTH) :- 
+get_int_by_vreg_internal(VAL, FID, VREG, IID, DEPTH) :- 
 anumber(DEPTH),
 block(FID, BID, _), instruction(BID, IID, VREG, OPC), OPC = "call",
 get_first_operand(IID, OV1), is_strlen_call_instruction(IID),
@@ -71,15 +114,8 @@ VAL = VAL2-1,
 VAL>0
 .
 
-//case call strlen (TODO: Minimum with userinput (only) can be 0)
-get_int_by_vreg_internal(VAL, FID, VREG, DEPTH) :- 
-anumber(DEPTH),
-block(FID, BID, _), instruction(BID, IID, VREG, OPC), OPC = "call",
-is_strlen_call_instruction(IID),
-VAL = 0.
-
 //case call atoi (max)
-get_int_by_vreg_internal(VAL, FID, VREG, DEPTH) :- 
+get_int_by_vreg_internal(VAL, FID, VREG, IID, DEPTH) :- 
 anumber(DEPTH),
 block(FID, BID, _), instruction(BID, IID, VREG, OPC), OPC = "call",
 get_last_operand(IID, "atoi"), get_first_operand(IID, BUFFVREG),
@@ -90,7 +126,7 @@ VAL = to_number(MAX)
 .
 
 //case call atoi (min)
-get_int_by_vreg_internal(VAL, FID, VREG, DEPTH) :- 
+get_int_by_vreg_internal(VAL, FID, VREG, IID, DEPTH) :- 
 anumber(DEPTH),
 block(FID, BID, _), instruction(BID, IID, VREG, OPC), OPC = "call",
 get_last_operand(IID, "atoi"), get_first_operand(IID, BUFFVREG),
@@ -102,31 +138,56 @@ MINSTR = cat("-", MIN),
 VAL = to_number(MINSTR)
 .
 
-//case rand max
-get_int_by_vreg_internal(VAL, FID, VREG, DEPTH) :- 
-block(FID, BID, _), instruction(BID, IID, VREG, OPC), OPC = "call",
-anumber(DEPTH),
-get_last_operand(IID, "rand"),
-VAL = 32767.
-
-//case rand min
-get_int_by_vreg_internal(VAL, FID, VREG, DEPTH) :- 
-block(FID, BID, _), instruction(BID, IID, VREG, OPC), OPC = "call",
-anumber(DEPTH),
-get_last_operand(IID, "rand"),
-VAL = 0.
 
 
-//case memequals
-get_int_by_vreg_internal(VAL, FID, VREG, DEPTH) :- block(FID, BID, _), instruction(BID, _, VREG, _),
+
+
+
+
+//core includes all non-recursive cases, that can be directly identified
+.decl get_int_by_vreg_internal_core(value: number, functionid: _functionid, _vreg: symbol, iidsetvalue: _instructionid, depth: number)
+
+//case is int
+get_int_by_vreg_internal_core(VAL, FID, VREG, IID, DEPTH) :-
+IID = -1,
+anumber(DEPTH), 
+is_numeric(VREG),
+VAL = to_number(VREG), block(FID, _, _).
+
+
+//case store integer
+get_int_by_vreg_internal_core(VAL, FID, VREG, IID, DEPTH) :- 
 anumber(DEPTH),
-memequals(FID, START_LOC, FID, END_LOC), 
-START_LOC = VREG,
+block(FID, BID, _), 
+instruction(BID, IID, _, OPC), OPC = "store",
+get_first_operand(IID, TYPE),
+is_inttype(TYPE), 
+get_second_operand(IID, NEWINT), 
+get_fourth_operand(IID, VREG),
+is_numeric(NEWINT),
+VAL = to_number(NEWINT)
+.
+
+//case load integer
+get_int_by_vreg_internal_core(VAL, FID, VREG, IID, DEPTH) :- 
+anumber(DEPTH),
+block(FID, BID, _), 
+instruction(BID, IID, VREG, OPC), OPC = "load",
+get_third_operand(IID, NEWINT), 
 DEPTH < VA_MAXDEPTH, 
-get_int_by_vreg_internal(VAL, FID, END_LOC, DEPTH+1).
+is_numeric(NEWINT),
+VAL = to_number(NEWINT)
+.
+
+
+
+
+//speculative cases
+
 
 //case phi instruction
-get_int_by_vreg_internal(VAL, FID, VREG, DEPTH) :-
+//TODO: add case for non numeric LOC2 ?
+get_int_by_vreg_internal_core(VAL, FID, VREG, IID, DEPTH) :-
 anumber(DEPTH),
 block(FID, BID, _),
 instruction(BID, IID, VREG, "phi"),
@@ -139,30 +200,24 @@ is_numeric(LOC2),
 VAL = to_number(LOC2)
 .
 
-
-//case store integer
-get_int_by_vreg_internal(VAL, FID, VREG, DEPTH) :- 
+//case call strlen (TODO: Minimum with userinput (only) can be 0)
+get_int_by_vreg_internal_core(VAL, FID, VREG, IID, DEPTH) :- 
 anumber(DEPTH),
-block(FID, BID, _), 
-instruction(BID, IID, _, OPC), OPC = "store",
-get_first_operand(IID, TYPE),
-is_inttype(TYPE), 
-get_second_operand(IID, NEWINT), 
-get_fourth_operand(IID, VREG),
-is_numeric(NEWINT),
-NEWINT != "0", 
-VAL = to_number(NEWINT)
-.
+block(FID, BID, _), instruction(BID, IID, VREG, OPC), OPC = "call",
+is_strlen_call_instruction(IID),
+VAL = 0.
 
-//case load integer
-//TODO: check if type check is necessary (?)
-get_int_by_vreg_internal(VAL, FID, VREG, DEPTH) :- 
+
+//case rand max
+get_int_by_vreg_internal_core(VAL, FID, VREG, IID, DEPTH) :- 
+block(FID, BID, _), instruction(BID, IID, VREG, OPC), OPC = "call",
 anumber(DEPTH),
-block(FID, BID, _), 
-instruction(BID, IID, VREG, OPC), OPC = "load",
-get_first_operand(IID, TYPE),
-!is_pointer(TYPE),
-get_third_operand(IID, NEWINT), 
-DEPTH < VA_MAXDEPTH, 
-get_int_by_vreg_internal(VAL, FID, NEWINT, DEPTH+1)
-.
+get_last_operand(IID, "rand"),
+VAL = 32767.
+
+//case rand min
+get_int_by_vreg_internal_core(VAL, FID, VREG, IID, DEPTH) :- 
+block(FID, BID, _), instruction(BID, IID, VREG, OPC), OPC = "call",
+anumber(DEPTH),
+get_last_operand(IID, "rand"),
+VAL = 0.
