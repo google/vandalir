@@ -10,6 +10,7 @@
 #include "config.dl"
 #include "util.dl"
 #include "test.dl"
+#include "call_graph.dl"
 #include "instructions.dl"
 #include "operands.dl"
 #include "control_flow.dl"
