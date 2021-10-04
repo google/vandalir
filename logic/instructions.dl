@@ -178,6 +178,92 @@ NAME = substr(GLOBNAME, 1, strlen(GLOBNAME))
 .
 
 
+//load instructions
+
+//get only load instruction
+.decl is_load_instruction(instructionid: _instructionid)
+is_load_instruction(IID) :- instruction(_, IID, _, OPC), OPC = "load".
+
+//returns location from which the value is loaded
+.decl get_load_pointer_by_iid(functionid: _functionid, location: symbol, instructionid: _instructionid)
+.output get_load_pointer_by_iid
+
+//case vreg
+get_load_pointer_by_iid(FID, VAL, IID) :-
+instruction(BID, IID, _, "load"),
+get_third_operand(IID, VAL),
+is_vreg(VAL),
+!is_global(VAL),
+block(FID, BID, _)
+.
+
+//case global
+get_load_pointer_by_iid(FID, VAL, IID) :-
+is_load_instruction(IID),
+get_third_operand(IID, VAL),
+!is_vreg(VAL),
+is_global(VAL),
+FID = -1
+.
+
+
+
+//store instructions
+
+//get only store instruction
+.decl is_store_instruction(instructionid: _instructionid)
+is_store_instruction(IID) :- instruction(_, IID, _, OPC), OPC = "store".
+
+//returns location at which the value is stored
+.decl get_store_pointer_by_iid(functionid: _functionid, location: symbol, instructionid: _instructionid)
+//.output get_store_pointer_by_iid
+//case vreg
+get_store_pointer_by_iid(FID, VAL, IID) :- 
+instruction(BID, IID, _, "store"),
+get_fourth_operand(IID, VAL),
+is_vreg(VAL),
+!is_global(VAL),
+block(FID, BID, _)
+.
+
+//case global
+get_store_pointer_by_iid(FID, VAL, IID) :- 
+is_store_instruction(IID),
+get_fourth_operand(IID, VAL),
+!is_vreg(VAL),
+is_global(VAL),
+FID = -1
+.
+
+.decl get_store_value_by_iid(functionid: _functionid, value: symbol, instructionid: _instructionid)
+//.output get_store_value_by_iid
+//case vreg is stored
+get_store_value_by_iid(FID, VAL, IID) :-
+instruction(BID, IID, _, "store"),
+get_second_operand(IID, VAL),
+is_vreg(VAL),
+block(FID, BID, _)
+.
+
+//case global is stored
+get_store_value_by_iid(FID, VAL, IID) :-
+is_store_instruction(IID),
+get_second_operand(IID, VAL),
+!is_vreg(VAL),
+is_global(VAL),
+FID = -1
+.
+
+//case constant is stored
+get_store_value_by_iid(FID, VAL, IID) :-
+is_store_instruction(IID),
+get_second_operand(IID, VAL),
+!is_vreg(VAL),
+is_numeric(VAL),
+FID = -1
+.
+
+
 .decl get_fid_for_call_instruction(functionid: _functionid, instructionid: _instructionid)
 //.output get_fid_for_call_instruction(delimiter=",")
 get_fid_for_call_instruction(FID, IID) :- get_function_for_call_instruction(FNAME, IID), function(FID, FNAME, _, _).

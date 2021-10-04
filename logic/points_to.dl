@@ -31,93 +31,27 @@ memequals(EFID, ELOC, E2FID, E2LOC)
 .decl points_to_core(functionid1: _functionid, memlocation1: symbol,
 functionid2: _functionid, memlocation2: symbol)
 
-//case store address to integer
+//case store a pointer
 points_to_core(SFID, SLOC, EFID, ELOC) :- 
-block(FID, BID, _),
-instruction(BID, IID, _, OPC), OPC = "store",
-get_second_operand(IID, ELOC),
-!is_global(ELOC),
-get_fourth_operand(IID, SLOC),
-pointer_level(STYPE, STYPE_PLVL),
-memlocation(SFID, SLOC, _, _), 
-memlocation(EFID, ELOC, _, _),
-get_first_operand(IID, ETYPE),
-get_third_operand(IID, STYPE),
-pointer_level(ETYPE, ETYPE_PLVL),
-ETYPE_PLVL < STYPE_PLVL,
-SFID = FID,
-EFID = FID.
-
-//case store a pointer to global
-points_to_core(SFID, SLOC, EFID, ELOC) :- 
-block(FID, BID, _),
-instruction(BID, IID, _, OPC), OPC = "store",
-get_second_operand(IID, ELOC),
-is_global(ELOC),
-get_fourth_operand(IID, SLOC),
-pointer_level(STYPE, STYPE_PLVL),
-memlocation(SFID, SLOC, _, _), 
-memlocation(EFID, ELOC, _, _),
-get_first_operand(IID, ETYPE),
-get_third_operand(IID, STYPE),
-pointer_level(ETYPE, ETYPE_PLVL),
-ETYPE_PLVL < STYPE_PLVL,
-SFID = FID,
-EFID = -1
-.
-
-//case store address in a global
-points_to_core(SFID, SLOC, EFID, ELOC) :- 
-block(FID, BID, _),
-instruction(BID, IID, _, OPC), OPC = "store",
-get_second_operand(IID, ELOC),
-is_global(SLOC),
-get_fourth_operand(IID, SLOC),
-pointer_level(STYPE, STYPE_PLVL),
-memlocation(SFID, SLOC, _, _), 
-memlocation(EFID, ELOC, _, _),
-get_first_operand(IID, ETYPE),
-get_third_operand(IID, STYPE),
-pointer_level(ETYPE, ETYPE_PLVL),
-ETYPE_PLVL < STYPE_PLVL,
-SFID = -1,
-EFID = FID
+is_store_instruction(IID),
+get_store_pointer_by_iid(SFID, SLOC, IID),
+get_store_value_by_iid(EFID, ELOC, IID),
+!is_numeric(ELOC)
 .
 
 
-//case load 
+//case load from vreg
 points_to_core(SFID, SLOC, EFID, ELOC) :-
 memlocation(SFID, SLOC, _, _), 
 memlocation(EFID, ELOC, _, _),
-instruction(BID, IID, VREG, OPC), block(FID, BID, _), OPC = "load",
+instruction(BID, IID, VREG, "load"),
+get_load_pointer_by_iid(SFID, SLOC, IID),
 get_first_operand(IID, ETYPE),
-get_second_operand(IID, STYPE),
-pointer_level(STYPE, STYPE_PLVL),
 pointer_level(ETYPE, ETYPE_PLVL),
-ETYPE_PLVL < STYPE_PLVL,
 ETYPE_PLVL >= 1, //do not consider pointers to actual values
-VREG = ELOC, 
-get_third_operand(IID, SLOC), 
-SFID = FID,
-EFID = FID.
-
-//case load from global
-points_to_core(SFID, SLOC, EFID, ELOC) :-
-memlocation(SFID, SLOC, _, _), 
-memlocation(EFID, ELOC, _, _),
-instruction(BID, IID, VREG, OPC), block(FID, BID, _), OPC = "load",
-get_first_operand(IID, ETYPE),
-get_second_operand(IID, STYPE),
-pointer_level(STYPE, STYPE_PLVL),
-pointer_level(ETYPE, ETYPE_PLVL),
-ETYPE_PLVL < STYPE_PLVL,
-ETYPE_PLVL >= 1,
-VREG = ELOC, 
-get_third_operand(IID, SLOC),
-is_global(SLOC), 
-SFID = -1,
-EFID = FID.
-
+VREG = ELOC,
+block(EFID, BID, _)
+.
 
 
 /*
