@@ -106,7 +106,8 @@ is_instruction_before_other(IID, IID2)//IID2 is before IID
 
 
 //case memequals
-get_int_by_vreg_internal(VAL, FID, VREG, IID, DEPTH) :- block(FID, BID, _), instruction(BID, _, VREG, _),
+get_int_by_vreg_internal(VAL, FID, VREG, IID, DEPTH) :- 
+block(FID, BID, _), instruction(BID, _, VREG, _),
 anumber(DEPTH),
 memequals(FID, START_LOC, FID2, END_LOC), 
 instruction(BID, IID, START_LOC, _),
@@ -115,6 +116,19 @@ START_LOC = VREG,
 DEPTH < VA_MAXDEPTH,
 block(FID, BID, _),
 is_instruction_before_other(IID, IID2)//IID2 is before IID
+.
+
+//case memequals oneway
+get_int_by_vreg_internal(VAL, FID, VREG, IID, DEPTH) :- 
+block(FID, BID, _), instruction(BID, _, VREG, _),
+anumber(DEPTH),
+memequals_oneway(FID, START_LOC, FID2, END_LOC), 
+instruction(BID, IID, START_LOC, _),
+get_int_by_vreg_internal(VAL, FID2, END_LOC, IID2, DEPTH+1),
+START_LOC = VREG,
+DEPTH < VA_MAXDEPTH,
+//is_instruction_before_other(IID, IID2),//IID2 is before IID 
+block(FID, BID, _)
 .
 
 
@@ -151,8 +165,6 @@ x_nines(MIN, BUFFSIZE-1),
 MINSTR = cat("-", MIN),
 VAL = to_number(MINSTR)
 .
-
-
 
 
 
@@ -229,3 +241,19 @@ block(FID, BID, _), instruction(BID, IID, VREG, OPC), OPC = "call",
 anumber(DEPTH),
 get_last_operand(IID, "rand"),
 VAL = 0.
+
+//case userinput min
+get_int_by_vreg_internal_core(VAL, FID, VREG, IID, DEPTH) :-
+anumber(DEPTH),
+memlocation(FID, VREG, _, _),
+is_memloc_with_userinput(FID, VREG),
+IID = -1,
+VAL = 0.
+
+//case userinput max unlimited
+get_int_by_vreg_internal_core(VAL, FID, VREG, IID, DEPTH) :-
+anumber(DEPTH),
+taintlocation(FID, VREG, _, _),
+CAT = cat("userinput_",to_string(MAXINT)),
+VAL = MAXINT,
+IID = -1.
