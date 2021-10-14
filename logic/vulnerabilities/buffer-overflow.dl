@@ -92,6 +92,18 @@ LEVEL = "Vulnerability",
 DEST_SIZE !=1, DEST_SIZE !=0,//this eliminates many false positives
 DEST_SIZE < COPY_SIZE.
 
+//case src=size=maxint
+is_vulnerable_memcpy_call_instruction(IID, LEVEL, MESSAGE) :- is_memcpy_call_instruction(IID), 
+block(FID, BID, _), instruction(BID, IID, _, _),
+get_second_operand(IID, SRC), get_third_operand(IID, N),
+SRC_SIZE = max SS : get_buffsize_by_vreg(SS, FID, SRC), 
+get_int_by_vreg(COPY_SIZE, FID, N),
+COPY_SIZE = MAXINT,
+SRC_SIZE = MAXINT,
+MESSAGE = cat("memcpy: possible insufficient buffer size for copy of size ", to_string(MAXINT) ),
+LEVEL = "Vulnerability"
+.
+
 //memmove vulnerable to bo
 .decl is_vulnerable_memmove_call_instruction(instructionid: _instructionid, level: symbol, message: symbol)
 
