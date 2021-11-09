@@ -3,7 +3,7 @@
 /test/test
 /llvm-ir/test_annotated.ll
 /profiler_html
-*.cpp
+./*.cpp
 /facts
 /output
 /test
