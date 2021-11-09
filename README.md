@@ -1,6 +1,6 @@
-## LLVM Datalog Analyzer
+## VANDAL
 
-A tool for analyzing LLVM-IR with Datalog with the goal to find vulnerabilities. 
+VANDAL (**V**ulnerability detection & static **AN**alysis using **DA**talog and **L**LVM-IR) is a tool for analyzing LLVM-IR with Datalog with the goal to find vulnerabilities. 
 
 
 
@@ -8,7 +8,7 @@ A tool for analyzing LLVM-IR with Datalog with the goal to find vulnerabilities.
 
 Install python3 (version >= 3.6)
 
-Install [clang](https://clang.llvm.org) (version >= 6.0.0)
+Install [clang](https://clang.llvm.org) (version >= 6.0.0, currently supported: LLVM 10)
 
 install [llvmlite](https://github.com/numba/llvmlite) (version >= 0.34.0): 
 
@@ -43,6 +43,14 @@ Additional parameters for run.sh
 `-p  generate profile using souffle's profiler`
 
 `-c  compile to C++ before executing (useful if large/complex programs are analyzed)`
+
+`-pc  use previously compiled version (does not work with profiler)`
+
+`-f specify facts directory (default: facts)`
+
+`-o specify output directory (default: output)`
+
+`-j specify how many threads Soufflé may use (default: 24)`
 
 The current processing pipeline done within this script consists of the following steps:
 
