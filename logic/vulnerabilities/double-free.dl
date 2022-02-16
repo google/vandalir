@@ -1,0 +1,44 @@
+//double free
+.decl double_free(instructionid: _instructionid, level: symbol, message: symbol)
+
+
+//case same basic block
+double_free(IID, LEVEL, MESSAGE) :-
+instruction(BID, IID, _, "call"),
+instruction(BID, IID2, _, "call"),
+is_X_call_instruction("free", IID),
+is_X_call_instruction("free", IID2),
+IID>IID2, //IID is the second free
+IID>0,
+get_first_operand(IID, VAR),
+get_first_operand(IID2, VAR2),
+is_vreg(VAR),
+is_vreg(VAR2),
+memequals(FID, VAR, FID, VAR2),
+LEVEL = "Vulnerability",
+MESSAGE = "double free" //cat("Double Free:  FID:", FID, " VREG:", VAR, " has already been freed here: FID:", FID2, " VREG:", VAR2)
+.
+
+
+//case other basic block, but path from one basic block to other exists
+double_free(IID, LEVEL, MESSAGE) :-
+instruction(BID, IID, _, "call"),
+instruction(BID2, IID2, _, "call"),
+block(FID, BID, _),
+block(FID2, BID2, _),
+
+is_X_call_instruction("free", IID),
+is_X_call_instruction("free", IID2),
+IID!=IID2,
+BID != BID2,
+
+is_before(FID, BID, FID2, BID2), //BID2 is before BID
+
+get_first_operand(IID, VAR),
+get_first_operand(IID2, VAR2),
+is_vreg(VAR),
+is_vreg(VAR2),
+memequals(FID, VAR, FID2, VAR2),
+LEVEL = "Vulnerability",
+MESSAGE = "double free" //cat("Double Free:  FID:", FID, " VREG:", VAR, " has already been freed here: FID:", FID2, " VREG:", VAR2)
+.

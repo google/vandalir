@@ -5,6 +5,8 @@
 #include "vulnerabilities/integer-overflow.dl"
 #include "vulnerabilities/format-string.dl"
 #include "vulnerabilities/dangerous-functions.dl"
+#include "vulnerabilities/double-free.dl"
+#include "vulnerabilities/use-after-free.dl"
 
 //print results
 .decl print_vulnerable(level: symbol, functionname: symbol, label: symbol, virtualregister: symbol, message: symbol)
@@ -32,4 +34,6 @@ get_vulnerable(IID, LEVEL, MESSAGE) :- out_of_bounds_read(IID, LEVEL, MESSAGE).
 get_vulnerable(IID, LEVEL, MESSAGE) :- format_string_attacks(IID, LEVEL, MESSAGE).
 get_vulnerable(IID, LEVEL, MESSAGE) :- integer_overflow(IID, LEVEL, MESSAGE).
 get_vulnerable(IID, LEVEL, MESSAGE) :- dangerous_function(IID, LEVEL, MESSAGE).
+get_vulnerable(IID, LEVEL, MESSAGE) :- double_free(IID, LEVEL, MESSAGE).
+get_vulnerable(IID, LEVEL, MESSAGE) :- use_after_free(IID, LEVEL, MESSAGE).
 
