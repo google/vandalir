@@ -29,12 +29,12 @@ def parse(filepath, facts_dir):
     if(filepath.endswith(".c")):
         command = "clang -S -emit-llvm \""+filepath+"\" -o \"./llvm-ir/"+filename+".ll\""
         os.system(command)
-        command2 = "python3 Parser.py ./llvm-ir/"+filename+".ll "
+        command2 = "python3 extractor.py ./llvm-ir/"+filename+".ll "
         if(facts_dir):
             command2 += "-o "+facts_dir
         subprocess.call(command2, shell=True)
     elif(filepath.endswith(".ll") or filepath.endswith(".bc")):
-        command = "python3 Parser.py "+filepath+" "
+        command = "python3 extractor.py "+filepath+" "
         if(facts_dir):
             command += "-o "+facts_dir
         subprocess.call(command, shell=True)
