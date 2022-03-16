@@ -30,7 +30,7 @@ TYPE = "head-controlled"
 
 //all loops
 .decl loop(functionid: _functionid, conditionBlock: _blockid, type: symbol)
-//.output loop(delimiter=",")
+.output loop(delimiter=",")
 loop(FID, CONDITION, TYPE) :- 
 loopCondition(FID, _, _, CONDITIONID, TYPE), 
 instruction(CONDITION, CONDITIONID, _, _)
@@ -77,7 +77,7 @@ loopBody(CONDBLOCK, BODY) :- loopBodyWithCondition(CONDBLOCK, BODY), CONDBLOCK !
 
 //enumerates all blocks within loop including the confition block
 .decl loopBodyWithCondition(conditionBlock: _blockid, bodyBlock: _blockid)
-//.output loopBodyWithCondition(delimiter=",")
+.output loopBodyWithCondition(delimiter=",")
 loopBodyWithCondition(CONDBLOCK, BODY) :- 
 loopCondition(_, EDGESTART, EDGEEND, CONDITIONID, _),
 instruction(CONDBLOCK, CONDITIONID, _, _),
@@ -110,7 +110,7 @@ X>=EDGEEND
 //detect loop variables (variables that determine the exit condition of a loop)
 
 .decl loop_variable(conditionBlock: _blockid, functionid: _functionid, loopVariable: symbol)
-//.output loop_variable(delimiter=",")
+.output loop_variable(delimiter=",")
 //case: condition block, direct integer i32
 loop_variable(CB, FID, VREGLV) :- 
 block(FID, CB, _),
@@ -149,3 +149,61 @@ get_third_operand(IIDLOAD, VREGLV)
 .
 
 //TODO: add (2) break accordingly
+
+
+//detects edges of one-time loops (used to remove these fake loopedges from CFG)
+.decl fake_loop(functionid: _functionid, startblock: _blockid, endblock: _blockid)
+.output fake_loop(delimiter=",")
+
+//head controlled
+fake_loop(FID, START, END) :-
+loop_variable(CB, FID, LV),
+loop(FID, CB, "head-controlled"),
+downwardEdge(FID, BEFORELOOPBLOCK, CB),
+instruction(BEFORELOOPBLOCK, STOREIID, _, "store"),//storing initial value
+get_second_operand(STOREIID, INITIALVALUE),
+get_fourth_operand(STOREIID, POINTERTOLV),
+points_to(FID, POINTERTOLV, FID, LV),
+instruction(CB, COMPAREIID, _, "icmp"),//comparing for jump
+get_third_operand(COMPAREIID, COMPAREVALUE),
+edge(FID, BLOCKWITHINCREASE, CB),
+instruction(BLOCKWITHINCREASE, INCREASEIID, _, "add"),
+get_first_operand(INCREASEIID, VREGINCREASED),
+memequals(FID, VREGINCREASED, FID, LV),
+get_second_operand(INCREASEIID, INCREASEVALUE),
+INCREASEVALUE = "1",
+is_numeric(INCREASEVALUE),
+is_numeric(INITIALVALUE),
+is_numeric(COMPAREVALUE),
+COMPAREVALUE = "1",
+INITIALVALUE = "0",
+loopedge(FID, START, CB),
+END = CB
+.
+
+//foot controlled
+fake_loop(FID, START, END) :-
+loop_variable(CB, FID, LV),
+loop(FID, CB, "foot-controlled"),
+downwardEdge(FID, BEFORELOOPBLOCK, CB),
+instruction(BEFORELOOPBLOCK, STOREIID, _, "store"),//storing initial value
+get_second_operand(STOREIID, INITIALVALUE),
+get_fourth_operand(STOREIID, POINTERTOLV),
+points_to(FID, POINTERTOLV, FID, LV),
+instruction(CB, COMPAREIID, _, "icmp"),//comparing for jump
+get_third_operand(COMPAREIID, COMPAREVALUE),
+edge(FID, BLOCKWITHINCREASE, CB),
+instruction(BLOCKWITHINCREASE, INCREASEIID, _, "add"),
+get_first_operand(INCREASEIID, VREGINCREASED),
+memequals(FID, VREGINCREASED, FID, LV),
+get_second_operand(INCREASEIID, INCREASEVALUE),
+INCREASEVALUE = "1",
+is_numeric(INCREASEVALUE),
+is_numeric(INITIALVALUE),
+is_numeric(COMPAREVALUE),
+COMPAREVALUE = "1",
+INITIALVALUE = "0",
+loopedge(FID, CB, END),
+START = CB
+.
+

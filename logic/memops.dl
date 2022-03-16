@@ -163,15 +163,15 @@ VAL = SIZE.
 
 //case unlimited user input (maximum length)
 get_buffsize_by_vreg(VAL, FID, VREG) :-
-taintlocation(FID, VREG, TYPE, _),
 CAT = cat("userinput_",to_string(MAXINT)),
+taintlocation(FID, VREG, _, CAT),
 //is_memloc_with_direct_userinput(FID, VREG, CAT),
 //is_pointer(TYPE),
 VAL = MAXINT.
 
 //case direct user input (minimum length => limited or unlimited may have a length of 0)
 get_buffsize_by_vreg(VAL, FID, VREG) :-
-memlocation(FID, VREG, TYPE, _),
+memlocation(FID, VREG, _, _),
 is_memloc_with_userinput(FID, VREG),
 //is_pointer(TYPE),
 VAL = 0.

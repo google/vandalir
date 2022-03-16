@@ -42,13 +42,13 @@ points_to(FID1, A, FID2, B),
 memlocation(FID2, B, _, _)
 .
 
-//introduces false positives due to points-to SETS
-/*
+
 //case points-to: (a -> x && b -> x) ==> (a <==> b)
+//introduces false positives due to points-to SETS
 memequals_core(FID1, LOC1, FID2, LOC2) :- 
 points_to(FID1, LOC1, FIDX, LOCX), 
 points_to(FID2, LOC2, FIDX, LOCX).
-*/
+
 
 //case conversion instruction
 memequals_core(FID1, LOC1, FID2, LOC2) :-

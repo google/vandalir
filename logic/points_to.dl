@@ -52,23 +52,3 @@ ETYPE_PLVL >= 1, //do not consider pointers to actual values
 VREG = ELOC,
 block(EFID, BID, _)
 .
-
-
-/*
-//TODO: check if this is still needed?
-//case load with STYPE="unknown"
-points_to_core(SFID, SLOC, EFID, ELOC) :-
-memlocation(SFID, SLOC, _, _), 
-memlocation(EFID, ELOC, _, _),
-get_first_operand(IID, ETYPE),
-get_second_operand(IID, STYPE),
-instruction(BID, IID, VREG, OPC), block(FID, BID, _), OPC = "load",
-STYPE = "unknown",
-pointer_level(ETYPE, ETYPE_PLVL),
-ETYPE_PLVL >= 1,
-VREG = ELOC, 
-get_third_operand(IID, SLOC),
-SFID = FID,
-EFID = FID
-.
-*/

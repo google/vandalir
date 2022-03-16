@@ -7,6 +7,11 @@ block(FID, END, ENDLABEL),
 predecessor(FID, ENDLABEL, STARTLABEL)
 .
 
+//edge without fake edges (e.g. removes fake (one-time) loop upward edges)
+.decl edge_cleaned(functionid: _functionid, startblock: _blockid, endblock: _blockid)
+edge_cleaned(FID, START, END) :-
+edge(FID, START, END).//, !fake_loop(FID, START, END).
+
 //all edges that go downward (no loop edges!)
 .decl downwardEdge(functionid: _functionid, startblock: _blockid, endblock: _blockid)
 downwardEdge(FID, START, END) :- edge(FID, START, END), START<END.
@@ -30,14 +35,18 @@ downwardPath(FID, START, X), downwardPath(FID, X, END), BLOCK = X.
 
 //basic blocks
 
+
+
 //get previous basic block within function
 .decl previous_block(functionid: _functionid, start: _blockid, previous: _blockid)
-previous_block(FID, START, PRED) :- block(FID, START, LABEL), block(FID, PRED, LABEL2),
-predecessor(FID, LABEL, LABEL2).
+previous_block(FID, START, PRED) :- 
+edge_cleaned(FID, PRED, START).
 
 //get next basic block within function
 .decl next_block(functionid: _functionid, start: _blockid, next: _blockid)
 next_block(FID, START, NEXT) :- previous_block(FID, NEXT, START).
+
+
 
 //get first block of function
 .decl first_block(functionid: _functionid, blockid: _blockid)
