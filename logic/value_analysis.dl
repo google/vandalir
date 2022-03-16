@@ -29,8 +29,8 @@ is_numeric(OV2),
 !is_numeric(VREG),
 !is_numeric(OV1),
 DEPTH < VA_MAXDEPTH,
-is_instruction_before_other(IID, IID2),//IID2 is before IID 
-VAL=TMP+to_number(OV2), get_int_by_vreg_internal(TMP, FID, OV1, IID2, DEPTH+1).
+//is_instruction_before_other(IID, IID2),//IID2 is before IID 
+VAL=TMP+to_number(OV2), get_int_by_vreg_internal(TMP, FID, OV1, _, DEPTH+1).
 
 //case mul
 get_int_by_vreg_internal(VAL, FID, VREG, IID, DEPTH) :- 
@@ -41,8 +41,8 @@ is_numeric(OV2),
 !is_numeric(VREG),
 !is_numeric(OV1), 
 DEPTH < VA_MAXDEPTH,
-is_instruction_before_other(IID, IID2),//IID2 is before IID 
-VAL=TMP*to_number(OV2), get_int_by_vreg_internal(TMP, FID, OV1, IID2, DEPTH+1).
+//is_instruction_before_other(IID, IID2),//IID2 is before IID 
+VAL=TMP*to_number(OV2), get_int_by_vreg_internal(TMP, FID, OV1, _, DEPTH+1).
 
 
 //case sub (sub number from vreg)
@@ -52,10 +52,10 @@ block(FID, BID, _), instruction(BID, IID, VREG, OPC), OPC = "sub",
 get_first_operand(IID, OV1), get_second_operand(IID, OV2),
 is_numeric(OV2), 
 DEPTH < VA_MAXDEPTH,
-is_instruction_before_other(IID, IID2),//IID2 is before IID  
+//is_instruction_before_other(IID, IID2),//IID2 is before IID  
 VAL=TMP-to_number(OV2),
 !is_numeric(OV1), 
-get_int_by_vreg_internal(TMP, FID, OV1, IID2, DEPTH+1).
+get_int_by_vreg_internal(TMP, FID, OV1, _, DEPTH+1).
 
 //case sub2 (sub vreg from number)
 get_int_by_vreg_internal(VAL, FID, VREG, IID, DEPTH) :-
@@ -66,8 +66,8 @@ is_numeric(OV1),
 VAL=to_number(OV1)-TMP, 
 DEPTH < VA_MAXDEPTH,
 !is_numeric(OV2),  
-is_instruction_before_other(IID, IID2),//IID2 is before IID
-get_int_by_vreg_internal(TMP, FID, OV2, IID2, DEPTH+1).
+//is_instruction_before_other(IID, IID2),//IID2 is before IID
+get_int_by_vreg_internal(TMP, FID, OV2, _, DEPTH+1).
 
 //get core cases
 get_int_by_vreg_internal(VAL, FID, VREG, IID, DEPTH) :-
@@ -79,27 +79,25 @@ anumber(DEPTH),
 block(FID, BID, _), 
 instruction(BID, IID, _, OPC), OPC = "store",
 get_second_operand(IID, NEWINT), 
-get_int_by_vreg_internal(VAL, FID, NEWINT, IID2, DEPTH+1),
+get_int_by_vreg_internal(VAL, FID, NEWINT, _, DEPTH+1),
 get_fourth_operand(IID, VREG),
 get_first_operand(IID, TYPE),
 is_inttype(TYPE), 
-!is_numeric(NEWINT),
-is_instruction_before_other(IID, IID2)//IID2 is before IID
-
+//is_instruction_before_other(IID, IID2),//IID2 is before IID
+!is_numeric(NEWINT)
 .
 
 //case load integer
 get_int_by_vreg_internal(VAL, FID, VREG, IID, DEPTH) :- 
 anumber(DEPTH),
 get_third_operand(IID, NEWINT), 
-get_int_by_vreg_internal(VAL, FID, NEWINT, IID2, DEPTH+1),
+get_int_by_vreg_internal(VAL, FID, NEWINT, _, DEPTH+1),
 block(FID, BID, _), 
 instruction(BID, IID, VREG, OPC),
 OPC = "load",
-DEPTH < VA_MAXDEPTH, 
-!is_numeric(NEWINT),
-is_instruction_before_other(IID, IID2)//IID2 is before IID
-
+DEPTH < VA_MAXDEPTH,
+//is_instruction_before_other(IID, IID2),//IID2 is before IID 
+!is_numeric(NEWINT)
 .
 
 //speculative cases:
@@ -111,11 +109,11 @@ block(FID, BID, _), instruction(BID, _, VREG, _),
 anumber(DEPTH),
 memequals(FID, START_LOC, FID2, END_LOC), 
 instruction(BID, IID, START_LOC, _),
-get_int_by_vreg_internal(VAL, FID2, END_LOC, IID2, DEPTH+1),
+get_int_by_vreg_internal(VAL, FID2, END_LOC, _, DEPTH+1),
 START_LOC = VREG,
 DEPTH < VA_MAXDEPTH,
-block(FID, BID, _),
-is_instruction_before_other(IID, IID2)//IID2 is before IID
+//is_instruction_before_other(IID, IID2),//IID2 is before IID
+block(FID, BID, _)
 .
 
 //case memequals oneway
@@ -124,7 +122,7 @@ block(FID, BID, _), instruction(BID, _, VREG, _),
 anumber(DEPTH),
 memequals_oneway(FID, START_LOC, FID2, END_LOC), 
 instruction(BID, IID, START_LOC, _),
-get_int_by_vreg_internal(VAL, FID2, END_LOC, IID2, DEPTH+1),
+get_int_by_vreg_internal(VAL, FID2, END_LOC, _, DEPTH+1),
 START_LOC = VREG,
 DEPTH < VA_MAXDEPTH,
 //is_instruction_before_other(IID, IID2),//IID2 is before IID 
@@ -254,6 +252,6 @@ VAL = 0.
 get_int_by_vreg_internal_core(VAL, FID, VREG, IID, DEPTH) :-
 anumber(DEPTH),
 taintlocation(FID, VREG, _, _),
-CAT = cat("userinput_",to_string(MAXINT)),
+//CAT = cat("userinput_",to_string(MAXINT)),
 VAL = MAXINT,
 IID = -1.

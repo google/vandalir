@@ -7,7 +7,7 @@
 
 //mode equal
 .decl taintlocation(functionid: _functionid, memloc: symbol, memtyp: symbol, memcategory: _memcategory)
-//.output taintlocation(delimiter=",")
+.output taintlocation(delimiter=",")
 
 //mode one argument
 taintlocation(FID, LOC, TYPE, CAT) :-
@@ -133,7 +133,7 @@ CAT = cat("userinput_", to_string(SIZE))
 
 //helper to get size info for limited or unlimited userinput
 .decl get_size_of_userinput(size: number, instructionid: _instructionid, fname: symbol, argid_relative: number)
-//.output get_size_of_userinput
+.output get_size_of_userinput
 
 //case unlimited (equal)
 get_size_of_userinput(SIZE, IID, FNAME, ARGID_REL) :-

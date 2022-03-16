@@ -35,5 +35,5 @@ get_vulnerable(IID, LEVEL, MESSAGE) :- format_string_attacks(IID, LEVEL, MESSAGE
 get_vulnerable(IID, LEVEL, MESSAGE) :- integer_overflow(IID, LEVEL, MESSAGE).
 get_vulnerable(IID, LEVEL, MESSAGE) :- dangerous_function(IID, LEVEL, MESSAGE).
 get_vulnerable(IID, LEVEL, MESSAGE) :- double_free(IID, LEVEL, MESSAGE).
-get_vulnerable(IID, LEVEL, MESSAGE) :- use_after_free(IID, LEVEL, MESSAGE).
+//get_vulnerable(IID, LEVEL, MESSAGE) :- use_after_free(IID, LEVEL, MESSAGE).
 
