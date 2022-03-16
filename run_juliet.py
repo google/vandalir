@@ -21,9 +21,9 @@ CREATE_LOG = False # this option is overwritten if evaluate_all_cwes() is used
 
 
 def main():
-    # compile_datalog()
-    # evaluate_all_cwes()
-    evaluate_full("121")
+    compile_datalog()
+    evaluate_all_cwes()
+    # evaluate_full("121")
 
 
 def create_logfile():
