@@ -6,7 +6,14 @@ import sys
 import re
 
 
-# configuration converter
+# configuration extractor
+
+# configuration Datalog
+# set library mode (all output facing parameters may contain userinput)
+DLC_LIBRARYMODE = ("libraryMode", False)
+DLC_SHOWVULNERABILITIES = ("showVulnerabilities", True)
+DLC_SHOWWARNINGS = ("showWarnings", True)
+DLC_DEEPALIAS = ("deepAlias", False) # deprecated, no longer in use
 
 # directory of fact files
 global FACTS_DIR
@@ -36,14 +43,6 @@ LIMIT = 1000
 
 # describes the maximum depth of structs or arrays within structs
 MAXDEPTH = 4
-
-
-# configuration Datalog
-# set library mode (all output facing parameters may contain userinput)
-DLC_LIBRARYMODE = ("libraryMode", False)
-DLC_SHOWVULNERABILITIES = ("showVulnerabilities", True)
-DLC_SHOWWARNINGS = ("showWarnings", False)
-DLC_DEEPALIAS = ("deepAlias", False) # deprecated, no longer in use
 
 # build config array
 DATALOG_CONFIG = [DLC_LIBRARYMODE, DLC_SHOWVULNERABILITIES, DLC_SHOWWARNINGS, DLC_DEEPALIAS]
