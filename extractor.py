@@ -348,8 +348,10 @@ class Parser:
             elif(" @" in ops2[1]):
                 operands[2] = "@"+ops2[1].rsplit(" @", 1)[1]
             else:
+                pass
                 # print("Parsing Error in parseLoadInstruction")
         except:
+            pass
             # print("Parsing Error in parseLoadInstruction")
             # sys.exit()
         
@@ -390,6 +392,7 @@ class Parser:
             operands[2] = dest[0].strip()
             operands[3] = dest[1].strip()
         except:
+            pass
             # print("Parsing Error in parseStoreInstruction")
         # print(ops)
         # print(operands)
