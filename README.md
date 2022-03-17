@@ -2,7 +2,7 @@
 
 VANDALIR (**V**ulnerability detection & static **AN**alysis using **DA**talog and **L**LVM-**IR**) is a tool for analyzing LLVM-IR with Datalog with the goal to find vulnerabilities. 
 
-
+ 
 
 ## Set up
 
