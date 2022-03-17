@@ -14,8 +14,8 @@ def parseArgs(parser):
                         help='specify facts directory (default: facts)')
     parser.add_argument('-o', action='store', dest='output_dir', default="output",
                         help='specify output directory (default: output)')
-    parser.add_argument('-j', action='store', dest='thread_count', default="24",
-                        help='specify how many threads Soufflé may use (default: 24)')
+    parser.add_argument('-j', action='store', dest='thread_count', default="4",
+                        help='specify how many threads Soufflé may use (default: 4)')
 
 def ensureDirectoryExists(name):
     if(not os.path.isdir("./"+name)):
@@ -109,7 +109,7 @@ def compile_functors():
     # print("Functors compiled.")
     set_functors_path()
 
-def compile_datalog(thread_count=24):
+def compile_datalog(thread_count=4):
     print("Compiling Datalog...")
     command = "souffle \"logic/main.dl\" -o bin/analyzer -L logic/functors -j "+str(thread_count)
     subprocess.call(command, shell=True, cwd="./")
@@ -128,7 +128,7 @@ def main():
     output_dir = args.output_dir
     thread_count = args.thread_count
     if(not thread_count):
-        thread_count = 24
+        thread_count = 4
 
     parse(filepath, facts_dir)
     run(filepath, compile, previous_compile, profile, facts_dir, output_dir, thread_count)

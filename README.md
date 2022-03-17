@@ -50,7 +50,7 @@ Additional parameters for run.sh
 
 `-o specify output directory (default: output)`
 
-`-j specify how many threads Soufflé may use (default: 24)`
+`-j specify how many threads Soufflé may use (default: 4)`
 
 ## Configuration
 Configuration is done within the extractor.py file. There you can activate library mode or change settings for vulnerability and warnings output.
