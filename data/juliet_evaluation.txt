@@ -2,71 +2,71 @@
 
 CWE: 121
 Testcases: 324
-Vulns: 0
-True Positives: 0 [0.0%]
-False Negatives: 324 [100.0%]
-False Positives (in patched): 0
+Vulns: 316
+True Positives: 316 [97.5%]
+False Negatives: 8 [2.5%]
+False Positives (in patched): 207
 
 
 CWE: 129
 Testcases: 228
-Vulns: 0
-True Positives: 0 [0.0%]
-False Negatives: 228 [100.0%]
-False Positives (in patched): 0
+Vulns: 250
+True Positives: 176 [77.2%]
+False Negatives: 52 [22.8%]
+False Positives (in patched): 163
 
 
 CWE: 131
 Testcases: 102
-Vulns: 0
-True Positives: 0 [0.0%]
-False Negatives: 102 [100.0%]
+Vulns: 64
+True Positives: 64 [62.7%]
+False Negatives: 38 [37.3%]
 False Positives (in patched): 0
 
 
 CWE: 193
 Testcases: 340
-Vulns: 0
-True Positives: 0 [0.0%]
-False Negatives: 340 [100.0%]
+Vulns: 323
+True Positives: 323 [95.0%]
+False Negatives: 17 [5.0%]
 False Positives (in patched): 0
 
 
 CWE: 242
 Testcases: 18
-Vulns: 0
-True Positives: 0 [0.0%]
-False Negatives: 18 [100.0%]
+Vulns: 18
+True Positives: 18 [100.0%]
+False Negatives: 0 [0.0%]
 False Positives (in patched): 0
 
 
 CWE: 805
 Testcases: 1020
-Vulns: 0
-True Positives: 0 [0.0%]
-False Negatives: 1020 [100.0%]
-False Positives (in patched): 0
+Vulns: 852
+True Positives: 852 [83.5%]
+False Negatives: 168 [16.5%]
+False Positives (in patched): 202
 
 
 CWE: 806
 Testcases: 456
-Vulns: 0
-True Positives: 0 [0.0%]
-False Negatives: 456 [100.0%]
-False Positives (in patched): 0
+Vulns: 444
+True Positives: 444 [97.4%]
+False Negatives: 12 [2.6%]
+False Positives (in patched): 624
 
 
 CWE: 134
 Testcases: 950
-Vulns: 0
-True Positives: 0 [0.0%]
-False Negatives: 950 [100.0%]
+Vulns: 925
+True Positives: 925 [97.4%]
+False Negatives: 25 [2.6%]
 False Positives (in patched): 0
 
 
 CWE: 415
 Testcases: 190
-Vulns: 0
-True Positives: 0 [0.0%]
-False Negatives: 190 [100.0%]
+Vulns: 169
+True Positives: 169 [88.9%]
+False Negatives: 21 [11.1%]
 False Positives (in patched): 0

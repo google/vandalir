@@ -1,0 +1,624 @@
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_loop_01;good;Vulnerability;goodG2B;18:;%24;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_loop_04;good;Vulnerability;goodG2B1;18:;%24;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_loop_04;good;Vulnerability;goodG2B2;18:;%24;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_loop_02;good;Vulnerability;goodG2B1;18:;%24;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_loop_02;good;Vulnerability;goodG2B2;18:;%24;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_loop_03;good;Vulnerability;goodG2B1;18:;%24;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_loop_03;good;Vulnerability;goodG2B2;18:;%24;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_loop_06;good;Vulnerability;goodG2B1;18:;%24;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_loop_06;good;Vulnerability;goodG2B2;18:;%24;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_loop_05;good;Vulnerability;goodG2B1;23:;%29;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_loop_05;good;Vulnerability;goodG2B2;22:;%28;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_loop_07;good;Vulnerability;goodG2B1;23:;%29;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_loop_07;good;Vulnerability;goodG2B2;22:;%28;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_loop_12;good;Vulnerability;goodG2B;26:;%32;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_loop_10;good;Vulnerability;goodG2B1;23:;%29;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_loop_10;good;Vulnerability;goodG2B2;22:;%28;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_loop_09;good;Vulnerability;goodG2B1;23:;%29;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_loop_09;good;Vulnerability;goodG2B2;22:;%28;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_loop_11;good;Vulnerability;goodG2B1;23:;%29;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_loop_11;good;Vulnerability;goodG2B2;22:;%28;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_loop_08;good;Vulnerability;goodG2B1;23:;%29;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_loop_08;good;Vulnerability;goodG2B2;22:;%28;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_loop_16;good;Vulnerability;goodG2B;20:;%26;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_loop_18;good;Vulnerability;goodG2B;19:;%25;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_loop_17;good;Vulnerability;goodG2B;27:;%33;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_loop_13;good;Vulnerability;goodG2B1;23:;%29;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_loop_13;good;Vulnerability;goodG2B2;22:;%28;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_loop_15;good;Vulnerability;goodG2B1;18:;%24;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_loop_15;good;Vulnerability;goodG2B2;18:;%24;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_loop_14;good;Vulnerability;goodG2B1;23:;%29;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_loop_14;good;Vulnerability;goodG2B2;22:;%28;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_loop_31;good;Vulnerability;goodG2B;22:;%28;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_loop_41;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_loop_41_goodG2BSink;13:;%19;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_loop_32;good;Vulnerability;goodG2B;28:;%34;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_loop_34;good;Vulnerability;goodG2B;24:;%30;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_loop_21;good;Vulnerability;goodG2B1;17:;%23;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_loop_21;good;Vulnerability;goodG2B2;17:;%23;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_loop_22;good;Vulnerability;goodG2B1;17:;%23;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_loop_22;good;Vulnerability;goodG2B2;17:;%23;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_loop_42;good;Vulnerability;goodG2B;17:;%23;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_loop_51;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_loop_51b_goodG2BSink;13:;%19;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_loop_44;good;Vulnerability;goodG2BSink;13:;%19;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_loop_45;good;Vulnerability;goodG2BSink;13:;%19;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_loop_52;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_loop_52c_goodG2BSink;13:;%19;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_loop_53;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_loop_53d_goodG2BSink;13:;%19;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_loop_54;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_loop_54e_goodG2BSink;13:;%19;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_loop_61;good;Vulnerability;goodG2B;17:;%23;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_loop_63;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_loop_63b_goodG2BSink;16:;%22;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_loop_64;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_loop_64b_goodG2BSink;19:;%25;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memcpy_01;good;Vulnerability;goodG2B;0:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_loop_65;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_loop_65b_goodG2BSink;13:;%19;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memcpy_02;good;Vulnerability;goodG2B1;0:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memcpy_02;good;Vulnerability;goodG2B2;0:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_loop_68;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_loop_68b_goodG2BSink;13:;%19;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memcpy_03;good;Vulnerability;goodG2B1;0:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memcpy_03;good;Vulnerability;goodG2B2;0:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memcpy_04;good;Vulnerability;goodG2B1;0:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memcpy_04;good;Vulnerability;goodG2B2;0:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_loop_67;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_loop_67b_goodG2BSink;17:;%23;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memcpy_05;good;Vulnerability;goodG2B1;13:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memcpy_05;good;Vulnerability;goodG2B2;12:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memcpy_06;good;Vulnerability;goodG2B1;0:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memcpy_06;good;Vulnerability;goodG2B2;0:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memcpy_07;good;Vulnerability;goodG2B1;13:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memcpy_07;good;Vulnerability;goodG2B2;12:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memcpy_08;good;Vulnerability;goodG2B1;13:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memcpy_08;good;Vulnerability;goodG2B2;12:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memcpy_09;good;Vulnerability;goodG2B1;13:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memcpy_09;good;Vulnerability;goodG2B2;12:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memcpy_10;good;Vulnerability;goodG2B1;13:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memcpy_10;good;Vulnerability;goodG2B2;12:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memcpy_12;good;Vulnerability;goodG2B;16:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memcpy_11;good;Vulnerability;goodG2B1;13:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memcpy_11;good;Vulnerability;goodG2B2;12:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memcpy_13;good;Vulnerability;goodG2B1;13:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memcpy_13;good;Vulnerability;goodG2B2;12:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memcpy_16;good;Vulnerability;goodG2B;10:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memcpy_18;good;Vulnerability;goodG2B;6:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memcpy_15;good;Vulnerability;goodG2B1;0:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memcpy_15;good;Vulnerability;goodG2B2;0:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memcpy_17;good;Vulnerability;goodG2B;17:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memcpy_14;good;Vulnerability;goodG2B1;13:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memcpy_14;good;Vulnerability;goodG2B2;12:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memcpy_31;good;Vulnerability;goodG2B;0:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memcpy_41;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memcpy_41_goodG2BSink;0:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memcpy_32;good;Vulnerability;goodG2B;0:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memcpy_34;good;Vulnerability;goodG2B;0:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memcpy_21;good;Vulnerability;goodG2B1;0:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memcpy_21;good;Vulnerability;goodG2B2;0:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memcpy_22;good;Vulnerability;goodG2B1;0:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memcpy_22;good;Vulnerability;goodG2B2;0:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memcpy_42;good;Vulnerability;goodG2B;0:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memcpy_44;good;Vulnerability;goodG2BSink;0:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memcpy_51;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memcpy_51b_goodG2BSink;0:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memcpy_45;good;Vulnerability;goodG2BSink;0:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memcpy_52;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memcpy_52c_goodG2BSink;0:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memcpy_53;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memcpy_53d_goodG2BSink;0:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memcpy_61;good;Vulnerability;goodG2B;0:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memcpy_63;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memcpy_63b_goodG2BSink;0:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memcpy_54;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memcpy_54e_goodG2BSink;0:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memcpy_64;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memcpy_64b_goodG2BSink;0:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memcpy_65;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memcpy_65b_goodG2BSink;0:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memmove_01;good;Vulnerability;goodG2B;0:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memcpy_68;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memcpy_68b_goodG2BSink;0:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memcpy_67;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memcpy_67b_goodG2BSink;0:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memmove_02;good;Vulnerability;goodG2B1;0:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memmove_02;good;Vulnerability;goodG2B2;0:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memmove_03;good;Vulnerability;goodG2B1;0:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memmove_03;good;Vulnerability;goodG2B2;0:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memmove_04;good;Vulnerability;goodG2B1;0:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memmove_04;good;Vulnerability;goodG2B2;0:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memmove_06;good;Vulnerability;goodG2B1;0:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memmove_06;good;Vulnerability;goodG2B2;0:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memmove_05;good;Vulnerability;goodG2B1;13:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memmove_05;good;Vulnerability;goodG2B2;12:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memmove_07;good;Vulnerability;goodG2B1;13:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memmove_07;good;Vulnerability;goodG2B2;12:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memmove_08;good;Vulnerability;goodG2B1;13:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memmove_08;good;Vulnerability;goodG2B2;12:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memmove_09;good;Vulnerability;goodG2B1;13:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memmove_09;good;Vulnerability;goodG2B2;12:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memmove_10;good;Vulnerability;goodG2B1;13:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memmove_10;good;Vulnerability;goodG2B2;12:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memmove_12;good;Vulnerability;goodG2B;16:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memmove_11;good;Vulnerability;goodG2B1;13:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memmove_11;good;Vulnerability;goodG2B2;12:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memmove_16;good;Vulnerability;goodG2B;10:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memmove_15;good;Vulnerability;goodG2B1;0:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memmove_15;good;Vulnerability;goodG2B2;0:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memmove_13;good;Vulnerability;goodG2B1;13:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memmove_13;good;Vulnerability;goodG2B2;12:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memmove_14;good;Vulnerability;goodG2B1;13:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memmove_14;good;Vulnerability;goodG2B2;12:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memmove_17;good;Vulnerability;goodG2B;17:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memmove_18;good;Vulnerability;goodG2B;6:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memmove_31;good;Vulnerability;goodG2B;0:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memmove_32;good;Vulnerability;goodG2B;0:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memmove_41;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memmove_41_goodG2BSink;0:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memmove_34;good;Vulnerability;goodG2B;0:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memmove_21;good;Vulnerability;goodG2B1;0:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memmove_21;good;Vulnerability;goodG2B2;0:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memmove_22;good;Vulnerability;goodG2B1;0:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memmove_22;good;Vulnerability;goodG2B2;0:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memmove_42;good;Vulnerability;goodG2B;0:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memmove_44;good;Vulnerability;goodG2BSink;0:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memmove_51;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memmove_51b_goodG2BSink;0:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memmove_45;good;Vulnerability;goodG2BSink;0:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memmove_52;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memmove_52c_goodG2BSink;0:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memmove_53;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memmove_53d_goodG2BSink;0:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memmove_61;good;Vulnerability;goodG2B;0:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memmove_54;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memmove_54e_goodG2BSink;0:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memmove_63;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memmove_63b_goodG2BSink;0:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memmove_64;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memmove_64b_goodG2BSink;0:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memmove_65;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memmove_65b_goodG2BSink;0:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memmove_68;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memmove_68b_goodG2BSink;0:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncat_01;good;Vulnerability;goodG2B;0:;%14;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memmove_67;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_memmove_67b_goodG2BSink;0:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncat_02;good;Vulnerability;goodG2B1;0:;%14;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncat_02;good;Vulnerability;goodG2B2;0:;%14;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncat_03;good;Vulnerability;goodG2B1;0:;%14;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncat_03;good;Vulnerability;goodG2B2;0:;%14;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncat_04;good;Vulnerability;goodG2B1;0:;%14;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncat_04;good;Vulnerability;goodG2B2;0:;%14;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncat_06;good;Vulnerability;goodG2B1;0:;%14;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncat_06;good;Vulnerability;goodG2B2;0:;%14;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncat_05;good;Vulnerability;goodG2B1;13:;%19;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncat_05;good;Vulnerability;goodG2B2;12:;%18;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncat_07;good;Vulnerability;goodG2B1;13:;%19;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncat_07;good;Vulnerability;goodG2B2;12:;%18;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncat_08;good;Vulnerability;goodG2B1;13:;%19;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncat_08;good;Vulnerability;goodG2B2;12:;%18;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncat_09;good;Vulnerability;goodG2B1;13:;%19;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncat_09;good;Vulnerability;goodG2B2;12:;%18;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncat_10;good;Vulnerability;goodG2B1;13:;%19;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncat_10;good;Vulnerability;goodG2B2;12:;%18;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncat_12;good;Vulnerability;goodG2B;16:;%22;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncat_11;good;Vulnerability;goodG2B1;13:;%19;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncat_11;good;Vulnerability;goodG2B2;12:;%18;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncat_16;good;Vulnerability;goodG2B;10:;%16;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncat_13;good;Vulnerability;goodG2B1;13:;%19;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncat_13;good;Vulnerability;goodG2B2;12:;%18;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncat_15;good;Vulnerability;goodG2B1;0:;%14;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncat_15;good;Vulnerability;goodG2B2;0:;%14;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncat_14;good;Vulnerability;goodG2B1;13:;%19;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncat_14;good;Vulnerability;goodG2B2;12:;%18;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncat_18;good;Vulnerability;goodG2B;6:;%15;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncat_17;good;Vulnerability;goodG2B;17:;%23;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncat_31;good;Vulnerability;goodG2B;0:;%18;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncat_32;good;Vulnerability;goodG2B;0:;%24;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncat_34;good;Vulnerability;goodG2B;0:;%20;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncat_41;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncat_41_goodG2BSink;0:;%9;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncat_21;good;Vulnerability;goodG2B1;0:;%13;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncat_21;good;Vulnerability;goodG2B2;0:;%13;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncat_22;good;Vulnerability;goodG2B1;0:;%13;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncat_22;good;Vulnerability;goodG2B2;0:;%13;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncat_42;good;Vulnerability;goodG2B;0:;%13;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncat_44;good;Vulnerability;goodG2BSink;0:;%9;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncat_45;good;Vulnerability;goodG2BSink;0:;%9;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncat_51;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncat_51b_goodG2BSink;0:;%9;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncat_52;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncat_52c_goodG2BSink;0:;%9;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncat_53;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncat_53d_goodG2BSink;0:;%9;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncat_61;good;Vulnerability;goodG2B;0:;%13;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncat_54;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncat_54e_goodG2BSink;0:;%9;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncat_63;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncat_63b_goodG2BSink;0:;%12;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncat_64;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncat_64b_goodG2BSink;0:;%15;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncat_65;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncat_65b_goodG2BSink;0:;%9;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncat_68;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncat_68b_goodG2BSink;0:;%9;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncpy_01;good;Vulnerability;goodG2B;0:;%14;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncat_67;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncat_67b_goodG2BSink;0:;%13;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncpy_02;good;Vulnerability;goodG2B1;0:;%14;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncpy_02;good;Vulnerability;goodG2B2;0:;%14;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncpy_03;good;Vulnerability;goodG2B1;0:;%14;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncpy_03;good;Vulnerability;goodG2B2;0:;%14;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncpy_04;good;Vulnerability;goodG2B1;0:;%14;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncpy_04;good;Vulnerability;goodG2B2;0:;%14;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncpy_06;good;Vulnerability;goodG2B1;0:;%14;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncpy_06;good;Vulnerability;goodG2B2;0:;%14;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncpy_05;good;Vulnerability;goodG2B1;13:;%19;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncpy_05;good;Vulnerability;goodG2B2;12:;%18;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncpy_07;good;Vulnerability;goodG2B1;13:;%19;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncpy_07;good;Vulnerability;goodG2B2;12:;%18;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncpy_09;good;Vulnerability;goodG2B1;13:;%19;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncpy_09;good;Vulnerability;goodG2B2;12:;%18;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncpy_08;good;Vulnerability;goodG2B1;13:;%19;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncpy_08;good;Vulnerability;goodG2B2;12:;%18;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncpy_10;good;Vulnerability;goodG2B1;13:;%19;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncpy_10;good;Vulnerability;goodG2B2;12:;%18;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncpy_12;good;Vulnerability;goodG2B;16:;%22;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncpy_11;good;Vulnerability;goodG2B1;13:;%19;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncpy_11;good;Vulnerability;goodG2B2;12:;%18;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncpy_16;good;Vulnerability;goodG2B;10:;%16;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncpy_15;good;Vulnerability;goodG2B1;0:;%14;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncpy_15;good;Vulnerability;goodG2B2;0:;%14;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncpy_13;good;Vulnerability;goodG2B1;13:;%19;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncpy_13;good;Vulnerability;goodG2B2;12:;%18;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncpy_14;good;Vulnerability;goodG2B1;13:;%19;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncpy_14;good;Vulnerability;goodG2B2;12:;%18;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncpy_18;good;Vulnerability;goodG2B;6:;%15;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncpy_17;good;Vulnerability;goodG2B;17:;%23;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncpy_31;good;Vulnerability;goodG2B;0:;%18;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncpy_32;good;Vulnerability;goodG2B;0:;%24;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncpy_34;good;Vulnerability;goodG2B;0:;%20;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncpy_41;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncpy_41_goodG2BSink;0:;%9;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncpy_21;good;Vulnerability;goodG2B1;0:;%13;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncpy_21;good;Vulnerability;goodG2B2;0:;%13;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncpy_22;good;Vulnerability;goodG2B1;0:;%13;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncpy_22;good;Vulnerability;goodG2B2;0:;%13;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncpy_42;good;Vulnerability;goodG2B;0:;%13;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncpy_44;good;Vulnerability;goodG2BSink;0:;%9;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncpy_45;good;Vulnerability;goodG2BSink;0:;%9;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncpy_51;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncpy_51b_goodG2BSink;0:;%9;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncpy_52;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncpy_52c_goodG2BSink;0:;%9;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncpy_53;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncpy_53d_goodG2BSink;0:;%9;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncpy_61;good;Vulnerability;goodG2B;0:;%13;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncpy_54;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncpy_54e_goodG2BSink;0:;%9;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncpy_63;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncpy_63b_goodG2BSink;0:;%12;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncpy_64;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncpy_64b_goodG2BSink;0:;%15;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncpy_65;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncpy_65b_goodG2BSink;0:;%9;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_snprintf_01;good;Vulnerability;goodG2B;0:;%14;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncpy_68;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncpy_68b_goodG2BSink;0:;%9;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncpy_67;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_ncpy_67b_goodG2BSink;0:;%13;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_snprintf_02;good;Vulnerability;goodG2B1;0:;%14;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_snprintf_02;good;Vulnerability;goodG2B2;0:;%14;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_snprintf_03;good;Vulnerability;goodG2B1;0:;%14;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_snprintf_03;good;Vulnerability;goodG2B2;0:;%14;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_snprintf_04;good;Vulnerability;goodG2B1;0:;%14;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_snprintf_04;good;Vulnerability;goodG2B2;0:;%14;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_snprintf_06;good;Vulnerability;goodG2B1;0:;%14;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_snprintf_06;good;Vulnerability;goodG2B2;0:;%14;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_snprintf_05;good;Vulnerability;goodG2B1;13:;%19;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_snprintf_05;good;Vulnerability;goodG2B2;12:;%18;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_snprintf_07;good;Vulnerability;goodG2B1;13:;%19;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_snprintf_07;good;Vulnerability;goodG2B2;12:;%18;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_snprintf_09;good;Vulnerability;goodG2B1;13:;%19;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_snprintf_09;good;Vulnerability;goodG2B2;12:;%18;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_snprintf_08;good;Vulnerability;goodG2B1;13:;%19;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_snprintf_08;good;Vulnerability;goodG2B2;12:;%18;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_snprintf_10;good;Vulnerability;goodG2B1;13:;%19;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_snprintf_10;good;Vulnerability;goodG2B2;12:;%18;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_snprintf_12;good;Vulnerability;goodG2B;16:;%22;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_snprintf_11;good;Vulnerability;goodG2B1;13:;%19;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_snprintf_11;good;Vulnerability;goodG2B2;12:;%18;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_snprintf_16;good;Vulnerability;goodG2B;10:;%16;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_snprintf_15;good;Vulnerability;goodG2B1;0:;%14;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_snprintf_15;good;Vulnerability;goodG2B2;0:;%14;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_snprintf_13;good;Vulnerability;goodG2B1;13:;%19;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_snprintf_13;good;Vulnerability;goodG2B2;12:;%18;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_snprintf_14;good;Vulnerability;goodG2B1;13:;%19;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_snprintf_14;good;Vulnerability;goodG2B2;12:;%18;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_snprintf_18;good;Vulnerability;goodG2B;6:;%15;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_snprintf_17;good;Vulnerability;goodG2B;17:;%23;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_snprintf_31;good;Vulnerability;goodG2B;0:;%18;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_snprintf_32;good;Vulnerability;goodG2B;0:;%24;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_snprintf_34;good;Vulnerability;goodG2B;0:;%20;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_snprintf_41;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_snprintf_41_goodG2BSink;0:;%9;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_snprintf_21;good;Vulnerability;goodG2B1;0:;%13;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_snprintf_21;good;Vulnerability;goodG2B2;0:;%13;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_snprintf_22;good;Vulnerability;goodG2B1;0:;%13;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_snprintf_22;good;Vulnerability;goodG2B2;0:;%13;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_snprintf_42;good;Vulnerability;goodG2B;0:;%13;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_snprintf_44;good;Vulnerability;goodG2BSink;0:;%9;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_snprintf_45;good;Vulnerability;goodG2BSink;0:;%9;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_snprintf_51;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_snprintf_51b_goodG2BSink;0:;%9;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_snprintf_52;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_snprintf_52c_goodG2BSink;0:;%9;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_snprintf_53;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_snprintf_53d_goodG2BSink;0:;%9;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_snprintf_61;good;Vulnerability;goodG2B;0:;%13;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_snprintf_54;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_snprintf_54e_goodG2BSink;0:;%9;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_snprintf_63;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_snprintf_63b_goodG2BSink;0:;%12;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_snprintf_64;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_snprintf_64b_goodG2BSink;0:;%15;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_snprintf_65;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_snprintf_65b_goodG2BSink;0:;%9;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_snprintf_68;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_snprintf_68b_goodG2BSink;0:;%9;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_snprintf_67;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_alloca_snprintf_67b_goodG2BSink;0:;%13;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_loop_01;good;Vulnerability;goodG2B;17:;%23;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_loop_02;good;Vulnerability;goodG2B1;17:;%23;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_loop_02;good;Vulnerability;goodG2B2;17:;%23;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_loop_03;good;Vulnerability;goodG2B1;17:;%23;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_loop_03;good;Vulnerability;goodG2B2;17:;%23;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_loop_04;good;Vulnerability;goodG2B1;17:;%23;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_loop_04;good;Vulnerability;goodG2B2;17:;%23;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_loop_05;good;Vulnerability;goodG2B1;22:;%28;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_loop_05;good;Vulnerability;goodG2B2;21:;%27;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_loop_06;good;Vulnerability;goodG2B1;17:;%23;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_loop_06;good;Vulnerability;goodG2B2;17:;%23;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_loop_07;good;Vulnerability;goodG2B1;22:;%28;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_loop_07;good;Vulnerability;goodG2B2;21:;%27;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_loop_09;good;Vulnerability;goodG2B1;22:;%28;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_loop_09;good;Vulnerability;goodG2B2;21:;%27;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_loop_08;good;Vulnerability;goodG2B1;22:;%28;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_loop_08;good;Vulnerability;goodG2B2;21:;%27;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_loop_12;good;Vulnerability;goodG2B;25:;%31;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_loop_10;good;Vulnerability;goodG2B1;22:;%28;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_loop_10;good;Vulnerability;goodG2B2;21:;%27;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_loop_11;good;Vulnerability;goodG2B1;22:;%28;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_loop_11;good;Vulnerability;goodG2B2;21:;%27;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_loop_13;good;Vulnerability;goodG2B1;22:;%28;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_loop_13;good;Vulnerability;goodG2B2;21:;%27;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_loop_16;good;Vulnerability;goodG2B;19:;%25;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_loop_17;good;Vulnerability;goodG2B;26:;%32;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_loop_15;good;Vulnerability;goodG2B1;17:;%23;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_loop_15;good;Vulnerability;goodG2B2;17:;%23;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_loop_14;good;Vulnerability;goodG2B1;22:;%28;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_loop_14;good;Vulnerability;goodG2B2;21:;%27;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_loop_18;good;Vulnerability;goodG2B;18:;%24;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_loop_31;good;Vulnerability;goodG2B;21:;%27;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_loop_34;good;Vulnerability;goodG2B;23:;%29;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_loop_41;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_loop_41_goodG2BSink;13:;%19;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_loop_32;good;Vulnerability;goodG2B;27:;%33;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_loop_21;good;Vulnerability;goodG2B1;16:;%22;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_loop_21;good;Vulnerability;goodG2B2;16:;%22;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_loop_22;good;Vulnerability;goodG2B1;16:;%22;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_loop_22;good;Vulnerability;goodG2B2;16:;%22;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_loop_42;good;Vulnerability;goodG2B;16:;%22;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_loop_51;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_loop_51b_goodG2BSink;13:;%19;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_loop_45;good;Vulnerability;goodG2BSink;13:;%19;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_loop_44;good;Vulnerability;goodG2BSink;13:;%19;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_loop_52;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_loop_52c_goodG2BSink;13:;%19;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_loop_53;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_loop_53d_goodG2BSink;13:;%19;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_loop_54;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_loop_54e_goodG2BSink;13:;%19;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_loop_61;good;Vulnerability;goodG2B;16:;%22;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_loop_63;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_loop_63b_goodG2BSink;16:;%22;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_loop_64;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_loop_64b_goodG2BSink;19:;%25;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_loop_65;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_loop_65b_goodG2BSink;13:;%19;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memcpy_01;good;Vulnerability;goodG2B;0:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memcpy_02;good;Vulnerability;goodG2B1;0:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memcpy_02;good;Vulnerability;goodG2B2;0:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_loop_68;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_loop_68b_goodG2BSink;13:;%19;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_loop_67;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_loop_67b_goodG2BSink;17:;%23;Array access within a loop with the loop variable [arr[i]] is out of bounds for i=98 and array size: 50.
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memcpy_04;good;Vulnerability;goodG2B1;0:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memcpy_04;good;Vulnerability;goodG2B2;0:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memcpy_03;good;Vulnerability;goodG2B1;0:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memcpy_03;good;Vulnerability;goodG2B2;0:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memcpy_05;good;Vulnerability;goodG2B1;12:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memcpy_05;good;Vulnerability;goodG2B2;11:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memcpy_06;good;Vulnerability;goodG2B1;0:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memcpy_06;good;Vulnerability;goodG2B2;0:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memcpy_07;good;Vulnerability;goodG2B1;12:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memcpy_07;good;Vulnerability;goodG2B2;11:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memcpy_09;good;Vulnerability;goodG2B1;12:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memcpy_09;good;Vulnerability;goodG2B2;11:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memcpy_10;good;Vulnerability;goodG2B1;12:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memcpy_10;good;Vulnerability;goodG2B2;11:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memcpy_08;good;Vulnerability;goodG2B1;12:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memcpy_08;good;Vulnerability;goodG2B2;11:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memcpy_12;good;Vulnerability;goodG2B;15:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memcpy_11;good;Vulnerability;goodG2B1;12:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memcpy_11;good;Vulnerability;goodG2B2;11:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memcpy_16;good;Vulnerability;goodG2B;9:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memcpy_13;good;Vulnerability;goodG2B1;12:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memcpy_13;good;Vulnerability;goodG2B2;11:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memcpy_15;good;Vulnerability;goodG2B1;0:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memcpy_15;good;Vulnerability;goodG2B2;0:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memcpy_18;good;Vulnerability;goodG2B;5:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memcpy_14;good;Vulnerability;goodG2B1;12:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memcpy_14;good;Vulnerability;goodG2B2;11:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memcpy_17;good;Vulnerability;goodG2B;16:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memcpy_31;good;Vulnerability;goodG2B;0:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memcpy_34;good;Vulnerability;goodG2B;0:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memcpy_32;good;Vulnerability;goodG2B;0:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memcpy_41;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memcpy_41_goodG2BSink;0:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memcpy_21;good;Vulnerability;goodG2B1;0:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memcpy_21;good;Vulnerability;goodG2B2;0:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memcpy_22;good;Vulnerability;goodG2B1;0:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memcpy_22;good;Vulnerability;goodG2B2;0:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memcpy_42;good;Vulnerability;goodG2B;0:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memcpy_44;good;Vulnerability;goodG2BSink;0:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memcpy_45;good;Vulnerability;goodG2BSink;0:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memcpy_51;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memcpy_51b_goodG2BSink;0:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memcpy_52;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memcpy_52c_goodG2BSink;0:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memcpy_53;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memcpy_53d_goodG2BSink;0:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memcpy_61;good;Vulnerability;goodG2B;0:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memcpy_63;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memcpy_63b_goodG2BSink;0:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memcpy_54;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memcpy_54e_goodG2BSink;0:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memcpy_64;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memcpy_64b_goodG2BSink;0:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memcpy_65;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memcpy_65b_goodG2BSink;0:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memmove_01;good;Vulnerability;goodG2B;0:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memcpy_68;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memcpy_68b_goodG2BSink;0:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memcpy_67;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memcpy_67b_goodG2BSink;0:;%-1;memcpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memmove_02;good;Vulnerability;goodG2B1;0:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memmove_02;good;Vulnerability;goodG2B2;0:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memmove_03;good;Vulnerability;goodG2B1;0:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memmove_03;good;Vulnerability;goodG2B2;0:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memmove_04;good;Vulnerability;goodG2B1;0:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memmove_04;good;Vulnerability;goodG2B2;0:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memmove_06;good;Vulnerability;goodG2B1;0:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memmove_06;good;Vulnerability;goodG2B2;0:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memmove_05;good;Vulnerability;goodG2B1;12:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memmove_05;good;Vulnerability;goodG2B2;11:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memmove_07;good;Vulnerability;goodG2B1;12:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memmove_07;good;Vulnerability;goodG2B2;11:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memmove_08;good;Vulnerability;goodG2B1;12:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memmove_08;good;Vulnerability;goodG2B2;11:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memmove_09;good;Vulnerability;goodG2B1;12:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memmove_09;good;Vulnerability;goodG2B2;11:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memmove_10;good;Vulnerability;goodG2B1;12:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memmove_10;good;Vulnerability;goodG2B2;11:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memmove_12;good;Vulnerability;goodG2B;15:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memmove_11;good;Vulnerability;goodG2B1;12:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memmove_11;good;Vulnerability;goodG2B2;11:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memmove_16;good;Vulnerability;goodG2B;9:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memmove_15;good;Vulnerability;goodG2B1;0:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memmove_15;good;Vulnerability;goodG2B2;0:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memmove_13;good;Vulnerability;goodG2B1;12:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memmove_13;good;Vulnerability;goodG2B2;11:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memmove_14;good;Vulnerability;goodG2B1;12:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memmove_14;good;Vulnerability;goodG2B2;11:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memmove_17;good;Vulnerability;goodG2B;16:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memmove_18;good;Vulnerability;goodG2B;5:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memmove_31;good;Vulnerability;goodG2B;0:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memmove_32;good;Vulnerability;goodG2B;0:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memmove_34;good;Vulnerability;goodG2B;0:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memmove_41;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memmove_41_goodG2BSink;0:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memmove_21;good;Vulnerability;goodG2B1;0:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memmove_21;good;Vulnerability;goodG2B2;0:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memmove_22;good;Vulnerability;goodG2B1;0:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memmove_22;good;Vulnerability;goodG2B2;0:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memmove_42;good;Vulnerability;goodG2B;0:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memmove_44;good;Vulnerability;goodG2BSink;0:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memmove_45;good;Vulnerability;goodG2BSink;0:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memmove_51;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memmove_51b_goodG2BSink;0:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memmove_52;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memmove_52c_goodG2BSink;0:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memmove_53;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memmove_53d_goodG2BSink;0:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memmove_54;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memmove_54e_goodG2BSink;0:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memmove_61;good;Vulnerability;goodG2B;0:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memmove_63;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memmove_63b_goodG2BSink;0:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memmove_65;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memmove_65b_goodG2BSink;0:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memmove_64;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memmove_64b_goodG2BSink;0:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncat_01;good;Vulnerability;goodG2B;0:;%13;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memmove_68;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memmove_68b_goodG2BSink;0:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memmove_67;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_memmove_67b_goodG2BSink;0:;%-1;memmove: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncat_02;good;Vulnerability;goodG2B1;0:;%13;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncat_02;good;Vulnerability;goodG2B2;0:;%13;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncat_03;good;Vulnerability;goodG2B1;0:;%13;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncat_03;good;Vulnerability;goodG2B2;0:;%13;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncat_04;good;Vulnerability;goodG2B1;0:;%13;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncat_04;good;Vulnerability;goodG2B2;0:;%13;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncat_06;good;Vulnerability;goodG2B1;0:;%13;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncat_06;good;Vulnerability;goodG2B2;0:;%13;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncat_05;good;Vulnerability;goodG2B1;12:;%18;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncat_05;good;Vulnerability;goodG2B2;11:;%17;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncat_07;good;Vulnerability;goodG2B1;12:;%18;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncat_07;good;Vulnerability;goodG2B2;11:;%17;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncat_08;good;Vulnerability;goodG2B1;12:;%18;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncat_08;good;Vulnerability;goodG2B2;11:;%17;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncat_10;good;Vulnerability;goodG2B1;12:;%18;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncat_10;good;Vulnerability;goodG2B2;11:;%17;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncat_09;good;Vulnerability;goodG2B1;12:;%18;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncat_09;good;Vulnerability;goodG2B2;11:;%17;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncat_12;good;Vulnerability;goodG2B;15:;%21;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncat_11;good;Vulnerability;goodG2B1;12:;%18;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncat_11;good;Vulnerability;goodG2B2;11:;%17;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncat_16;good;Vulnerability;goodG2B;9:;%15;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncat_13;good;Vulnerability;goodG2B1;12:;%18;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncat_13;good;Vulnerability;goodG2B2;11:;%17;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncat_15;good;Vulnerability;goodG2B1;0:;%13;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncat_15;good;Vulnerability;goodG2B2;0:;%13;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncat_14;good;Vulnerability;goodG2B1;12:;%18;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncat_14;good;Vulnerability;goodG2B2;11:;%17;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncat_18;good;Vulnerability;goodG2B;5:;%14;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncat_17;good;Vulnerability;goodG2B;16:;%22;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncat_31;good;Vulnerability;goodG2B;0:;%17;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncat_34;good;Vulnerability;goodG2B;0:;%19;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncat_32;good;Vulnerability;goodG2B;0:;%23;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncat_41;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncat_41_goodG2BSink;0:;%9;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncat_21;good;Vulnerability;goodG2B1;0:;%12;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncat_21;good;Vulnerability;goodG2B2;0:;%12;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncat_22;good;Vulnerability;goodG2B1;0:;%12;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncat_22;good;Vulnerability;goodG2B2;0:;%12;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncat_42;good;Vulnerability;goodG2B;0:;%12;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncat_44;good;Vulnerability;goodG2BSink;0:;%9;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncat_45;good;Vulnerability;goodG2BSink;0:;%9;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncat_51;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncat_51b_goodG2BSink;0:;%9;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncat_52;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncat_52c_goodG2BSink;0:;%9;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncat_53;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncat_53d_goodG2BSink;0:;%9;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncat_54;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncat_54e_goodG2BSink;0:;%9;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncat_61;good;Vulnerability;goodG2B;0:;%12;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncat_63;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncat_63b_goodG2BSink;0:;%12;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncat_64;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncat_64b_goodG2BSink;0:;%15;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncat_65;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncat_65b_goodG2BSink;0:;%9;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncpy_01;good;Vulnerability;goodG2B;0:;%13;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncat_68;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncat_68b_goodG2BSink;0:;%9;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncat_67;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncat_67b_goodG2BSink;0:;%13;strncat: possible insufficient buffer size 50 for concatenation with 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncpy_02;good;Vulnerability;goodG2B1;0:;%13;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncpy_02;good;Vulnerability;goodG2B2;0:;%13;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncpy_03;good;Vulnerability;goodG2B1;0:;%13;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncpy_03;good;Vulnerability;goodG2B2;0:;%13;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncpy_04;good;Vulnerability;goodG2B1;0:;%13;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncpy_04;good;Vulnerability;goodG2B2;0:;%13;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncpy_06;good;Vulnerability;goodG2B1;0:;%13;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncpy_06;good;Vulnerability;goodG2B2;0:;%13;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncpy_05;good;Vulnerability;goodG2B1;12:;%18;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncpy_05;good;Vulnerability;goodG2B2;11:;%17;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncpy_07;good;Vulnerability;goodG2B1;12:;%18;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncpy_07;good;Vulnerability;goodG2B2;11:;%17;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncpy_09;good;Vulnerability;goodG2B1;12:;%18;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncpy_09;good;Vulnerability;goodG2B2;11:;%17;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncpy_08;good;Vulnerability;goodG2B1;12:;%18;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncpy_08;good;Vulnerability;goodG2B2;11:;%17;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncpy_10;good;Vulnerability;goodG2B1;12:;%18;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncpy_10;good;Vulnerability;goodG2B2;11:;%17;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncpy_12;good;Vulnerability;goodG2B;15:;%21;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncpy_11;good;Vulnerability;goodG2B1;12:;%18;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncpy_11;good;Vulnerability;goodG2B2;11:;%17;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncpy_16;good;Vulnerability;goodG2B;9:;%15;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncpy_13;good;Vulnerability;goodG2B1;12:;%18;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncpy_13;good;Vulnerability;goodG2B2;11:;%17;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncpy_15;good;Vulnerability;goodG2B1;0:;%13;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncpy_15;good;Vulnerability;goodG2B2;0:;%13;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncpy_14;good;Vulnerability;goodG2B1;12:;%18;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncpy_14;good;Vulnerability;goodG2B2;11:;%17;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncpy_18;good;Vulnerability;goodG2B;5:;%14;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncpy_17;good;Vulnerability;goodG2B;16:;%22;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncpy_31;good;Vulnerability;goodG2B;0:;%17;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncpy_32;good;Vulnerability;goodG2B;0:;%23;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncpy_34;good;Vulnerability;goodG2B;0:;%19;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncpy_41;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncpy_41_goodG2BSink;0:;%9;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncpy_21;good;Vulnerability;goodG2B1;0:;%12;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncpy_21;good;Vulnerability;goodG2B2;0:;%12;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncpy_22;good;Vulnerability;goodG2B1;0:;%12;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncpy_22;good;Vulnerability;goodG2B2;0:;%12;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncpy_42;good;Vulnerability;goodG2B;0:;%12;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncpy_44;good;Vulnerability;goodG2BSink;0:;%9;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncpy_45;good;Vulnerability;goodG2BSink;0:;%9;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncpy_51;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncpy_51b_goodG2BSink;0:;%9;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncpy_52;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncpy_52c_goodG2BSink;0:;%9;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncpy_53;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncpy_53d_goodG2BSink;0:;%9;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncpy_54;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncpy_54e_goodG2BSink;0:;%9;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncpy_61;good;Vulnerability;goodG2B;0:;%12;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncpy_63;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncpy_63b_goodG2BSink;0:;%12;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncpy_64;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncpy_64b_goodG2BSink;0:;%15;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncpy_65;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncpy_65b_goodG2BSink;0:;%9;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_snprintf_01;good;Vulnerability;goodG2B;0:;%13;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncpy_68;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncpy_68b_goodG2BSink;0:;%9;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncpy_67;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_ncpy_67b_goodG2BSink;0:;%13;strncpy: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_snprintf_02;good;Vulnerability;goodG2B1;0:;%13;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_snprintf_02;good;Vulnerability;goodG2B2;0:;%13;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_snprintf_03;good;Vulnerability;goodG2B1;0:;%13;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_snprintf_03;good;Vulnerability;goodG2B2;0:;%13;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_snprintf_04;good;Vulnerability;goodG2B1;0:;%13;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_snprintf_04;good;Vulnerability;goodG2B2;0:;%13;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_snprintf_06;good;Vulnerability;goodG2B1;0:;%13;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_snprintf_06;good;Vulnerability;goodG2B2;0:;%13;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_snprintf_05;good;Vulnerability;goodG2B1;12:;%18;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_snprintf_05;good;Vulnerability;goodG2B2;11:;%17;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_snprintf_07;good;Vulnerability;goodG2B1;12:;%18;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_snprintf_07;good;Vulnerability;goodG2B2;11:;%17;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_snprintf_09;good;Vulnerability;goodG2B1;12:;%18;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_snprintf_09;good;Vulnerability;goodG2B2;11:;%17;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_snprintf_08;good;Vulnerability;goodG2B1;12:;%18;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_snprintf_08;good;Vulnerability;goodG2B2;11:;%17;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_snprintf_12;good;Vulnerability;goodG2B;15:;%21;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_snprintf_10;good;Vulnerability;goodG2B1;12:;%18;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_snprintf_10;good;Vulnerability;goodG2B2;11:;%17;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_snprintf_11;good;Vulnerability;goodG2B1;12:;%18;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_snprintf_11;good;Vulnerability;goodG2B2;11:;%17;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_snprintf_13;good;Vulnerability;goodG2B1;12:;%18;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_snprintf_13;good;Vulnerability;goodG2B2;11:;%17;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_snprintf_16;good;Vulnerability;goodG2B;9:;%15;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_snprintf_14;good;Vulnerability;goodG2B1;12:;%18;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_snprintf_14;good;Vulnerability;goodG2B2;11:;%17;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_snprintf_15;good;Vulnerability;goodG2B1;0:;%13;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_snprintf_15;good;Vulnerability;goodG2B2;0:;%13;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_snprintf_18;good;Vulnerability;goodG2B;5:;%14;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_snprintf_17;good;Vulnerability;goodG2B;16:;%22;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_snprintf_31;good;Vulnerability;goodG2B;0:;%17;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_snprintf_34;good;Vulnerability;goodG2B;0:;%19;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_snprintf_32;good;Vulnerability;goodG2B;0:;%23;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_snprintf_41;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_snprintf_41_goodG2BSink;0:;%9;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_snprintf_21;good;Vulnerability;goodG2B1;0:;%12;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_snprintf_21;good;Vulnerability;goodG2B2;0:;%12;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_snprintf_22;good;Vulnerability;goodG2B1;0:;%12;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_snprintf_22;good;Vulnerability;goodG2B2;0:;%12;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_snprintf_42;good;Vulnerability;goodG2B;0:;%12;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_snprintf_44;good;Vulnerability;goodG2BSink;0:;%9;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_snprintf_51;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_snprintf_51b_goodG2BSink;0:;%9;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_snprintf_45;good;Vulnerability;goodG2BSink;0:;%9;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_snprintf_52;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_snprintf_52c_goodG2BSink;0:;%9;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_snprintf_53;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_snprintf_53d_goodG2BSink;0:;%9;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_snprintf_61;good;Vulnerability;goodG2B;0:;%12;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_snprintf_63;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_snprintf_63b_goodG2BSink;0:;%12;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_snprintf_54;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_snprintf_54e_goodG2BSink;0:;%9;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_snprintf_64;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_snprintf_64b_goodG2BSink;0:;%15;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_snprintf_65;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_snprintf_65b_goodG2BSink;0:;%9;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_snprintf_68;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_snprintf_68b_goodG2BSink;0:;%9;snprintf: possible insufficient buffer size 50 for n of size 99
+CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_snprintf_67;good;Vulnerability;CWE121_Stack_Based_Buffer_Overflow__CWE806_char_declare_snprintf_67b_goodG2BSink;0:;%13;snprintf: possible insufficient buffer size 50 for n of size 99

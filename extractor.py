@@ -42,8 +42,8 @@ MAXDEPTH = 4
 # set library mode (all output facing parameters may contain userinput)
 DLC_LIBRARYMODE = ("libraryMode", False)
 DLC_SHOWVULNERABILITIES = ("showVulnerabilities", True)
-DLC_SHOWWARNINGS = ("showWarnings", True)
-DLC_DEEPALIAS = ("deepAlias", False)
+DLC_SHOWWARNINGS = ("showWarnings", False)
+DLC_DEEPALIAS = ("deepAlias", False) # deprecated, no longer in use
 
 # build config array
 DATALOG_CONFIG = [DLC_LIBRARYMODE, DLC_SHOWVULNERABILITIES, DLC_SHOWWARNINGS, DLC_DEEPALIAS]
