@@ -1,0 +1,16 @@
+Vulnerability;main;208:;%214;sprintf(dest %s src): possible insufficient buffer size 512 for source of size 2147483647
+Vulnerability;_Z4initPv;544:;%555;sprintf(dest %s src): possible insufficient buffer size 512 for source of size 2560
+Vulnerability;_Z4initPv;59:;%61;sprintf(dest %s src): possible insufficient buffer size 256 for source of size 512
+Vulnerability;_Z4initPv;199:;%206;strcpy: possible insufficient buffer size 320 for copy of 512 sized buffer
+Vulnerability;_Z4initPv;199:;%213;strcpy: possible insufficient buffer size 320 for copy of 512 sized buffer
+Vulnerability;_Z4initPv;199:;%225;possibly insufficient buffer size 320 detected for too small index access (below zero) of -1
+Vulnerability;_Z11processRecvP7request;128:;%138;sprintf(dest %s src): possible insufficient buffer size 512 for source of size 920
+Vulnerability;_Z11processSendP7request;398:;%408;sprintf(dest %s src): possible insufficient buffer size 512 for source of size 920
+Vulnerability;_Z4isIPPc;5:;%-1;duplicate loop variable increase in loop may result in memory error
+Warning;main;1198:;%-1;syslog detected and its formatstring argument is not static.
+Warning;_Z7logMessPch;63:;%-1;syslog detected and its formatstring argument is not static.
+Warning;_Z7logMessP7requesth;240:;%-1;syslog detected and its formatstring argument is not static.
+Warning;_Z7logMessP7requesth;18:;%27;printf detected and its formatstring argument is not static.
+Warning;_Z7logMessP7requesth;181:;%190;sprintf detected and its formatstring argument is not static.
+Warning;_Z11processSendP7request;328:;%347;sprintf detected and its formatstring argument is not static.
+Warning;_Z11processSendP7request;135:;%154;sprintf detected and its formatstring argument is not static.

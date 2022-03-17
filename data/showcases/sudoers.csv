@@ -1,0 +1,2 @@
+Vulnerability;set_cmnd;142:;%-1;duplicate loop variable increase in loop may result in memory error
+Vulnerability;cb_fqdn;109:;%-1;double free
