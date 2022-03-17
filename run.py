@@ -17,6 +17,18 @@ def parseArgs(parser):
     parser.add_argument('-j', action='store', dest='thread_count', default="24",
                         help='specify how many threads Soufflé may use (default: 24)')
 
+def ensureDirectoryExists(name):
+    if(not os.path.isdir("./"+name)):
+        os.mkdir("./"+name)
+
+def setupDirectories():
+    ensureDirectoryExists("bin")
+    ensureDirectoryExists("data")
+    ensureDirectoryExists("facts")
+    ensureDirectoryExists("llvm-ir")
+    ensureDirectoryExists("output")
+    ensureDirectoryExists("profiler")
+    ensureDirectoryExists("profiler_html")
 
 def parse(filepath, facts_dir):
 
@@ -105,6 +117,8 @@ def compile_datalog(thread_count=24):
 
 
 def main():
+    setupDirectories()
+
     filepath = args.file
     compile = args.compile
     previous_compile = args.previous_compile
