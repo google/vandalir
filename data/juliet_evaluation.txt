@@ -26,9 +26,9 @@ False Positives (in patched): 0
 
 CWE: 193
 Testcases: 340
-Vulns: 323
-True Positives: 323 [95.0%]
-False Negatives: 17 [5.0%]
+Vulns: 324
+True Positives: 324 [95.3%]
+False Negatives: 16 [4.7%]
 False Positives (in patched): 0
 
 
