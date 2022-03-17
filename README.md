@@ -1,6 +1,6 @@
-## VANDAL
+## VANDALIR
 
-VANDAL (**V**ulnerability detection & static **AN**alysis using **DA**talog and **L**LVM-IR) is a tool for analyzing LLVM-IR with Datalog with the goal to find vulnerabilities. 
+VANDALIR (**V**ulnerability detection & static **AN**alysis using **DA**talog and **L**LVM-**IR**) is a tool for analyzing LLVM-IR with Datalog with the goal to find vulnerabilities. 
 
 
 
@@ -8,7 +8,7 @@ VANDAL (**V**ulnerability detection & static **AN**alysis using **DA**talog and 
 
 Install python3 (version >= 3.6)
 
-Install [clang](https://clang.llvm.org) (version >= 6.0.0, currently supported: LLVM 10)
+Install [clang](https://clang.llvm.org) (version >= 10, currently supported: LLVM 10)
 
 install [llvmlite](https://github.com/numba/llvmlite) (version >= 0.34.0): 
 
@@ -52,32 +52,26 @@ Additional parameters for run.sh
 
 `-j specify how many threads Soufflé may use (default: 24)`
 
-<!---
+## Configuration
+Configuration is done within the extractor.py file. There you can activate library mode or change settings for vulnerability and warnings output.
 
-The current processing pipeline done within this script consists of the following steps:
+## Tools
+run.py starts the VANDALIR pipeline.<br>
+run_juliet.py runs all Juliet test cases from the /test/juliet directory.<br>
+extractor.py is the extractor component, which creates the knowledge base. 
 
-**0) Optionally: Generate LLVM-IR Code from C file**
+## Directories
+*/bin* contains the compiled version of VANDALIR.<br>
+*/data* contains raw evaluation data.<br>
+*/facts* is used to store fact files.<br>
+*/llvm-ir* is used to store llvm-ir files, if c files are used as input for the VANDALIR pipeline.<br>
+*/logic* contains all Datalog code of VANDALIR.<br>
+*/logic/vulnerabilities* contains the vulnerability rule sets.<br>
+*/output* is used for Soufflé's output. The file print_vulnerable.csv contains the vulnerability report created by VANDALIR.<br>
+*/profiler* can be used by the souffle profiler.<br>
+*/profiler_html* can be used to store HTML reports of the Soufflé profiler.<br>
+*/test* contains test cases used during the evaluation.<br>
 
-```
-clang -S -emit-llvm "path/to/inputdir/file.c" -o "path/to/outputdir/file.ll"
-```
+## Data
 
-The *run.sh* script stores all LLVM-IR code in the *llvm-ir* directory.
-
-**1) Parse LLVM-IR to datalog facts with Parser.py**
-
-```
-python3 Parser.py "path/to/file.ll"
-```
-
-**2) run the datalog analysis with souffle**
-
-```
-souffle "./logic/main.dl" -F "./facts" -D "./output"
-```
-
-The program is started using the main.dl file from the logic directory. The path to the generated fact files (*facts*) and the output directory (*output*) need to be specified as parameters.
-
-Finally the result of the analysis can be found in the *output* directory.
-
--->
+You can find our raw data in the /data directory.
