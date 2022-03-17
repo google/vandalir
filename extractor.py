@@ -348,9 +348,9 @@ class Parser:
             elif(" @" in ops2[1]):
                 operands[2] = "@"+ops2[1].rsplit(" @", 1)[1]
             else:
-                print("Parsing Error in parseLoadInstruction")
+                # print("Parsing Error in parseLoadInstruction")
         except:
-            print("Parsing Error in parseLoadInstruction")
+            # print("Parsing Error in parseLoadInstruction")
             # sys.exit()
         
         #print(operands)
@@ -390,7 +390,7 @@ class Parser:
             operands[2] = dest[0].strip()
             operands[3] = dest[1].strip()
         except:
-            print("Parsing Error in parseStoreInstruction")
+            # print("Parsing Error in parseStoreInstruction")
         # print(ops)
         # print(operands)
 
@@ -593,7 +593,7 @@ class Parser:
             changed = False
             if(not outputEntry.isnumeric()):
                 if(not outputEntry):
-                    print("Warning: outputEntry empty. Skipping output value.")
+                    # print("Warning: outputEntry empty. Skipping output value.")
                     return
                 if(outputEntry[0] == '"' and outputEntry[-1] == '"'):  # and outputEntry[1:-1].isnumeric()):
                     newOutput.append(outputEntry[1:-1])
