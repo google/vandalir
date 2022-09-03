@@ -75,3 +75,22 @@ extractor.py is the extractor component, which creates the knowledge base.
 ## Data
 
 You can find our raw data in the /data directory.
+
+## Published work
+
+If your research find one or several components of VANDALIR useful, please cite [our paper](https://link.springer.com/chapter/10.1007/978-3-031-09484-2_6):
+```
+@inproceedings{schilling2022vandalir,
+  title={VANDALIR: Vulnerability Analyses Based on Datalog and LLVM-IR},
+  author={Schilling, Joschua and M{\"u}ller, Tilo},
+  booktitle={International Conference on Detection of Intrusions and Malware, and Vulnerability Assessment},
+  pages={96--115},
+  year={2022},
+  organization={Springer}
+}
+
+```
+
+## License
+
+VANDALIR is distributed under the MIT License.
