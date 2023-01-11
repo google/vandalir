@@ -1,2 +1,0 @@
-Vulnerability;gattlib_disconnect;0:;%-1;double free
-Warning;gattlib_connect;28:;%31;strncpy: out of bounds read.

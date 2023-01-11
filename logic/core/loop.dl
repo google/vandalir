@@ -1,0 +1,75 @@
+// Copyright (c) 2023 Google LLC
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy of
+// this software and associated documentation files (the "Software"), to deal in
+// the Software without restriction, including without limitation the rights to
+// use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+// the Software, and to permit persons to whom the Software is furnished to do so,
+// subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+// FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+// COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+// IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+// CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+#pragma once
+
+#include "defines.dl"
+#include "type.dl"
+#include "control_flow.dl"
+#include "operand.dl"
+#include "function.dl"
+#include "block.dl"
+
+#ifdef DEBUG_LOOP
+#define OUTPUT(x) OUTPUT_IMPL(x)
+#else
+#define OUTPUT(x)
+#endif
+
+
+.comp _Loop {
+
+  .decl get(fid: func_t, head: block_t, tail: block_t)
+  OUTPUT(get)
+
+  get(fid, head, tail) :-
+    Function.get(fid, fname, _),
+    CFG.block_back_egde(fname, tail_name, head_name),
+    Block.get(fid, head, head_name),
+    Block.get(fid, tail, tail_name).
+
+  .decl node(fid: func_t, head: block_t, node: block_t)
+  OUTPUT(node)
+
+  node(fid, head, node) :-
+    Function.get(fid, fname, _),
+    Block.get(fid, head, head_name),
+    Block.get(fid, node, node_name),
+    CFG.block_loop_node(fname, head_name, node_name).
+
+  .decl condition_instr(fid: func_t, head: block_t, iid: instr_t)
+  OUTPUT(condition_instr)
+
+  condition_instr(fid, head, iid) :-
+    get(fid, head, _),
+    Block.terminator(fid, head, term_id),
+    Instruction.BrCond.get(term_id, head, cond, _, _),
+    Operand.vreg(cond, dest, _),
+    Instruction.ICmp.get(iid, head, dest).  
+
+  condition_instr(fid, head, iid) :-
+    get(fid, head, tail),
+    Block.terminator(fid, tail, term_id),
+    Instruction.BrCond.get(term_id, tail, cond, _, _),
+    Operand.vreg(cond, dest, _),
+    Instruction.ICmp.get(iid, tail, dest).  
+
+}
+
+.init Loop = _Loop

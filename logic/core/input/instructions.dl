@@ -1,0 +1,379 @@
+// Copyright (c) 2023 Google LLC
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy of
+// this software and associated documentation files (the "Software"), to deal in
+// the Software without restriction, including without limitation the rights to
+// use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+// the Software, and to permit persons to whom the Software is furnished to do so,
+// subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+// FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+// COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+// IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+// CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+#pragma once
+
+#include "defines.dl"
+
+.type instr_sub_t <: number
+
+.decl instruction (
+    id: instr_t,
+    bid: block_t,
+    vreg: name_t,
+    opcode: opcode_t,
+    atomic: symbol,
+    binary: symbol,
+    unary: symbol,
+    family_id: instr_sub_t
+)
+INPUT(instruction)
+
+.decl instruction_binary (
+    id: instr_sub_t,
+    op0: operand_t,
+    op1: operand_t,
+    dest: name_t
+)
+INPUT(instruction_binary)
+
+.decl instruction_unary (
+    id: instr_sub_t,
+    op: operand_t,
+    tid: type_t,
+    dest: name_t
+)
+INPUT(instruction_unary)
+
+.decl instruction_cmp (
+    id: instr_sub_t,
+    predicate: symbol,
+    op0: operand_t,
+    op1: operand_t,
+    dest: name_t
+)
+INPUT(instruction_cmp)
+
+.decl instruction_select (
+    id: instr_sub_t,
+    cond: operand_t,
+    true_op: operand_t,
+    false_op: operand_t,
+    dest: name_t
+)
+INPUT(instruction_select)
+
+.decl instruction_alloca (
+    id: instr_sub_t,
+    tid: type_t,
+    num: number,
+    dest: name_t,
+    alignment: number
+)
+INPUT(instruction_alloca)
+
+.decl instruction_load (
+    id: instr_sub_t,
+    addr: operand_t,
+    dest: name_t,
+    volatile: symbol,
+    alignment: number
+)
+INPUT(instruction_load)
+
+.decl instruction_store (
+    id: instr_sub_t,
+    addr: operand_t,
+    value: operand_t,
+    volatile: symbol,
+    alignment: number
+)
+INPUT(instruction_store)
+
+.decl instruction_cmpxchg (
+    id: instr_sub_t,
+    addr: operand_t,
+    expected: operand_t,
+    replacement: operand_t,
+    dest: name_t,
+    volatile: symbol,
+    f_mem_ord: symbol,
+    weak: symbol
+)
+INPUT(instruction_cmpxchg)
+
+.decl instruction_atomicrmw (
+    id: instr_sub_t,
+    op: symbol,
+    addr: operand_t,
+    value: operand_t,
+    dest: name_t,
+    volatile: symbol
+)
+INPUT(instruction_atomicrmw)
+
+.decl instruction_gep (
+    id: instr_sub_t,
+    addr: operand_t,
+    indices_num: number,
+    dest: name_t,
+    in_bounds: symbol
+)
+INPUT(instruction_gep)
+
+.decl instruction_gep_index (
+    id: instr_sub_t,
+    pid: instr_sub_t,
+    oid: operand_t
+)
+INPUT(instruction_gep_index)
+
+.decl instruction_extractelement (
+    id: instr_sub_t,
+    vec: operand_t,
+    idx: operand_t,
+    dest: name_t
+)
+INPUT(instruction_extractelement)
+
+.decl instruction_insertelement (
+    id: instr_sub_t,
+    vec: operand_t,
+    el: operand_t,
+    idx: operand_t,
+    dest: name_t
+)
+INPUT(instruction_insertelement)
+
+.decl instruction_shufflevector (
+    id: instr_sub_t,
+    op0: operand_t,
+    op1: operand_t,
+    dest: name_t,
+    mask: const_t
+)
+INPUT(instruction_shufflevector)
+
+.decl instruction_extractvalue (
+    id: instr_sub_t,
+    aggr: operand_t,
+    indices_num: number,
+    dest: name_t
+)
+INPUT(instruction_extractvalue)
+
+.decl instruction_extractvalue_index (
+    id: instr_sub_t,
+    pid: instr_sub_t,
+    oid: operand_t
+)
+INPUT(instruction_extractvalue_index)
+
+.decl instruction_insertvalue (
+    id: instr_sub_t,
+    aggr: operand_t,
+    el: operand_t,
+    indices_num: number,
+    dest: name_t
+)
+INPUT(instruction_insertvalue)
+
+.decl instruction_insertvalue_index (
+    id: instr_sub_t,
+    pid: instr_sub_t,
+    value: number
+)
+INPUT(instruction_insertvalue_index)
+
+.decl instruction_call (
+    id: instr_sub_t,
+    func: operand_t,
+    arg_num: number,
+    dest: name_t,
+    tail_call: symbol
+)
+INPUT(instruction_call)
+
+.decl instruction_call_op (
+    id: instr_sub_t,
+    pid: instr_sub_t,
+    oid: operand_t
+)
+INPUT(instruction_call_op)
+
+.decl instruction_phi (
+    id: instr_sub_t,
+    tid: type_t,
+    dest: name_t,
+    values_num: number
+)
+INPUT(instruction_phi)
+
+.decl instruction_phi_value (
+    id: instr_sub_t,
+    pid: instr_sub_t,
+    oid: operand_t,
+    dest: name_t
+)
+INPUT(instruction_phi_value)
+
+.decl instruction_landingpad (
+    id: instr_sub_t,
+    tid: type_t,
+    dest: name_t,
+    cleanup: symbol
+)
+INPUT(instruction_landingpad)
+
+.decl instruction_catchpad (
+    id: instr_sub_t,
+    catch_switch: operand_t,
+    arg_num: number,
+    dest: name_t
+)
+INPUT(instruction_catchpad)
+
+.decl instruction_catchpad_arg (
+    id: instr_sub_t,
+    pid: instr_sub_t,
+    oid: operand_t
+)
+INPUT(instruction_catchpad_arg)
+
+.decl instruction_cleanuppad (
+    id: instr_sub_t,
+    parent_pad: operand_t,
+    arg_num: number,
+    dest: name_t
+)
+INPUT(instruction_cleanuppad)
+
+.decl instruction_cleanuppad_arg (
+    id: instr_sub_t,
+    pid: instr_sub_t,
+    oid: operand_t
+)
+INPUT(instruction_cleanuppad_arg)
+
+.decl instruction_vaarg (
+    id: instr_sub_t,
+    arg_list: operand_t,
+    tid: type_t,
+    dest: name_t
+)
+INPUT(instruction_vaarg)
+
+.decl instruction_br (
+    id: instr_sub_t,
+    dest: name_t
+)
+INPUT(instruction_br)
+
+.decl instruction_condbr (
+    id: instr_sub_t,
+    op: operand_t,
+    true_dest: name_t,
+    false_dest: name_t
+)
+INPUT(instruction_condbr)
+
+.decl instruction_switch (
+    id: instr_sub_t,
+    op: operand_t,
+    default_dest: name_t,
+    num_dest: number
+)
+INPUT(instruction_switch)
+
+.decl instruction_switch_dest (
+    id: instr_sub_t,
+    pid: instr_sub_t,
+    cid: const_t,
+    name: name_t
+)
+INPUT(instruction_switch_dest)
+
+.decl instruction_indirectbr (
+    id: instr_sub_t,
+    op: operand_t,
+    num_dest: number
+)
+INPUT(instruction_indirectbr)
+
+.decl instruction_indirectbr_dest  (
+    id: instr_sub_t,
+    pid: instr_sub_t,
+    dest: name_t
+)
+INPUT(instruction_indirectbr_dest)
+
+.decl instruction_cleanupret (
+    id: instr_sub_t,
+    op: operand_t,
+    dest: name_t
+)
+INPUT(instruction_cleanupret)
+
+.decl instruction_catchret (
+    id: instr_sub_t,
+    op: operand_t,
+    dest: name_t
+)
+INPUT(instruction_catchret)
+
+.decl instruction_callbr (
+    id: instr_sub_t,
+    func: operand_t,
+    arg_num: number,
+    result: name_t,
+    return_label: name_t,
+    other: name_t
+)
+INPUT(instruction_callbr)
+
+.decl instruction_callbr_arg (
+    id: instr_sub_t,
+    pid: instr_sub_t,
+    oid: operand_t
+)
+INPUT(instruction_callbr_arg)
+
+.decl instruction_invoke (
+    id: instr_sub_t,
+    func: operand_t,
+    arg_num: number,
+    result: name_t,
+    return_label: name_t,
+    other: name_t
+)
+INPUT(instruction_invoke)
+
+.decl instruction_invoke_arg (
+    id: instr_sub_t,
+    pid: instr_sub_t,
+    oid: operand_t
+)
+INPUT(instruction_invoke_arg)
+
+
+.decl instruction_catchswitch (
+    id: instr_sub_t,
+    ppad: operand_t,
+    default_dest: name_t,
+    result: name_t,
+    num_handlers: number
+)
+INPUT(instruction_catchswitch)
+
+.decl instruction_catchswitch_handler  (
+    id: instr_sub_t,
+    pid: instr_sub_t,
+    dest: name_t
+)
+INPUT(instruction_catchswitch_handler)

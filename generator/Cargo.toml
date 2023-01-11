@@ -1,0 +1,13 @@
+[package]
+name = "fact_generator"
+version = "0.1.0"
+authors = ["Dmitry Yatsushkevich <daermon4u@gmail.com>"]
+edition = "2018"
+license = "MIT"
+
+[dependencies]
+llvm-ir = { version = "0.8.2", features = ["llvm-14"] }
+llvm-ir-analysis = { git = "https://github.com/cdisselkoen/llvm-ir-analysis.git", version = "0.3.1" }
+argparse = "0.2.2"
+either = "1.8.0"
+clap = { version = "4.0.29", features = ["derive"] }

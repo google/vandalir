@@ -1,0 +1,11 @@
+[package]
+name = "vandalir"
+version = "0.1.0"
+authors = ["Dmitry Yatsushkevich <daermon4u@gmail.com>"]
+edition = "2018"
+license = "MIT"
+
+[dependencies]
+fact_generator = { path = "../generator" }
+souffle_wrapper = { path = "../souffle_wrapper" }
+clap = { version = "4.0.29", features = ["derive"] }

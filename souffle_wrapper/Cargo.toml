@@ -1,0 +1,13 @@
+[package]
+name = "souffle_wrapper"
+version = "0.1.0"
+authors = ["Dmitry Yatsushkevich <daermon4u@gmail.com>"]
+edition = "2018"
+build="build.rs"
+license = "MIT"
+
+[dependencies]
+cxx = "1.0"
+
+[build-dependencies]
+cxx-build = "1.0"

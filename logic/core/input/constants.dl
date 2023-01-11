@@ -1,0 +1,197 @@
+// Copyright (c) 2023 Google LLC
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy of
+// this software and associated documentation files (the "Software"), to deal in
+// the Software without restriction, including without limitation the rights to
+// use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+// the Software, and to permit persons to whom the Software is furnished to do so,
+// subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+// FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+// COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+// IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+// CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+#pragma once
+
+#include "defines.dl"
+
+.type const_sub_t <: number
+
+.decl constant (
+    id: const_t,
+    family: symbol,
+    family_id: const_sub_t
+)
+INPUT(constant)
+
+.decl constant_int (
+    id: const_sub_t,
+    bits: number,
+    value: number
+)
+INPUT(constant_int)
+
+.decl constant_float (
+    id: const_sub_t,
+    value: float,
+    name: symbol
+)
+INPUT(constant_float)
+
+.decl constant_type_info (
+    id: const_sub_t,
+    tid: type_t
+)
+INPUT(constant_type_info)
+
+.decl constant_array (
+    id: const_sub_t,
+    tid: type_t,
+    size: number
+)
+INPUT(constant_array)
+
+.decl constant_array_value (
+    id: const_sub_t,
+    pid: const_sub_t,
+    el_id: const_t
+)
+INPUT(constant_array_value)
+
+.decl constant_vector (
+    id: const_sub_t,
+    size: number
+)
+INPUT(constant_vector)
+
+.decl constant_vector_value (
+    id: const_sub_t,
+    pid: const_sub_t,
+    el_id: const_t
+)
+INPUT(constant_vector_value)
+
+.decl constant_struct (
+    id: const_sub_t,
+    name: symbol,
+    num: number,
+    is_packed: symbol
+)
+INPUT(constant_struct)
+
+.decl constant_struct_value (
+    id: const_sub_t,
+    pid: const_sub_t,
+    field_id: const_t
+)
+INPUT(constant_struct_value)
+
+.decl constant_global_ref (
+    id: const_sub_t,
+    name: symbol,
+    tid: type_t
+)
+INPUT(constant_global_ref)
+
+.decl constant_binary_operand (
+    id: const_sub_t,
+    op0: const_t,
+    op1: const_t
+)
+INPUT(constant_binary_operand)
+
+.decl constant_unary_operand (
+    id: const_sub_t,
+    op: const_t,
+    tid: type_t
+)
+INPUT(constant_unary_operand)
+
+.decl constant_cmp (
+    id: const_sub_t,
+    predicate: symbol,
+    op0: const_t,
+    op1: const_t
+)
+INPUT(constant_cmp)
+
+.decl constant_select (
+    id: const_sub_t,
+    condition: const_t,
+    true_value: const_t,
+    false_value: const_t
+)
+INPUT(constant_select)
+
+.decl constant_extractelement (
+    id: const_sub_t,
+    vector: const_t,
+    index: const_t
+)
+INPUT(constant_extractelement)
+
+.decl constant_insertelement (
+    id: const_sub_t,
+    vector: const_t,
+    element: const_t,
+    index: const_t
+)
+INPUT(constant_insertelement)
+
+.decl constant_shufflevector (
+    id: const_sub_t,
+    op0: const_t,
+    op1: const_t,
+    mask: const_t
+)
+INPUT(constant_shufflevector)
+
+.decl constant_extractvalue (
+    id: const_sub_t,
+    aggr: const_t,
+    num: number
+)
+INPUT(constant_extractvalue)
+
+.decl constant_extractvalue_index (
+    id: const_sub_t,
+    pid: const_sub_t,
+    idx: number
+)
+INPUT(constant_insertvalue)
+
+.decl constant_insertvalue (
+    id: const_sub_t,
+    aggr: const_t,
+    element: const_t,
+    num: number
+)
+INPUT(constant_getelementptr)
+
+.decl constant_insertvalue_index (
+    id: const_sub_t,
+    pid: const_sub_t,
+    idx: number
+)
+INPUT(constant_gep_index)
+
+.decl constant_getelementptr (
+    id: const_sub_t,
+    addr: const_t,
+    in_bounds: symbol,
+    num: number
+)
+INPUT(constant_insertvalue_index)
+
+.decl constant_gep_index (
+    id: const_sub_t,
+    pid: const_sub_t,
+    idx: const_t
+)
+INPUT(constant_extractvalue_index)

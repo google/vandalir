@@ -1,0 +1,125 @@
+// Copyright (c) 2023 Google LLC
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy of
+// this software and associated documentation files (the "Software"), to deal in
+// the Software without restriction, including without limitation the rights to
+// use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+// the Software, and to permit persons to whom the Software is furnished to do so,
+// subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+// FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+// COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+// IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+// CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+#pragma once
+
+#include "defines.dl"
+#include "input/constants.dl"
+
+#ifdef DEBUG_CONSTANT
+#define OUTPUT(x) .output x
+#else
+#define OUTPUT(x)
+#endif
+
+.comp _Constant {
+
+  .decl is_struct(id: const_t)
+  OUTPUT(is_struct)
+  
+  is_struct(id) :-
+    constant(id, family, _),
+    family = "struct".
+
+  .decl is_array(id: const_t)
+  OUTPUT(is_array)
+
+  is_array(id) :-
+    constant(id, family, _),
+    family = "array".
+
+  .decl is_vector(id: const_t)
+  OUTPUT(is_vector)
+
+  is_vector(id) :-
+    constant(id, family, _),
+    family = "vector".
+
+  .decl is_int(id: const_t)
+  OUTPUT(is_int)
+
+  is_int(id) :-
+    constant(id, family, _),
+    family = "int".
+
+  .decl global_ref(id: const_t, name: symbol, tid: type_t)
+  OUTPUT(global_ref)
+  global_ref(id, name, tid) :-
+    constant(id, family, family_id),
+    family = "global_ref",
+    constant_global_ref(family_id, name, tid).
+
+
+  .decl is_const_expr(id: const_t)
+  is_const_expr(id) :- 
+    constant(id, family, _),
+    (family = "add";
+     family = "sub";
+     family = "mul";
+     family = "udiv";
+     family = "sdiv";
+     family = "urem";
+     family = "srem";
+     family = "and";
+     family = "or";
+     family = "xor";
+     family = "shl";
+     family = "lshr";
+     family = "ashr";
+     family = "fadd";
+     family = "fsub";
+     family = "fmul";
+     family = "fdiv";
+     family = "frem";
+     family = "extractelement";
+     family = "insertelement";
+     family = "shufflevector";
+     family = "extractvalue";
+     family = "insertvalue";
+     family = "getelementptr";
+     family = "trunc";
+     family = "zext";
+     family = "sext";
+     family = "fptrunc";
+     family = "fpext";
+     family = "fptoui";
+     family = "fptosi";
+     family = "uitofp";
+     family = "sitofp";
+     family = "ptrtoint";
+     family = "inttoptr";
+     family = "bitcast";
+     family = "addrspacecast";
+     family = "icmp";
+     family = "fcmp";
+     family = "select").
+
+  .comp Int {
+    .decl value(id: const_t, value: number)
+    
+    value(id, val) :-
+      constant(id, family, family_id),
+      family = "int",
+      constant_int(family_id, _, val).
+  }
+
+  .init Int = Int
+}
+
+.init Constant = _Constant

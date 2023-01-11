@@ -1,0 +1,8 @@
+[workspace]
+members = ["generator", "parser", "souffle_wrapper", "cli"]
+
+[workspace.package]
+version = "1.2.3"
+authors = ["Dmitry Yatsushkevich <daermon4u@gmail.com>"]
+description = "LLVM-IR static analysing tool"
+license = "MIT"

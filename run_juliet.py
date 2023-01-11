@@ -1,274 +1,284 @@
-import subprocess
+# Copyright (c) 2023 Google LLC
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy of
+# this software and associated documentation files (the "Software"), to deal in
+# the Software without restriction, including without limitation the rights to
+# use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+# the Software, and to permit persons to whom the Software is furnished to do so,
+# subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+# FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+# COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+# IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+# CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+import argparse
+import multiprocessing.pool
 import os
-import sys
-import shutil
-from multiprocessing.pool import ThreadPool
-import numpy as np
 import pathlib
+import shutil
+import subprocess
+import sys
+
+import numpy as np
+
+CWEs = ['121', '129', '131', '193', '242', '805', '806', '134', '415']
+
+TESTS_DIR = '/tests/juliet'
+
+class ExecCommandError(Exception):
+
+    def __init__(self, message, error):
+        self.message = message
+        self.error = error
+
+    def __str__(self):
+        return self.message
 
 
-juliet_path = "./test/juliet/"
-juliet_report_path = "./data/juliet/"
-logfile_path = "./data/juliet_evaluation.txt"
-CWEs = ["121", "129", "131", "193", "242", "805", "806", "134", "415"]
-results = []
-
-PROCS_FOR_LARGE = 1
-LARGE_SIZE = 20000
-SKIP_LARGE = False
-THREADS = 6
-CREATE_LOG = False # this option is overwritten if evaluate_all_cwes() is used
+def exec_command(command, cwd=None):
+    rc = subprocess.run(command, cwd=cwd, shell=True, check=False).returncode
+    if rc != 0:
+        raise ExecCommandError(
+            f'Failed to exec \'{command}\': Error code {rc} ', rc)
 
 
-def main():
-    compile_datalog()
-    evaluate_all_cwes()
-    # evaluate_full("121")
+class JulietTest:
 
+    REPORT_FILE = '/juliet_evaluation.txt'
+    VANDALIR_REPORT = '/RESULTS.csv'
 
-def create_logfile():
-    f = open(logfile_path, "w")
-    f.close()
+    def __init__(self,
+                 test_dir,
+                 output_dir,
+                 num_threads=4,
+                 thread_pool_size=16):
+        self._input_dir = test_dir
+        self._output_dir = output_dir
+        self._num_threads = num_threads
+        self._thread_pool_size = thread_pool_size
 
-# get report of current soufflé run
-def get_report(badgood, filename, output_dir):
+        self._report = open(output_dir + JulietTest.REPORT_FILE, 'a+',
+                            encoding='utf8')
+        self._show = True
 
-    testcase = filename.replace(".bc", "").replace(".ll", "").replace("-bad", "").replace("-good", "")
+    # get report of current soufflé run
+    def _get_report(self, filename, out):
+        output = []
+        with open(out + self.VANDALIR_REPORT, 'r', encoding='utf8') as csv_file:
+            csv_reader = csv_file.readlines()
+            for row in csv_reader:
+                output.append((filename, row))
+        return output
 
-    with open(output_dir+"/print_vulnerable.csv") as csv_file:
-        output = list()
-        csv_reader = csv_file.readlines()
-        for row in csv_reader:
-            newLine = testcase+";"+badgood+";"+row
-            output.append(newLine)
-    return output
+    def _print_and_report(self, msg):
+        self._report.write(msg + '\n')
+        print(msg)
 
+    # run one testcase
+    def _run(self, badgood, filename, test_id, total):
+        percentage = str(round(100 * test_id / total))
 
-# run one testcase
-def run_file(cwe, badgood, filename, id, total, processes):
-    percentage = str(round(100*id/total))
-    id = str(id)
-    facts_dir = "facts/"+id
-    output_dir = "output/"+id
-    filepath = juliet_path+"CWE"+cwe+"/"+badgood+"/"+filename
+        out_dir = self._output_dir + str(test_id)
 
-    if(os.path.getsize(filepath) > LARGE_SIZE):
-        processes = str(PROCS_FOR_LARGE)
-        if(SKIP_LARGE):
-            print("Skipped: "+filename+" id:"+id)
-            return ""
+        # create folders
+        pathlib.Path(out_dir).mkdir(parents=True, exist_ok=True)
 
-    # create folders
-    if(not os.path.isdir(output_dir)):
-        os.mkdir(output_dir)
+        # run
+        command = self._output_dir + '/bin/vandalir run '
+        command += '-o ' + out_dir + ' '
+        command += str(filename.absolute()) + ' '
+        exec_command(command)
 
-    if(not os.path.isdir(facts_dir)):
-        os.mkdir(facts_dir)
+        report = self._get_report(filename.name, out_dir + "/out")
+        print('Analysis successful ' + filename.name + ' || id:' +
+              str(test_id) + ' [' + badgood + ':' + percentage + '%]')
 
-    # parse
-    command_parse = "python3 extractor.py "+filepath+" "
-    command_parse += "-o "+facts_dir
-    subprocess.call(command_parse, shell=True)
+        # clean up directories
+        if os.path.isdir(out_dir):
+            shutil.rmtree(out_dir)
+        return report
 
-    # run
-    command = "bin/analyzer "+filepath+" "
-    command += "-F "+facts_dir+" "
-    command += "-D "+output_dir+" "
-    command += "-j "+processes+" "
-    subprocess.call(command, shell=True)
-    report = get_report(badgood, filename, output_dir)
-    print("Analysis successful "+filename+" || id:"+id+" ["+badgood+":"+percentage+"%]")
+    # run all testcases (good OR bad) of one CWE
+    def _run_cwe(self, cwe, badgood):
+        results = []
+        cwe_dir = self._input_dir + '/CWE' + cwe + '/' + badgood + '/'
 
-    # clean up directories
-    if(os.path.isdir(facts_dir)):
-        shutil.rmtree(facts_dir)
-    if(os.path.isdir(output_dir)):
-        shutil.rmtree(output_dir)
-    return report
-
-
-def set_functors_path():
-    # setup LD_LIBRARY_PATH
-    absPath = str(pathlib.Path(__file__).parent.absolute())
-    os.environ['LD_LIBRARY_PATH'] = absPath+"/"+"logic/functors/"
-    # print(absPath+"/"+"logic/functors/")
-
-
-def compile_functors():
-    command = "./make.sh "
-    subprocess.call(command, shell=True, cwd="logic/functors/")
-    print("Functors compiled.")
-    set_functors_path()
-
-
-def compile_datalog():
-    compile_functors()
-    print("Compiling Datalog...")
-    command = "souffle \"logic/main.dl\" -o bin/analyzer -L logic/functors -j "+str(THREADS)
-    subprocess.call(command, shell=True, cwd="./")
-    print("Datalog compiled.")
-
-
-# add .bc ending to bitcodefiles and decompile to .ll files
-def preprocess_folder(folder):
-    for subdir, dirs, files in os.walk(folder):
-        for filename in files:
-            filepath = folder + filename
-            if(not filename.endswith(".bc") and not filename.endswith(".ll")):
-                os.rename(filepath, filepath+".bc")
-
-    for subdir, dirs, files in os.walk(folder):
-        for filename in files:
-            filepath = folder + filename
-            if(filename.endswith(".bc") and not os.path.isfile(str(filepath)[:-3]+".ll")):
-                os.system("llvm-dis-10 "+filepath)
-    print("Preprocessing successfully finished")
-
-
-def collect_reports(report):
-    global results
-    results.extend(report)
-
-
-# run all testcases (good OR bad) of one CWE
-def run_cwe(cwe, badgood):
-    global results
-
-    results = []
-    cwe_dir = juliet_path+"CWE"+cwe+"/"
-    badgood_dir = cwe_dir+badgood+"/"
-
-    preprocess_folder(badgood_dir)
-
-    file_list = list()
-    found_list = list()
-
-    for subdir, dirs, files in os.walk(badgood_dir):
-        for filename in files:
-            if(filename.endswith(".ll")):
-                filepath = badgood_dir + filename
-                if(os.path.getsize(filepath) > LARGE_SIZE and SKIP_LARGE):
-                    continue
-                
-                file_list.append(filename)
-
-    # print("fl:"+str(len(file_list)))
-    # print("cfl:"+str(len(c_file_list)))
-
-    file_list = list(set(file_list))
-
-    # print("fl:"+str(len(file_list)))
-
-    file_list.sort()
-
-    # run analysis in parallel
-    pool = ThreadPool(THREADS)
-    [pool.apply_async(run_file, args=(cwe, badgood, filename, id+1, len(file_list), "1"), callback=collect_reports)
-     for id, filename in enumerate(file_list)]
-    pool.close()
-    pool.join()
-    print("All "+badgood+" files processed")
-
-    for res in results:
-        lines = res.split("\n")
-        for line in lines:
-            split = line.split(";")
-            filename = split[0]
-            filename = filename + "-"+badgood+".ll"
-            found_list.append(filename)
-
-    # create final report
-    full_report_str = "".join(results)
-    if(badgood == "bad"):
-        with open(juliet_report_path+'jreport_cwe'+cwe+'_vulns.csv', mode='w') as report:
-            report.write(full_report_str)
-        false_negative_list = np.setdiff1d(file_list, found_list)
-        false_negatives_str = "\n".join(false_negative_list)
-        with open(juliet_report_path+'jreport_cwe'+cwe+'_fn.csv', mode='w') as report:
-            report.write(false_negatives_str)
-
+        file_list = sorted(pathlib.Path(cwe_dir).rglob('*.bc'))
         num_total = len(file_list)
-        num_vulns = len(results)
-        num_false_neg = len(false_negative_list)
-        num_true_positives = num_total-num_false_neg
-        num_false_positives = num_vulns-num_true_positives
-        return(num_total, num_vulns, num_false_neg, num_true_positives, num_false_positives)
 
-    elif(badgood == "good"):
-        with open(juliet_report_path+'jreport_cwe'+cwe+'_fp.csv', mode='w') as report:
-            report.write(full_report_str)
+        # run analysis in parallel
+        pool = multiprocessing.pool.ThreadPool(self._thread_pool_size)
+        for test_id, filename in enumerate(file_list):
+            pool.apply_async(self._run,
+                             args=(badgood, filename, test_id + 1, num_total),
+                             callback=results.extend)
+        pool.close()
+        pool.join()
+        print('All ' + badgood + ' files processed')
 
-        num_total = len(file_list)
-        num_vulns = -1
-        num_false_neg = -1
-        num_true_positives = -1
-        num_false_positives = len(results)
-        return(num_total, num_vulns, num_false_neg, num_true_positives, num_false_positives)
+        vuln_found_list = []
+        warn_found_list = []
+        for filename, msg in results:
+            if 'Vulnerability' in msg:
+                vuln_found_list.append(filename)
+            if 'Warning' in msg:
+                warn_found_list.append(filename)
+
+        results = sorted(results, key=lambda el: el[0])
+        # create final report
+        full_report_str = ''.join(file + ';' + msg for file, msg in results)
+        if badgood == 'bad':
+            with open(self._output_dir + '/CWE' + cwe + '_report_vulns.csv',
+                      mode='w', encoding='utf8') as report:
+                report.write(full_report_str)
+
+            filename_list = [f.name for f in file_list]
+            false_negative_list = np.setdiff1d(filename_list, vuln_found_list)
+            false_negatives_str = '\n'.join(false_negative_list)
+            with open(self._output_dir + '/CWE' + cwe + '_report_fn.csv',
+                      mode='w', encoding='utf8') as report:
+                report.write(false_negatives_str)
+
+            num_vulns = len(vuln_found_list)
+            num_warns = len(warn_found_list)
+            num_false_neg = len(false_negative_list)
+            num_true_positives = num_total - num_false_neg
+            num_false_positives = num_vulns - num_true_positives
+            return (num_total, num_vulns, num_warns, num_false_neg,
+                    num_true_positives, num_false_positives)
+
+        elif badgood == 'good':
+            with open(self._output_dir + '/CWE' + cwe + '_report_fp.csv',
+                      mode='w', encoding='utf8') as report:
+                report.write(full_report_str)
+
+            num_vulns = len(vuln_found_list)
+            num_warns = len(warn_found_list)
+            num_false_neg = 0
+            num_true_positives = 0
+            num_false_positives = len(vuln_found_list)
+            return (num_total, num_vulns, num_warns, num_false_neg,
+                    num_true_positives, num_false_positives)
+
+    def evaluate_full(self, cwe):
+        print('Processing CWE:' + cwe + ': bad')
+        (num_total, num_vulns, num_warns, num_false_neg, num_true_positives,
+         num_bad_false_positives) = self._run_cwe(cwe, 'bad')
+
+        print('Processing CWE:' + cwe + ': good')
+        (num_total_good, _, num_warns_good, _, _,
+         num_good_false_positives) = self._run_cwe(cwe, 'good')
+        num_total_good = num_total
+        num_warns_good = 0
+        num_good_false_positives = 0
+
+        self._print_and_report('\n')
+        self._print_and_report('CWE: ' + str(cwe))
+        self._print_and_report('Testcases(bad/good): ' + str(num_total) + '/' +
+                               str(num_total_good))
+        self._print_and_report('Vulns: ' + str(num_vulns))
+        self._print_and_report('Warnings: ' + str(num_warns))
+        self._print_and_report(
+            'True Positives: ' + str(num_true_positives) + ' [' +
+            str(round(100 * num_true_positives / num_total, 1)) + '%]')
+        self._print_and_report('False Negatives: ' + str(num_false_neg) + ' [' +
+                               str(round(100 * num_false_neg / num_total, 1)) +
+                               '%]')
+        self._print_and_report(
+            'False Positives: ' + str(num_bad_false_positives) + ' [' +
+            str(round(100 * num_bad_false_positives / num_total, 1)) + '%]')
+        self._print_and_report('False Positives Warnings (in patched): ' +
+                               str(num_warns_good))
+        self._print_and_report(
+            'False Positives (in patched): ' + str(num_good_false_positives) +
+            ' [' +
+            str(round(100 * num_good_false_positives / num_total_good, 1)) +
+            '%]')
 
 
-def evaluate_good(cwe, show=True):
-    set_functors_path()
-    print("Processing CWE"+cwe+" good")
-    num_total, num_vulns, num_false_neg, num_true_positives, num_false_positives = run_cwe(cwe, "good")
-
-    if(show):
-        print("\n")
-        print("CWE: "+str(cwe))
-        print("Testcases: "+str(num_total))
-        print("False Positives (in patched): "+str(num_false_positives))
-
-    return(num_total, num_vulns, num_false_neg, num_true_positives, num_false_positives)
+def ensure_directory_exists(name):
+    if not os.path.isdir(name):
+        os.mkdir(name)
 
 
-def evaluate_bad(cwe, show=True):
-    set_functors_path()
-    print("Processing CWE"+cwe+" bad")
-    num_total, num_vulns, num_false_neg, num_true_positives, num_false_positives = run_cwe(cwe, "bad")
-
-    if(show):
-        print("\n")
-        print("CWE: "+str(cwe))
-        print("Testcases: "+str(num_total))
-        print("Vulns: "+str(num_vulns))
-        print("True Positives: "+str(num_true_positives)+" ["+str(round(100*num_true_positives/num_total, 1))+"%]")
-        print("False Negatives: "+str(num_false_neg)+" ["+str(round(100*num_false_neg/num_total, 1))+"%]")
-        # print("Additional Vulns (in vulnerable): "+str(num_false_positives))
-
-    return(num_total, num_vulns, num_false_neg, num_true_positives, num_false_positives)
+def compile_vandalir(vandalir_dir, output, extra, thread_count=4):
+    print('Compiling Fact Generator...')
+    ensure_directory_exists(output + '/bin')
+    command = 'VANDALIR_SOUFFLE_DEBUG=NO_STDOUT_PRINT '
+    command += f'CARGO_TARGET_DIR={output}/ cargo build -p vandalir --release '
+    exec_command(command, cwd=f"{vandalir_dir}")
+    print('Fact Generator compiled.')
+    shutil.copy(output + '/release/vandalir',
+                    output + '/bin/vandalir')
 
 
-def evaluate_full(cwe):
+def parse_args():
+    """Parses command line arguments."""
 
-    num_total, num_vulns, num_false_neg, num_true_positives, num_bad_false_positives = evaluate_bad(cwe, True)
-    _, _, _, _, num_good_false_positives = evaluate_good(cwe, False)
+    parser = argparse.ArgumentParser(
+        description='Run VANDALIR for Juliet Test Suite')
 
-    printLogAndConsole("\n")
-    printLogAndConsole("CWE: "+str(cwe))
-    printLogAndConsole("Testcases: "+str(num_total))
-    printLogAndConsole("Vulns: "+str(num_vulns))
-    printLogAndConsole("True Positives: "+str(num_true_positives)+" ["+str(round(100*num_true_positives/num_total, 1))+"%]")
-    printLogAndConsole("False Negatives: "+str(num_false_neg)+" ["+str(round(100*num_false_neg/num_total, 1))+"%]")
-    # printLogAndConsole("Additional Vulns (in vulnerable): "+str(num_bad_false_positives))
-    printLogAndConsole("False Positives (in patched): "+str(num_good_false_positives))
+    parser.add_argument('-p',
+                        type=str,
+                        dest='vandalir_project',
+                        required=False,
+                        default=None,
+                        help='VANDALIR project directory')
+    parser.add_argument('-o',
+                        type=str,
+                        dest='output',
+                        required=True,
+                        help='output directory')
+    parser.add_argument('-j',
+                        type=int,
+                        dest='thread_count',
+                        default='4',
+                        help='number of threads Soufflé may use (default: 4)')
+    parser.add_argument('-t',
+                        type=int,
+                        dest='thread_pool_size',
+                        default='16',
+                        help='Pool thread size (default: 16)')
+    parser.add_argument('-c',
+                        type=str,
+                        dest='cwe',
+                        default=None,
+                        help='CWE to test')
 
-def printLogAndConsole(str):
-    res = ""
-    
-    if(CREATE_LOG):
-        res+=str+"\n"
-        f = open(logfile_path, "a")
-        f.write(res)
-        f.close()
-    print(str)
-
-def evaluate_all_cwes():
-    global CREATE_LOG
-    CREATE_LOG = True
-
-    create_logfile()
-    for cwe in CWEs:
-        evaluate_full(cwe)
+    return parser.parse_args()
 
 
-if __name__ == "__main__":
-    main()
+def main(args):
+
+    test_dir = str(pathlib.Path(__file__).parent.absolute()) + TESTS_DIR
+    if args.vandalir_project:
+        vandalir_dir = os.path.abspath(args.vandalir_project)
+    else:
+        vandalir_dir = str(pathlib.Path(__file__).parent.absolute())
+    output = os.path.abspath(args.output)
+
+    ensure_directory_exists(output)
+
+    compile_vandalir(vandalir_dir, output, "", args.thread_count)
+
+    test = JulietTest(test_dir, output, args.thread_count,
+                      args.thread_pool_size)
+
+    if args.cwe:
+        if args.cwe not in CWEs:
+            print('Unknown CWE type: ' + args.cwe)
+            return -1
+        test.evaluate_full(args.cwe)
+    else:
+        for cwe in CWEs:
+            test.evaluate_full(cwe)
+
+
+if __name__ == '__main__':
+    sys.exit(main(parse_args()))

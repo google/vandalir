@@ -1,0 +1,100 @@
+// Copyright (c) 2023 Google LLC
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy of
+// this software and associated documentation files (the "Software"), to deal in
+// the Software without restriction, including without limitation the rights to
+// use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+// the Software, and to permit persons to whom the Software is furnished to do so,
+// subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+// FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+// COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+// IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+// CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+#pragma once
+
+#include "defines.dl"
+#include "type.dl"
+#include "type.dl"
+#include "operand.dl"
+#include "instruction.dl"
+
+#ifdef DEBUG_VREG_ANALYSIS
+#define OUTPUT(x) OUTPUT_IMPL(x)
+#else
+#define OUTPUT(x)
+#endif
+
+.comp _VRegAnalysis {
+
+  .decl same(fid: func_t, vreg1: name_t, vreg2: name_t)
+  OUTPUT(same)
+
+  same(fid, vreg1, vreg2) :-
+    Block.get(fid, bid, _),
+    Instruction.Load.get(_, bid, vreg1, addr),
+    Operand.vreg(addr, vreg2, _).
+
+  same(fid, vreg1, vreg2) :- 
+    Block.get(fid, bid, _),
+    Instruction.Conversation.get(iid, bid, vreg1),
+    Instruction.Conversation.operands(iid, op, _, _),
+    Operand.vreg(op, vreg2, _).
+
+  same(fid, vreg1, vreg2) :- 
+    same(fid, vreg2, vreg1).
+
+  same(fid, vreg1, vreg2) :- 
+    same(fid, vreg1, tmp),
+    same(fid, tmp, vreg2).
+
+  .decl equel(fid: func_t,
+              iid1: instr_t,
+              vreg1: name_t,
+              vreg2: name_t)
+  OUTPUT(equel)
+
+  equel(fid, iid1, vreg1, vreg2) :-
+    Block.get(fid, bid, _),
+    Instruction.Store.get(iid1, bid, vreg1, value),
+    Operand.vreg(value, vreg2, _).
+
+  equel(fid, iid1, vreg1, vreg2) :-
+    Block.get(fid, bid, _),
+    Instruction.Load.get(iid1, bid, vreg1, addr),
+    Operand.vreg(addr, vreg2, _).
+
+  equel(fid, iid1, vreg1, vreg2) :- 
+    Block.get(fid, bid, _),
+    Instruction.Conversation.get(iid1, bid, vreg1),
+    Instruction.Conversation.operands(iid1, op, _, _),
+    Operand.vreg(op, vreg2, _).
+
+  equel(fid, iid1, vreg1, vreg2) :-
+    equel(fid, iid1, vreg1, tmp),
+    equel(fid, iid_tmp, tmp, vreg2),
+    InstructionAnalysis.is_instruction_before(iid1, iid_tmp),
+    !modified(iid_tmp, iid1, tmp).
+
+  .decl modified(iid_start: instr_t, iid_end: instr_t, vreg: name_t)
+  OUTPUT(modified)
+
+  modified(iid_start, iid_end, vreg) :-
+    Block.get(fid, bid_start, _),
+    Block.get(fid, bid_end, _),
+    Instruction.get(iid_start, bid_start, _, _),
+    Instruction.get(iid_end, bid_end, _, _),
+    Instruction.Store.get(iid_store, _, vreg, _),
+    InstructionAnalysis.is_instruction_before(iid_store, iid_start),
+    InstructionAnalysis.is_instruction_before(iid_end, iid_store).
+  
+  
+
+}
+.init VRegAnalysis = _VRegAnalysis

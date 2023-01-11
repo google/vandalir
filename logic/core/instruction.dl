@@ -1,0 +1,592 @@
+// Copyright (c) 2023 Google LLC
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy of
+// this software and associated documentation files (the "Software"), to deal in
+// the Software without restriction, including without limitation the rights to
+// use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+// the Software, and to permit persons to whom the Software is furnished to do so,
+// subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+// FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+// COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+// IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+// CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+#pragma once
+
+#include "defines.dl"
+#include "input/instructions.dl"
+#include "type.dl"
+#include "operand.dl"
+#include "function.dl"
+#include "vreg_analysis.dl"
+
+#ifdef DEBUG_INSTRUCTION
+#define OUTPUT(x) .output x
+#else
+#define OUTPUT(x)
+#endif
+
+#define UPPERBOUND_COND(x) \
+  (x = "slt"; x = "sle"; x = "ult"; x = "ule")
+
+#define SMALLER_COND(x) \
+  (x = "slt"; x = "ult")
+
+#define SMALLER_EQUAL_COND(x) \
+  (x = "sle"; x = "ule")
+
+#define LOWERBOUND_COND(x) \
+  (x = "sgt"; x = "sge"; x = "ugt"; x = "uge")
+ 
+#define BIGGER_COND(x) \
+  (x = "sgt"; x = "ugt")
+
+#define BIGGER_EQUAL_COND(x) \
+  (x = "sge"; x = "uge")
+
+.comp _Instruction {
+
+  .decl is_integer_binary_ops(bid: block_t, iid: instr_t)
+  OUTPUT(is_integer_binary_ops)
+
+  is_integer_binary_ops(bid, iid) :-
+    instruction(iid, bid, _, opcode, _, _, _, _),
+    (opcode = "add";
+     opcode = "sub";
+     opcode = "mul";
+     opcode = "udiv";
+     opcode = "sdiv";
+     opcode = "urem";
+     opcode = "srem").
+
+
+  .decl is_bitwise_binary_ops(bid: block_t, iid: instr_t)
+  OUTPUT(is_bitwise_binary_ops)
+
+  is_bitwise_binary_ops(bid, iid) :-
+    instruction(iid, bid, _, opcode, _, _, _, _),
+    (opcode = "and";
+     opcode = "or";
+     opcode = "xor";
+     opcode = "shl";
+     opcode = "lshr";
+     opcode = "ashr").
+
+
+  .decl is_floating_point_ops(bid: block_t, iid: instr_t)
+  OUTPUT(is_floating_point_ops)
+
+  is_floating_point_ops(bid, iid) :-
+    instruction(iid, bid, _, opcode, _, _, _, _),
+    (opcode = "fadd";
+     opcode = "fsub";
+     opcode = "fmul";
+     opcode = "fdiv";
+     opcode = "frem";
+     opcode = "fneg").
+
+
+  .decl is_vector_ops(bid: block_t, iid: instr_t)
+  OUTPUT(is_vector_ops)
+
+  is_vector_ops(bid, iid) :-
+    instruction(iid, bid, _, opcode, _, _, _, _),
+    (opcode = "extractelement";
+     opcode = "insertelement";
+     opcode = "shufflevector").
+
+
+  .decl is_aggregate_ops(bid: block_t, iid: instr_t)
+  OUTPUT(is_aggregate_ops)
+
+  is_aggregate_ops(bid, iid) :-
+    instruction(iid, bid, _, opcode, _, _, _, _),
+    (opcode = "extractvalue";
+     opcode = "insertvalue").
+
+
+  .decl is_memory_related_ops(bid: block_t, iid: instr_t)
+  OUTPUT(is_memory_related_ops)
+
+  is_memory_related_ops(bid, iid) :-
+    instruction(iid, bid, _, opcode, _, _, _, _),
+    (opcode = "alloca";
+     opcode = "load";
+     opcode = "store";
+     opcode = "fence";
+     opcode = "cmpxchg";
+     opcode = "atomicrmw";
+     opcode = "getelementptr").
+
+
+  .decl is_conversion_ops(bid: block_t, iid: instr_t)
+  OUTPUT(is_conversion_ops)
+
+  is_conversion_ops(bid, iid) :-
+    Conversation.get(iid, bid, _).
+
+
+  .decl is_other_ops(bid: block_t, iid: instr_t)
+  OUTPUT(is_other_ops)
+
+  is_other_ops(bid, iid) :-
+    instruction(iid, bid, _, opcode, _, _, _, _),
+    (opcode = "icmp";
+     opcode = "fcmp";
+     opcode = "phi";
+     opcode = "select";
+     opcode = "freeze";
+     opcode = "call";
+     opcode = "vaarg";
+     opcode = "landingpad";
+     opcode = "catchpad";
+     opcode = "cleanuppad").
+
+
+  .decl dest(id: instr_t, name: name_t)
+  dest(id, name) :-
+    instruction(id, _, name, _, _, _, _, _),
+    name != "".
+
+  .decl get(id: instr_t, bid: block_t,
+            name: name_t, opcode: symbol)
+  get(id, bid, name, opcode) :-
+    instruction(id, bid, name, opcode, _, _, _, _).
+
+  .comp Binary {
+    .decl get(id: instr_t, bid: block_t, dest: name_t) overridable
+    OUTPUT(get)
+
+    .decl operands(id: instr_t, op0: operand_t, op1: operand_t, dest: name_t)
+    OUTPUT(operands)
+
+    operands(id, op0, op1, dest) :-
+      instruction(id, _, _, _, _, binary, _, opid),
+      binary = "true",
+      instruction_binary(opid, op0, op1, dest).
+  }
+
+  .comp Conversation {
+    .decl get(id: instr_t, bid: block_t, dest: name_t) overridable
+    OUTPUT(get)
+    get(id, bid, name) :-
+      instruction(id, bid, name, opcode, _, _, _, _),
+      (opcode = "trunc";
+       opcode = "zext";
+       opcode = "sext";
+       opcode = "fptrunc";
+       opcode = "fpext";
+       opcode = "fptoui";
+       opcode = "fptosi";
+       opcode = "uitofp";
+       opcode = "sitofp";
+       opcode = "ptrtoint";
+       opcode = "inttoptr";
+       opcode = "bitcast";
+       opcode = "addrspacecast").
+
+    .decl operands(id: instr_t, op: operand_t, tid: type_t, dest: name_t)
+    OUTPUT(operands)
+
+    operands(id, op, tid, name) :-
+      instruction(id, _, _, _, _, _, unary, opid),
+      unary = "true",
+      instruction_unary(opid, op, tid, name).
+  }
+
+  .comp Cmp {
+    .decl get(id: instr_t, bid: block_t, dest: name_t) overridable
+    OUTPUT(get)
+
+    .decl operands(id: instr_t, pred: symbol, op0: operand_t, op1: operand_t)
+    OUTPUT(operands)
+    operands(id, pred, true_op, false_op) :-
+      instruction(id, _, _, _, _, _, _, opid),
+      instruction_cmp(opid, pred, true_op, false_op, _).
+  }
+
+  .comp Add : Binary {
+    get(id, bid, name) :-
+      instruction(id, bid, name, opcode, _, _, _, _),
+      opcode = "add".
+  }
+
+  .comp Sub : Binary {
+    get(id, bid, name) :-
+      instruction(id, bid, name, opcode, _, _, _, _),
+      opcode = "sub".
+  }
+
+  .comp Mul : Binary {
+    get(id, bid, name) :-
+      instruction(id, bid, name, opcode, _, _, _, _),
+      opcode = "mul".
+  }
+
+  .comp UDiv : Binary {
+    get(id, bid, name) :-
+      instruction(id, bid, name, opcode, _, _, _, _),
+      opcode = "udiv".
+  }
+
+  .comp SDiv : Binary {
+    get(id, bid, name) :-
+      instruction(id, bid, name, opcode, _, _, _, _),
+      opcode = "sdiv".
+  }
+
+  .comp URem : Binary {
+    get(id, bid, name) :-
+      instruction(id, bid, name, opcode, _, _, _, _),
+      opcode = "urem".
+  }
+
+  .comp SRem : Binary {
+    get(id, bid, name) :-
+      instruction(id, bid, name, opcode, _, _, _, _),
+      opcode = "srem".
+  }
+
+  .comp And : Binary {
+    get(id, bid, name) :-
+      instruction(id, bid, name, opcode, _, _, _, _),
+      opcode = "and".
+  }
+
+  .comp Or : Binary {
+    get(id, bid, name) :-
+      instruction(id, bid, name, opcode, _, _, _, _),
+      opcode = "or".
+  }
+
+  .comp Xor : Binary {
+    get(id, bid, name) :-
+      instruction(id, bid, name, opcode, _, _, _, _),
+      opcode = "xor".
+  }
+
+  .comp Shl : Binary {
+    get(id, bid, name) :-
+      instruction(id, bid, name, opcode, _, _, _, _),
+      opcode = "shl".
+  }
+
+  .comp LShr : Binary {
+    get(id, bid, name) :-
+      instruction(id, bid, name, opcode, _, _, _, _),
+      opcode = "lshr".
+  }
+
+  .comp AShr : Binary {
+    get(id, bid, name) :-
+      instruction(id, bid, name, opcode, _, _, _, _),
+      opcode = "ashr".
+  }
+
+  .comp FAdd : Binary {
+    get(id, bid, name) :-
+      instruction(id, bid, name, opcode, _, _, _, _),
+      opcode = "fadd".
+  }
+
+  .comp FSub : Binary {
+    get(id, bid, name) :-
+      instruction(id, bid, name, opcode, _, _, _, _),
+      opcode = "fsub".
+  }
+
+  .comp FMul : Binary {
+    get(id, bid, name) :-
+      instruction(id, bid, name, opcode, _, _, _, _),
+      opcode = "fmul".
+  }
+
+  .comp FDiv : Binary {
+    get(id, bid, name) :-
+      instruction(id, bid, name, opcode, _, _, _, _),
+      opcode = "fdiv".
+  }
+
+  .comp FRem : Binary {
+    get(id, bid, name) :-
+      instruction(id, bid, name, opcode, _, _, _, _),
+      opcode = "frem".
+  }
+
+  .comp FNeg : Binary {
+    get(id, bid, name) :-
+      instruction(id, bid, name, opcode, _, _, _, _),
+      opcode = "fneg".
+  }
+
+  .comp Load {
+    .decl get(id: instr_t, bid: block_t, name: name_t, addr: operand_t)
+    OUTPUT(get)
+
+    get(id, bid, name, addr) :-
+      instruction(id, bid, name, opcode, _, _, _, family_id),
+      opcode = "load",
+      instruction_load(family_id, addr, name, _, _).
+  }
+
+  .comp Store {
+    .decl get(id: instr_t, bid: block_t, name: name_t, value: operand_t)
+    OUTPUT(get)
+
+    get(id, bid, name, value) :-
+      instruction(id, bid, _, opcode, _, _, _, family_id),
+      opcode = "store",
+      instruction_store(family_id, addr, value, _, _),
+      Operand.vreg(addr, name, _).
+  }
+
+  .comp Phi {
+    .decl get(id: instr_t, bid: block_t, dest: name_t)
+    get(id, bid, name) :-
+      instruction(id, bid, name, opcode, _, _, _, _),
+      opcode = "phi".
+
+    .decl ith_operand(id: instr_t, idx: number, op: operand_t, dest: name_t)
+    OUTPUT(ith_operand)
+    ith_operand(id, idx, op, dest) :-
+      instruction(id, _, _, opcode, _, _, _, family_id),
+      opcode = "phi",
+      instruction_phi(family_id, _, _, values_num),
+      idx < values_num,
+      ith_operand_impl(_, family_id, idx, op, dest).
+
+    .decl ith_operand_impl(id: instr_sub_t,
+                           family_id: instr_sub_t,
+                           idx: number,
+                           op: operand_t,
+                           dest: name_t)
+    OUTPUT(ith_operand_impl)
+    ith_operand_impl(id, family_id, idx, op, dest) :-
+      idx=0,
+      instruction_phi_value(id, family_id, op, dest),
+      !instruction_phi_value(id - 1, family_id, _, _).
+
+    ith_operand_impl(id, family_id, idx + 1, op, dest) :-
+      instruction_phi_value(id, family_id, op, dest),
+      ith_operand_impl(id - 1, family_id, idx, _, _).
+  }
+
+  .comp Call {
+    .decl get(id: instr_t, bid: block_t, dest: name_t, name: symbol)
+    OUTPUT(get)
+
+    get(id, bid, dest, name) :-
+      instruction(id, bid, _, opcode, _, _, _, family_id),
+      opcode = "call",
+      instruction_call(family_id, fname_op, _, dest, _),
+      Operand.name(fname_op, name).
+
+    .decl global_func(id: instr_t, bid: block_t, dest: name_t, name: symbol, tid: type_t)
+    OUTPUT(global_func)
+
+    global_func(id, bid, dest, name, tid) :-
+      instruction(id, bid, _, opcode, _, _, _, family_id),
+      opcode = "call",
+      instruction_call(family_id, fname_op, _, dest, _),
+      Operand.global_ref(fname_op, name, tid).
+
+    .decl ith_operand(id: instr_t, idx: number, op: operand_t)
+    OUTPUT(ith_operand)
+
+    ith_operand(id, idx, op) :-
+      instruction(id, _, _, opcode, _, _, _, family_id),
+      opcode = "call",
+      instruction_call(family_id, _, arg_num, _, _),
+      idx < arg_num,
+      ith_operand_impl(_, family_id, idx, op).
+
+    .decl ith_operand_impl(id: instr_sub_t,
+                           family_id: instr_sub_t,
+                           idx: number,
+                           op: operand_t)
+    OUTPUT(ith_operand_impl)
+    ith_operand_impl(id, family_id, idx, op) :-
+      idx=0,
+      instruction_call_op(id, family_id, op),
+      !instruction_call_op(id - 1, family_id, _).
+
+    ith_operand_impl(id, family_id, idx + 1, op) :-
+      instruction_call_op(id, family_id, op),
+      ith_operand_impl(id - 1, family_id, idx, _).
+  }
+
+  .comp Alloca {
+    .decl get(id: instr_t, bid: block_t, dest: name_t, tid: type_t, size: number)
+    OUTPUT(get)
+
+    get(id, bid, dest, tid, size) :-
+      instruction(id, bid, _, opcode, _, _, _, family_id),
+      opcode = "alloca",
+      instruction_alloca(family_id, tid, size_op, dest, _),
+      Operand.int(size_op, size).
+  }
+
+  .comp GetElementPtr {
+    .decl get(id: instr_t, bid: block_t, dest: name_t, addr: operand_t, num_idx: number)
+    OUTPUT(get)
+
+    get(id, bid, dest, addr, num_idx) :-
+      instruction(id, bid, _, opcode, _, _, _, family_id),
+      opcode = "getelementptr",
+      instruction_gep(family_id, addr, num_idx, dest, _).
+
+    .decl ith_index(id: instr_t, idx: number, op: operand_t)
+    OUTPUT(ith_index)
+
+    ith_index(id, idx, op) :-
+      instruction(id, _, _, opcode, _, _, _, family_id),
+      opcode = "getelementptr",
+      instruction_gep(family_id, _, idx_num, _, _),
+      idx < idx_num,
+      ith_index_impl(_, family_id, idx, op).
+
+    .decl ith_index_impl(id: instr_sub_t,
+                         family_id: instr_sub_t,
+                         idx: number,
+                         op: operand_t)
+    OUTPUT(ith_index_impl)
+    ith_index_impl(id, family_id, idx, op) :-
+      idx=0,
+      instruction_gep_index(id, family_id, op),
+      !instruction_gep_index(id - 1, family_id, _).
+
+    ith_index_impl(id, family_id, idx + 1, op) :-
+      instruction_gep_index(id, family_id, op),
+      ith_index_impl(id - 1, family_id, idx, _).
+
+    // very often GEP has 1 or 2 indices, moreover 1st index is 0
+    // in the 2-indices case.
+    // This rule cover this custom situation.
+    .decl index(id: instr_t, op: operand_t)
+
+    index(id, op) :-
+      instruction(id, _, _, opcode, _, _, _, family_id),
+      opcode = "getelementptr",
+      instruction_gep(family_id, _, idx_num, _, _),
+      idx_num = 1,
+      ith_index_impl(_, family_id, 0, op).
+
+    index(id, op) :-
+      instruction(id, _, _, opcode, _, _, _, family_id),
+      opcode = "getelementptr",
+      instruction_gep(family_id, _, idx_num, _, _),
+      idx_num = 2,
+      ith_index_impl(_, family_id, 0, op0),
+      Operand.int(op0, op0_val),
+      op0_val = 0,
+      ith_index_impl(_, family_id, 1, op).
+
+    .decl addr_size(id: instr_t, bid: block_t, name: name_t, size: number)
+    OUTPUT(addr_size)
+
+    addr_size(id, bid, name, size) :-
+      Block.get(_, bid, _),
+      Instruction.GetElementPtr.get(id, bid, _, addr_op, _),
+      Operand.vreg(addr_op, name, addr_type_ptr),
+      Type.Pointer.pointee(addr_type_ptr, addr_type),
+      (Type.Array.get(addr_type, _, size);
+       Type.Vector.get(addr_type, _, size);
+       Type.Struct.get(addr_type, size)
+      ).
+
+    addr_size(id, bid, name, size) :-
+      Block.get(_, bid, _),
+      Instruction.GetElementPtr.get(id, bid, _, addr_op, _),
+      Operand.global_ref(addr_op, gname, tid),
+      name = as(gname, name_t),
+      (Type.Array.get(tid, _, size);
+       Type.Vector.get(tid, _, size);
+       Type.Struct.get(tid, size)
+      ).
+
+    addr_size(id, bid, name, size) :-
+      Block.get(fid, bid, _),
+      Block.get(fid, bid2, _),
+
+      Instruction.GetElementPtr.get(id, bid, _, addr_op, _),
+      Operand.vreg(addr_op, name, _),
+
+      VRegAnalysis.equel(fid, _, name, vreg),
+      get(iid2, bid2, vreg, _, _),
+      addr_size(iid2, bid2, _, size).
+
+  }
+
+  .comp ICmp : Cmp {
+    get(id, bid, dest) :-
+      instruction(id, bid, dest, opcode, _, _, _, _),
+      opcode = "icmp".
+  }
+
+  .comp FCmp : Cmp {
+    get(id, bid, dest) :-
+      instruction(id, bid, dest, opcode, _, _, _, _),
+      opcode = "fcmp".
+  }
+
+  .comp Br {
+    .decl get(id: instr_t, bid: block_t, label: name_t)
+    OUTPUT(get)
+    get(id, bid, label) :-
+      instruction(id, bid, _, opcode, _, _, _, family_id),
+      opcode = "br",
+      instruction_br(family_id, label).
+  }
+
+  .comp BrCond {
+    .decl get(id: instr_t,
+              bid: block_t,
+              cond: operand_t,
+              true_label: name_t,
+              false_label: name_t)
+    OUTPUT(get)
+    get(id, bid, cond, true_label, false_label) :-
+      instruction(id, bid, _, opcode, _, _, _, family_id),
+      opcode = "condbr",
+      instruction_condbr(family_id, cond, true_label, false_label).
+  }
+
+  .init Conversation = Conversation
+
+  .init Add = Add
+  .init Sub = Sub
+  .init Mul = Mul
+  .init UDiv = UDiv
+  .init SDiv = SDiv
+  .init URem = URem
+  .init SRem = SRem
+  .init And = And
+  .init Or = Or
+  .init Xor = Xor
+  .init Shl = Shl
+  .init LShr = LShr
+  .init AShr = AShr
+
+  .init Load = Load
+  .init Store = Store
+
+  .init Phi = Phi
+  .init Call = Call
+
+  .init Alloca = Alloca
+  .init GetElementPtr = GetElementPtr
+
+  .init ICmp = ICmp
+  .init FCmp = FCmp
+
+  .init Br = Br
+  .init BrCond = BrCond
+}
+
+.init Instruction = _Instruction

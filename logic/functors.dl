@@ -1,5 +1,0 @@
-//define all functors
-.functor get_before(symbol,symbol):number 
-.functor get_behind(symbol,symbol):symbol
-.functor get_num_seperators(symbol,symbol):number 
-

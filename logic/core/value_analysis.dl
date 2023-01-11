@@ -1,0 +1,250 @@
+// Copyright (c) 2023 Google LLC
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy of
+// this software and associated documentation files (the "Software"), to deal in
+// the Software without restriction, including without limitation the rights to
+// use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+// the Software, and to permit persons to whom the Software is furnished to do so,
+// subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+// FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+// COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+// IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+// CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+#pragma once
+
+#include "defines.dl"
+#include "instruction_analysis.dl"
+#include "instruction.dl"
+#include "operand.dl"
+#include "type.dl"
+#include "global.dl"
+
+
+#ifdef DEBUG_VREG_VALUE_ANALYSIS
+  #define OUTPUT(x) .output x
+#else
+  #define OUTPUT(x)
+#endif
+
+#if defined(TRACE_VREG_VALUE_ANALYSIS) && defined(DEBUG_VREG_VALUE_ANALYSIS)
+  #define DEBUG_MSG_DECL TRACE_MSG_DECL
+  #define DEBUG_MSG_PARAM TRACE_MSG_PARAM
+  #define DEBUG_MSG_INIT TRACE_MSG_INIT
+  #define DEBUG_MSG_ENDPOINT(iid, value) \
+    TRACE_MSG(cat("ENDPOINT ", DEPTH_MSG ": (", to_string(iid), \
+              ") = ", to_string(value)))
+  #define DEBUG_MSG_MOVE(iid, iid_to, value) \
+    TRACE_MSG(cat("MOVE ", DEPTH_MSG ": (", to_string(iid), \
+              ") -> (", to_string(iid_to), ") = ", to_string(value)))
+#else
+  #define DEBUG_MSG_DECL
+  #define DEBUG_MSG_PARAM
+  #define DEBUG_MSG_INIT
+  #define DEBUG_MSG_ENDPOINT(iid, value)
+  #define DEBUG_MSG_MOVE(iid, iid_to, value )
+#endif
+
+.comp _VRegValueAnalysis {
+
+#define RAND_MAX 32767
+
+#define GET_INT_FROM_OP(fid, iid, op, val) \
+    (DEBUG_MSG_ENDPOINT(iid, val) \
+     Operand.int(op, val); \
+     DEBUG_MSG_MOVE(iid, iid_##op, val) \
+     Operand.vreg(op, op##_vreg, op##_type), \
+     Type.is_int(op##_type), \
+     get_int_impl(fid, iid_##op, op##_vreg, val DEPTH_UPDATE DEBUG_MSG_INIT), \
+     InstructionAnalysis.is_instruction_before(iid, iid_##op) \
+    )
+
+
+  // get possible integer values of VREG in specific function
+  .decl get_int(fid: func_t, vreg: name_t, value: number)
+  OUTPUT(get_int)
+
+  get_int(fid, vreg, value) :-
+    get_int_impl(fid, _, vreg, value DEPTH_INIT DEBUG_MSG_INIT).
+
+  .decl get_int_impl(fid: func_t,
+                     iid: instr_t,
+                     vreg: name_t,
+                     value: number
+                     DEPTH_DECL
+                     DEBUG_MSG_DECL)
+  OUTPUT(get_int_impl)
+
+  // case ADD
+  get_int_impl(fid, iid, vreg, value DEPTH_PARAM DEBUG_MSG_PARAM) :-
+    DEPTH_CHECK
+    Block.get(fid, bid, _),
+    Instruction.Add.get(iid, bid, vreg),
+    Instruction.Add.operands(iid, op0, op1, _),
+    GET_INT_FROM_OP(fid, iid, op0, val0),
+    GET_INT_FROM_OP(fid, iid, op1, val1),
+    value = val0 + val1.
+
+  // case MULL
+  get_int_impl(fid, iid, vreg, value DEPTH_PARAM DEBUG_MSG_PARAM) :-
+    DEPTH_CHECK
+    Block.get(fid, bid, _),
+    Instruction.Mul.get(iid, bid, vreg),
+    Instruction.Mul.operands(iid, op0, op1, _),
+    GET_INT_FROM_OP(fid, iid, op0, val0),
+    GET_INT_FROM_OP(fid, iid, op1, val1),
+    value = val0 * val1.
+
+  // case SUB
+  get_int_impl(fid, iid, vreg, value DEPTH_PARAM DEBUG_MSG_PARAM) :-
+    DEPTH_CHECK
+    Block.get(fid, bid, _),
+    Instruction.Sub.get(iid, bid, vreg),
+    Instruction.Sub.operands(iid, op0, op1, _),
+    GET_INT_FROM_OP(fid, iid, op0, val0),
+    GET_INT_FROM_OP(fid, iid, op1, val1),
+    value = val0 - val1.
+
+  // case UDIV, SDIV
+  // TODO: fix correct value calc
+  get_int_impl(fid, iid, vreg, value DEPTH_PARAM DEBUG_MSG_PARAM) :-
+    DEPTH_CHECK
+    Block.get(fid, bid, _),
+    (Instruction.UDiv.get(iid, bid, vreg),
+     Instruction.UDiv.operands(iid, op0, op1, _);
+     Instruction.SDiv.get(iid, bid, vreg),
+     Instruction.SDiv.operands(iid, op0, op1, _)
+    ),
+    GET_INT_FROM_OP(fid, iid, op0, val0),
+    GET_INT_FROM_OP(fid, iid, op1, val1),
+    value = val0 / val1.
+
+  // case URem, SRem
+  // TODO: fix correct value calc
+  get_int_impl(fid, iid, vreg, value DEPTH_PARAM DEBUG_MSG_PARAM) :-
+    DEPTH_CHECK
+    Block.get(fid, bid, _),
+    (Instruction.URem.get(iid, bid, vreg),
+     Instruction.URem.operands(iid, op0, op1, _);
+     Instruction.SRem.get(iid, bid, vreg),
+     Instruction.SRem.operands(iid, op0, op1, _)
+    ),
+    GET_INT_FROM_OP(fid, iid, op0, val0),
+    GET_INT_FROM_OP(fid, iid, op1, val1),
+    value = val0 % val1.
+
+  // case And
+  get_int_impl(fid, iid, vreg, value DEPTH_PARAM DEBUG_MSG_PARAM) :-
+    DEPTH_CHECK
+    Block.get(fid, bid, _),
+    Instruction.And.get(iid, bid, vreg),
+    Instruction.And.operands(iid, op0, op1, _),
+    GET_INT_FROM_OP(fid, iid, op0, val0),
+    GET_INT_FROM_OP(fid, iid, op1, val1),
+    value = val0 band val1.
+
+  // case Or
+  get_int_impl(fid, iid, vreg, value DEPTH_PARAM DEBUG_MSG_PARAM) :-
+    DEPTH_CHECK
+    Block.get(fid, bid, _),
+    Instruction.Or.get(iid, bid, vreg),
+    Instruction.Or.operands(iid, op0, op1, _),
+    GET_INT_FROM_OP(fid, iid, op0, val0),
+    GET_INT_FROM_OP(fid, iid, op1, val1),
+    value = val0 bor val1.
+
+  // case Xor
+  get_int_impl(fid, iid, vreg, value DEPTH_PARAM DEBUG_MSG_PARAM) :-
+    DEPTH_CHECK
+    Block.get(fid, bid, _),
+    Instruction.Xor.get(iid, bid, vreg),
+    Instruction.Xor.operands(iid, op0, op1, _),
+    GET_INT_FROM_OP(fid, iid, op0, val0),
+    GET_INT_FROM_OP(fid, iid, op1, val1),
+    value = val0 bxor val1.
+
+  // case Shl
+  get_int_impl(fid, iid, vreg, value DEPTH_PARAM DEBUG_MSG_PARAM) :-
+    DEPTH_CHECK
+    Block.get(fid, bid, _),
+    Instruction.Shl.get(iid, bid, vreg),
+    Instruction.Shl.operands(iid, op0, op1, _),
+    GET_INT_FROM_OP(fid, iid, op0, val0),
+    GET_INT_FROM_OP(fid, iid, op1, val1),
+    value = val0 bshl val1.
+
+  // case LShr
+  get_int_impl(fid, iid, vreg, value DEPTH_PARAM DEBUG_MSG_PARAM) :-
+    DEPTH_CHECK
+    Block.get(fid, bid, _),
+    Instruction.LShr.get(iid, bid, vreg),
+    Instruction.LShr.operands(iid, op0, op1, _),
+    GET_INT_FROM_OP(fid, iid, op0, val0),
+    GET_INT_FROM_OP(fid, iid, op1, val1),
+    value = val0 bshru val1.
+
+  // case Ashr
+  get_int_impl(fid, iid, vreg, value DEPTH_PARAM DEBUG_MSG_PARAM) :-
+    DEPTH_CHECK
+    Block.get(fid, bid, _),
+    Instruction.AShr.get(iid, bid, vreg),
+    Instruction.AShr.operands(iid, op0, op1, _),
+    GET_INT_FROM_OP(fid, iid, op0, val0),
+    GET_INT_FROM_OP(fid, iid, op1, val1),
+    value = val0 bshr val1.
+
+  // case Conversation ops
+  get_int_impl(fid, iid, vreg, value DEPTH_PARAM DEBUG_MSG_PARAM) :-
+    DEPTH_CHECK
+    Block.get(fid, bid, _),
+    Instruction.Conversation.get(iid, bid, vreg),
+    Instruction.Conversation.operands(iid, op, _, _),
+    GET_INT_FROM_OP(fid, iid, op, value).
+
+  // LOAD
+  get_int_impl(fid, iid, vreg, value DEPTH_PARAM DEBUG_MSG_PARAM) :-
+    DEPTH_CHECK
+    Block.get(fid, bid, _),
+    Instruction.Load.get(iid, bid, vreg, addr),
+    (DEBUG_MSG_ENDPOINT(iid, value)
+     Operand.int(addr, value);
+     Operand.vreg(addr, addr_vreg, addr_vreg_type),
+     Type.Pointer.pointee(addr_vreg_type, ptr_type),
+     Type.is_int(ptr_type),
+     get_int_impl(fid, iid_sub, addr_vreg, value DEPTH_UPDATE DEBUG_MSG_INIT),
+     DEBUG_MSG_MOVE(iid, iid_sub, value)
+     InstructionAnalysis.is_instruction_before(iid, iid_sub)
+    ).
+
+  // STORE
+  get_int_impl(fid, iid, vreg, value DEPTH_PARAM DEBUG_MSG_PARAM) :-
+    DEPTH_CHECK
+    Block.get(fid, bid, _),
+    Instruction.Store.get(iid, bid, vreg, val),
+    GET_INT_FROM_OP(fid, iid, val, value).
+
+  // Phi
+  get_int_impl(fid, iid, vreg, value DEPTH_PARAM DEBUG_MSG_PARAM) :-
+    DEPTH_CHECK
+    Block.get(fid, bid, _),
+    Instruction.Phi.get(iid, bid, vreg),
+    Instruction.Phi.ith_operand(iid, _, op, _),
+    GET_INT_FROM_OP(fid, iid, op, value).
+
+  // Call rand
+  get_int_impl(fid, iid, vreg, value DEPTH_PARAM DEBUG_MSG_PARAM) :-
+    DEPTH_CHECK
+    Block.get(fid, bid, _), 
+    Instruction.Call.global_func(iid, bid, vreg, name, _),
+    name = "%rand",
+    DEBUG_MSG_ENDPOINT(iid, value)
+    (value = RAND_MAX; value = 0).
+}
+
+.init VRegValueAnalysis = _VRegValueAnalysis
