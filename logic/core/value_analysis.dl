@@ -55,7 +55,7 @@
 
 #define RAND_MAX 32767
 
-#define GET_INT_FROM_OP(fid, iid, op, val) \
+#define VA_GET_INT_FROM_OP(fid, iid, op, val) \
     (DEBUG_MSG_ENDPOINT(iid, val) \
      Operand.int(op, val); \
      DEBUG_MSG_MOVE(iid, iid_##op, val) \
@@ -87,8 +87,8 @@
     Block.get(fid, bid, _),
     Instruction.Add.get(iid, bid, vreg),
     Instruction.Add.operands(iid, op0, op1, _),
-    GET_INT_FROM_OP(fid, iid, op0, val0),
-    GET_INT_FROM_OP(fid, iid, op1, val1),
+    VA_GET_INT_FROM_OP(fid, iid, op0, val0),
+    VA_GET_INT_FROM_OP(fid, iid, op1, val1),
     value = val0 + val1.
 
   // case MULL
@@ -97,8 +97,8 @@
     Block.get(fid, bid, _),
     Instruction.Mul.get(iid, bid, vreg),
     Instruction.Mul.operands(iid, op0, op1, _),
-    GET_INT_FROM_OP(fid, iid, op0, val0),
-    GET_INT_FROM_OP(fid, iid, op1, val1),
+    VA_GET_INT_FROM_OP(fid, iid, op0, val0),
+    VA_GET_INT_FROM_OP(fid, iid, op1, val1),
     value = val0 * val1.
 
   // case SUB
@@ -107,8 +107,8 @@
     Block.get(fid, bid, _),
     Instruction.Sub.get(iid, bid, vreg),
     Instruction.Sub.operands(iid, op0, op1, _),
-    GET_INT_FROM_OP(fid, iid, op0, val0),
-    GET_INT_FROM_OP(fid, iid, op1, val1),
+    VA_GET_INT_FROM_OP(fid, iid, op0, val0),
+    VA_GET_INT_FROM_OP(fid, iid, op1, val1),
     value = val0 - val1.
 
   // case UDIV, SDIV
@@ -121,8 +121,8 @@
      Instruction.SDiv.get(iid, bid, vreg),
      Instruction.SDiv.operands(iid, op0, op1, _)
     ),
-    GET_INT_FROM_OP(fid, iid, op0, val0),
-    GET_INT_FROM_OP(fid, iid, op1, val1),
+    VA_GET_INT_FROM_OP(fid, iid, op0, val0),
+    VA_GET_INT_FROM_OP(fid, iid, op1, val1),
     value = val0 / val1.
 
   // case URem, SRem
@@ -135,8 +135,8 @@
      Instruction.SRem.get(iid, bid, vreg),
      Instruction.SRem.operands(iid, op0, op1, _)
     ),
-    GET_INT_FROM_OP(fid, iid, op0, val0),
-    GET_INT_FROM_OP(fid, iid, op1, val1),
+    VA_GET_INT_FROM_OP(fid, iid, op0, val0),
+    VA_GET_INT_FROM_OP(fid, iid, op1, val1),
     value = val0 % val1.
 
   // case And
@@ -145,8 +145,8 @@
     Block.get(fid, bid, _),
     Instruction.And.get(iid, bid, vreg),
     Instruction.And.operands(iid, op0, op1, _),
-    GET_INT_FROM_OP(fid, iid, op0, val0),
-    GET_INT_FROM_OP(fid, iid, op1, val1),
+    VA_GET_INT_FROM_OP(fid, iid, op0, val0),
+    VA_GET_INT_FROM_OP(fid, iid, op1, val1),
     value = val0 band val1.
 
   // case Or
@@ -155,8 +155,8 @@
     Block.get(fid, bid, _),
     Instruction.Or.get(iid, bid, vreg),
     Instruction.Or.operands(iid, op0, op1, _),
-    GET_INT_FROM_OP(fid, iid, op0, val0),
-    GET_INT_FROM_OP(fid, iid, op1, val1),
+    VA_GET_INT_FROM_OP(fid, iid, op0, val0),
+    VA_GET_INT_FROM_OP(fid, iid, op1, val1),
     value = val0 bor val1.
 
   // case Xor
@@ -165,8 +165,8 @@
     Block.get(fid, bid, _),
     Instruction.Xor.get(iid, bid, vreg),
     Instruction.Xor.operands(iid, op0, op1, _),
-    GET_INT_FROM_OP(fid, iid, op0, val0),
-    GET_INT_FROM_OP(fid, iid, op1, val1),
+    VA_GET_INT_FROM_OP(fid, iid, op0, val0),
+    VA_GET_INT_FROM_OP(fid, iid, op1, val1),
     value = val0 bxor val1.
 
   // case Shl
@@ -175,8 +175,8 @@
     Block.get(fid, bid, _),
     Instruction.Shl.get(iid, bid, vreg),
     Instruction.Shl.operands(iid, op0, op1, _),
-    GET_INT_FROM_OP(fid, iid, op0, val0),
-    GET_INT_FROM_OP(fid, iid, op1, val1),
+    VA_GET_INT_FROM_OP(fid, iid, op0, val0),
+    VA_GET_INT_FROM_OP(fid, iid, op1, val1),
     value = val0 bshl val1.
 
   // case LShr
@@ -185,8 +185,8 @@
     Block.get(fid, bid, _),
     Instruction.LShr.get(iid, bid, vreg),
     Instruction.LShr.operands(iid, op0, op1, _),
-    GET_INT_FROM_OP(fid, iid, op0, val0),
-    GET_INT_FROM_OP(fid, iid, op1, val1),
+    VA_GET_INT_FROM_OP(fid, iid, op0, val0),
+    VA_GET_INT_FROM_OP(fid, iid, op1, val1),
     value = val0 bshru val1.
 
   // case Ashr
@@ -195,8 +195,8 @@
     Block.get(fid, bid, _),
     Instruction.AShr.get(iid, bid, vreg),
     Instruction.AShr.operands(iid, op0, op1, _),
-    GET_INT_FROM_OP(fid, iid, op0, val0),
-    GET_INT_FROM_OP(fid, iid, op1, val1),
+    VA_GET_INT_FROM_OP(fid, iid, op0, val0),
+    VA_GET_INT_FROM_OP(fid, iid, op1, val1),
     value = val0 bshr val1.
 
   // case Conversation ops
@@ -205,7 +205,7 @@
     Block.get(fid, bid, _),
     Instruction.Conversation.get(iid, bid, vreg),
     Instruction.Conversation.operands(iid, op, _, _),
-    GET_INT_FROM_OP(fid, iid, op, value).
+    VA_GET_INT_FROM_OP(fid, iid, op, value).
 
   // LOAD
   get_int_impl(fid, iid, vreg, value DEPTH_PARAM DEBUG_MSG_PARAM) :-
@@ -227,7 +227,7 @@
     DEPTH_CHECK
     Block.get(fid, bid, _),
     Instruction.Store.get(iid, bid, vreg, val),
-    GET_INT_FROM_OP(fid, iid, val, value).
+    VA_GET_INT_FROM_OP(fid, iid, val, value).
 
   // Phi
   get_int_impl(fid, iid, vreg, value DEPTH_PARAM DEBUG_MSG_PARAM) :-
@@ -235,7 +235,7 @@
     Block.get(fid, bid, _),
     Instruction.Phi.get(iid, bid, vreg),
     Instruction.Phi.ith_operand(iid, _, op, _),
-    GET_INT_FROM_OP(fid, iid, op, value).
+    VA_GET_INT_FROM_OP(fid, iid, op, value).
 
   // Call rand
   get_int_impl(fid, iid, vreg, value DEPTH_PARAM DEBUG_MSG_PARAM) :-
