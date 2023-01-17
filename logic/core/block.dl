@@ -33,7 +33,7 @@
 
 .comp _Block {
   .decl get(fid: func_t, bid: block_t, name: name_t)
-  OUTPUT(get) 
+  OUTPUT(get)
 
   get(fid, bid, name) :-
     block(bid, fid, name, _).

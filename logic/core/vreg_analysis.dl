@@ -41,16 +41,16 @@
     Instruction.Load.get(_, bid, vreg1, addr),
     Operand.vreg(addr, vreg2, _).
 
-  same(fid, vreg1, vreg2) :- 
+  same(fid, vreg1, vreg2) :-
     Block.get(fid, bid, _),
     Instruction.Conversation.get(iid, bid, vreg1),
     Instruction.Conversation.operands(iid, op, _, _),
     Operand.vreg(op, vreg2, _).
 
-  same(fid, vreg1, vreg2) :- 
+  same(fid, vreg1, vreg2) :-
     same(fid, vreg2, vreg1).
 
-  same(fid, vreg1, vreg2) :- 
+  same(fid, vreg1, vreg2) :-
     same(fid, vreg1, tmp),
     same(fid, tmp, vreg2).
 
@@ -70,7 +70,7 @@
     Instruction.Load.get(iid1, bid, vreg1, addr),
     Operand.vreg(addr, vreg2, _).
 
-  equel(fid, iid1, vreg1, vreg2) :- 
+  equel(fid, iid1, vreg1, vreg2) :-
     Block.get(fid, bid, _),
     Instruction.Conversation.get(iid1, bid, vreg1),
     Instruction.Conversation.operands(iid1, op, _, _),
@@ -93,8 +93,5 @@
     Instruction.Store.get(iid_store, _, vreg, _),
     InstructionAnalysis.is_instruction_before(iid_store, iid_start),
     InstructionAnalysis.is_instruction_before(iid_end, iid_store).
-  
-  
-
 }
 .init VRegAnalysis = _VRegAnalysis

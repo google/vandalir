@@ -110,7 +110,7 @@
   OUTPUT(block_forward_egde)
 
   block_forward_egde(func_name, A, B) :-
-    block_succ(_, func_name, A, B), 
+    block_succ(_, func_name, A, B),
     !block_dom(func_name, B, A).
 
 
@@ -118,7 +118,7 @@
   OUTPUT(block_back_egde)
 
   block_back_egde(func_name, A, B) :-
-    block_succ(_, func_name, A, B), 
+    block_succ(_, func_name, A, B),
     block_dom(func_name, B, A).
 
   // Natural loop nodes
@@ -129,7 +129,7 @@
     block_back_egde(func_name, tail, head),
     block_successor_without_node(func_name, node, tail, head),
     block_dom(func_name, head, node).
-    
+
   block_loop_node(func_name, head, node) :-
     block_back_egde(func_name, tail, head),
     node = tail.

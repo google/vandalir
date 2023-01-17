@@ -32,7 +32,7 @@
 
   .decl is_struct(id: const_t)
   OUTPUT(is_struct)
-  
+
   is_struct(id) :-
     constant(id, family, _),
     family = "struct".
@@ -67,7 +67,7 @@
 
 
   .decl is_const_expr(id: const_t)
-  is_const_expr(id) :- 
+  is_const_expr(id) :-
     constant(id, family, _),
     (family = "add";
      family = "sub";
@@ -112,7 +112,7 @@
 
   .comp Int {
     .decl value(id: const_t, value: number)
-    
+
     value(id, val) :-
       constant(id, family, family_id),
       family = "int",

@@ -39,8 +39,8 @@
   is_instruction_before(iid, iid_before) :-
     Instruction.get(iid, bid, _, _),
     Instruction.get(iid_before, bid, _, _),
-    iid > iid_before. 
-  
+    iid > iid_before.
+
   is_instruction_before(iid, iid_before) :-
     Instruction.get(iid, bid, _, _),
     Instruction.get(iid_before, bid_before, _, _),

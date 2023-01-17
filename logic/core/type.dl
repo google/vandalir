@@ -32,7 +32,7 @@
 
   .decl is_struct(tid: type_t)
   OUTPUT(is_struct)
-  
+
   is_struct(tid) :-
     type(tid, _, _, family, _),
     family = "struct".
@@ -75,7 +75,7 @@
     pointee(id, tid) :-
       type(id, _, _, family, family_id),
       family = "pointer",
-      type_ptr(family_id, tid, _). 
+      type_ptr(family_id, tid, _).
   }
 
   .comp FuncPointer {
@@ -85,7 +85,7 @@
     ret_type(id, tid) :-
       type(id, _, _, family, family_id),
       family = "func_ptr",
-      type_func_ptr(family_id, tid, _, _). 
+      type_func_ptr(family_id, tid, _, _).
   }
 
   .comp Array {
@@ -95,7 +95,7 @@
     get(id, tid, size) :-
       type(id, _, _, family, family_id),
       family = "array",
-      type_array(family_id, tid, size). 
+      type_array(family_id, tid, size).
   }
 
   .comp Vector {
@@ -105,7 +105,7 @@
     get(id, tid, size) :-
       type(id, _, _, family, family_id),
       family = "vector",
-      type_vector(family_id, tid, size, _). 
+      type_vector(family_id, tid, size, _).
   }
 
   .comp Struct {

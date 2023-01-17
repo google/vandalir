@@ -40,7 +40,7 @@
 OUTPUT(bo_in_array)
 
 bo_in_array(func, iid, name, msg) :-
-  Function.get(fid, func, _), 
+  Function.get(fid, func, _),
   Block.get(fid, bid, bname),
   Instruction.GetElementPtr.addr_size(iid, bid, name, size),
   Instruction.GetElementPtr.index(iid, idx_op),

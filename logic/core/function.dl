@@ -31,7 +31,7 @@
 
 .comp _Function {
   .decl get(fid: func_t, name: symbol, tid: type_t)
-  OUTPUT(get) 
+  OUTPUT(get)
 
   get(fid, name, tid) :-
     function(fid, name, _, tid).

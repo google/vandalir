@@ -61,14 +61,14 @@
     Block.terminator(fid, head, term_id),
     Instruction.BrCond.get(term_id, head, cond, _, _),
     Operand.vreg(cond, dest, _),
-    Instruction.ICmp.get(iid, head, dest).  
+    Instruction.ICmp.get(iid, head, dest).
 
   condition_instr(fid, head, iid) :-
     get(fid, head, tail),
     Block.terminator(fid, tail, term_id),
     Instruction.BrCond.get(term_id, tail, cond, _, _),
     Operand.vreg(cond, dest, _),
-    Instruction.ICmp.get(iid, tail, dest).  
+    Instruction.ICmp.get(iid, tail, dest).
 
 }
 

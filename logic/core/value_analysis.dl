@@ -240,7 +240,7 @@
   // Call rand
   get_int_impl(fid, iid, vreg, value DEPTH_PARAM DEBUG_MSG_PARAM) :-
     DEPTH_CHECK
-    Block.get(fid, bid, _), 
+    Block.get(fid, bid, _),
     Instruction.Call.global_func(iid, bid, vreg, name, _),
     name = "%rand",
     DEBUG_MSG_ENDPOINT(iid, value)

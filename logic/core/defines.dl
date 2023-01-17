@@ -57,7 +57,7 @@ Depth(n + 1) :-
 #define DEPTH_INIT , 0
 #define DEPTH_CHECK Depth(depth),
 #define DEPTH_UPDATE  , depth + 1
-#define DEPTH_MSG  to_string(depth), 
+#define DEPTH_MSG  to_string(depth),
 
 #else
 

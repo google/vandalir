@@ -43,7 +43,7 @@
 
 #define LOWERBOUND_COND(x) \
   (x = "sgt"; x = "sge"; x = "ugt"; x = "uge")
- 
+
 #define BIGGER_COND(x) \
   (x = "sgt"; x = "ugt")
 
