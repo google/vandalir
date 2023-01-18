@@ -23,16 +23,16 @@
 #include "input/analysis.dl"
 
 #ifdef DEBUG_CFG
-#define OUTPUT(x) .output x
+#define CF_OUTPUT(x) OUTPUT_IMPL(x)
 #else
-#define OUTPUT(x)
+#define CF_OUTPUT(x)
 #endif
 
 
 .comp _ControlFlowGraph {
 
   .decl block_predecessor(func_name: symbol, bname: name_t, bname1: name_t)
-  OUTPUT(block_predecessor)
+  CF_OUTPUT(block_predecessor)
 
   block_predecessor(func_name, bname, bname_pred) :-
     block_pred(_, func_name, bname, bname_pred).
@@ -42,7 +42,7 @@
     block_predecessor(func_name, tmp, bname_pred).
 
   .decl block_successor(func_name: symbol, bname_A: name_t, bname_B: name_t)
-  OUTPUT(block_successor)
+  CF_OUTPUT(block_successor)
 
   block_successor(func_name, A, B) :-
     block_succ(_, func_name, A, B).
@@ -55,7 +55,7 @@
                                      bname_A: name_t,
                                      bname_B: name_t,
                                      bname_C: name_t)  // exclude path with this node in it
-  OUTPUT(block_successor_without_node)
+  CF_OUTPUT(block_successor_without_node)
 
   block_successor_without_node(func_name, A, B, C) :-
     block_succ(_, func_name, C, _),
@@ -71,7 +71,7 @@
                                      bname_A: name_t,
                                      bname_B: name_t,
                                      bname_C: name_t)  // exclude path with this node in it
-  OUTPUT(block_successor_without_node1)
+  CF_OUTPUT(block_successor_without_node1)
 
   block_successor_without_node1(func_name, C, A, B) :-
     block_succ(_, func_name, C, _),
@@ -85,7 +85,7 @@
 
   // A dom B
   .decl block_dom(func_name: symbol, bname_A: name_t, bname_B: name_t)
-  OUTPUT(block_dom)
+  CF_OUTPUT(block_dom)
 
   block_dom(func_name, A, B) :-
     block_idom(_, func_name, B, A).
@@ -96,7 +96,7 @@
 
 
   .decl block_forward_egdes(func_name: symbol, bname_A: name_t, bname_B: name_t)
-  OUTPUT(block_forward_egdes)
+  CF_OUTPUT(block_forward_egdes)
 
   block_forward_egdes(func_name, A, B) :-
     block_forward_egde(func_name, A, B).
@@ -107,7 +107,7 @@
 
 
   .decl block_forward_egde(func_name: symbol, bname_A: name_t, bname_B: name_t)
-  OUTPUT(block_forward_egde)
+  CF_OUTPUT(block_forward_egde)
 
   block_forward_egde(func_name, A, B) :-
     block_succ(_, func_name, A, B),
@@ -115,7 +115,7 @@
 
 
   .decl block_back_egde(func_name: symbol, bname_A: name_t, bname_B: name_t)
-  OUTPUT(block_back_egde)
+  CF_OUTPUT(block_back_egde)
 
   block_back_egde(func_name, A, B) :-
     block_succ(_, func_name, A, B),
@@ -123,7 +123,7 @@
 
   // Natural loop nodes
   .decl block_loop_node(func_name: symbol, head: name_t, node: name_t)
-  OUTPUT(block_loop_node)
+  CF_OUTPUT(block_loop_node)
 
   block_loop_node(func_name, head, node) :-
     block_back_egde(func_name, tail, head),

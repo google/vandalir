@@ -25,9 +25,9 @@
 #include "function.dl"
 
 #ifdef DEBUG_OPERAND_UTIL
-#define OUTPUT(x) OUTPUT_IMPL(x)
+#define OPU_OUTPUT(x) OUTPUT_IMPL(x)
 #else
-#define OUTPUT(x)
+#define OPU_OUTPUT(x)
 #endif
 
 
@@ -35,7 +35,7 @@
 
 // gets operand's VREG or Global reference
 .decl name(op: operand_t, name: name_t, tid: type_t)
-OUTPUT(name)
+OPU_OUTPUT(name)
 
 name(op, name, tid) :-
    Operand.vreg(op, name, tid).

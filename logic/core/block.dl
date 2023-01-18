@@ -25,15 +25,15 @@
 #include "instruction.dl"
 
 #ifdef DEBUG_BLOCK
-#define OUTPUT(x) .output x
+#define BLK_OUTPUT(x) OUTPUT_IMPL(x)
 #else
-#define OUTPUT(x)
+#define BLK_OUTPUT(x)
 #endif
 
 
 .comp _Block {
   .decl get(fid: func_t, bid: block_t, name: name_t)
-  OUTPUT(get)
+  BLK_OUTPUT(get)
 
   get(fid, bid, name) :-
     block(bid, fid, name, _).

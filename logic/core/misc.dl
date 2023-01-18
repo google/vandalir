@@ -26,8 +26,8 @@
 #include "type.dl"
 
 #ifdef DEBUG_MISC
-#define OUTPUT(x) .output x
+#define MSC_OUTPUT(x) .output x
 #else
-#define OUTPUT(x)
+#define MSC_OUTPUT(x)
 #endif
 

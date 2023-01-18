@@ -26,15 +26,15 @@
 #include "instruction.dl"
 
 #ifdef DEBUG_INSTRUCTION_ANALYSIS
-#define OUTPUT(x) .output x
+#define INSTRA_OUTPUT(x) OUTPUT_IMPL(x)
 #else
-#define OUTPUT(x)
+#define INSTRA_OUTPUT(x)
 #endif
 
 
 .comp _InstructionAnalysis {
   .decl is_instruction_before(iid: instr_t, iid_before: instr_t)
-  OUTPUT(is_instruction_before)
+  INSTRA_OUTPUT(is_instruction_before)
 
   is_instruction_before(iid, iid_before) :-
     Instruction.get(iid, bid, _, _),

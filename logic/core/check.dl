@@ -28,9 +28,9 @@
 #include "block.dl"
 
 #ifdef DEBUG_CHECK
-#define OUTPUT(x) OUTPUT_IMPL(x)
+  #define CH_OUTPUT(x) OUTPUT_IMPL(x)
 #else
-#define OUTPUT(x)
+  #define CH_OUTPUT(x)
 #endif
 
 #define GET_INT_FROM_OP(fid, op, val) \
@@ -42,7 +42,7 @@
 .comp _Check {
 
 .decl get_upperbound_limited_value(fid: func_t, bid: block_t, vreg: symbol, idx: number)
-OUTPUT(get_upperbound_limited_value)
+CH_OUTPUT(get_upperbound_limited_value)
 
 get_upperbound_limited_value(fid, bid, vreg, idx) :-
   VRegValueAnalysis.get_int(fid, vreg, value),
@@ -95,7 +95,7 @@ get_upperbound_limited_value(fid, bid, vreg, idx) :-
                      value: number,
                      true_label: name_t,
                      false_label: name_t)
-OUTPUT(check_boundary)
+CH_OUTPUT(check_boundary)
 
 check_boundary(fid, bid, cmp_iid, pred, vreg, value, true_label, false_label) :-
   Block.get(fid, cmp_bid, cmp_bname),
@@ -119,7 +119,7 @@ check_boundary(fid, bid, cmp_iid, pred, vreg, value, true_label, false_label) :-
                           pred: symbol,
                           vreg: name_t,
                           value: number)
-OUTPUT(check_boundary_true)
+CH_OUTPUT(check_boundary_true)
 
 check_boundary_true(fid, bid, pred, vreg, value) :-
   Block.get(fid, bid, bname),
@@ -135,7 +135,7 @@ check_boundary_true(fid, bid, pred, vreg, value) :-
                           pred: symbol,
                           vreg: name_t,
                           value: number)
-OUTPUT(check_boundary_false)
+CH_OUTPUT(check_boundary_false)
 
 check_boundary_false(fid, bid, pred, vreg, value) :-
   Block.get(fid, bid, bname),

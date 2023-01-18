@@ -26,15 +26,15 @@
 #include "instruction.dl"
 
 #ifdef DEBUG_VREG_ANALYSIS
-#define OUTPUT(x) OUTPUT_IMPL(x)
+#define VRA_OUTPUT(x) OUTPUT_IMPL(x)
 #else
-#define OUTPUT(x)
+#define VRA_OUTPUT(x)
 #endif
 
 .comp _VRegAnalysis {
 
   .decl same(fid: func_t, vreg1: name_t, vreg2: name_t)
-  OUTPUT(same)
+  VRA_OUTPUT(same)
 
   same(fid, vreg1, vreg2) :-
     Block.get(fid, bid, _),
@@ -58,7 +58,7 @@
               iid1: instr_t,
               vreg1: name_t,
               vreg2: name_t)
-  OUTPUT(equel)
+  VRA_OUTPUT(equel)
 
   equel(fid, iid1, vreg1, vreg2) :-
     Block.get(fid, bid, _),
@@ -83,7 +83,7 @@
     !modified(iid_tmp, iid1, tmp).
 
   .decl modified(iid_start: instr_t, iid_end: instr_t, vreg: name_t)
-  OUTPUT(modified)
+  VRA_OUTPUT(modified)
 
   modified(iid_start, iid_end, vreg) :-
     Block.get(fid, bid_start, _),

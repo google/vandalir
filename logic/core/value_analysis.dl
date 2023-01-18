@@ -28,9 +28,9 @@
 
 
 #ifdef DEBUG_VREG_VALUE_ANALYSIS
-  #define OUTPUT(x) .output x
+  #define VA_OUTPUT(x) OUTPUT_IMPL(x)
 #else
-  #define OUTPUT(x)
+  #define VA_OUTPUT(x)
 #endif
 
 #if defined(TRACE_VREG_VALUE_ANALYSIS) && defined(DEBUG_VREG_VALUE_ANALYSIS)
@@ -68,7 +68,7 @@
 
   // get possible integer values of VREG in specific function
   .decl get_int(fid: func_t, vreg: name_t, value: number)
-  OUTPUT(get_int)
+  VA_OUTPUT(get_int)
 
   get_int(fid, vreg, value) :-
     get_int_impl(fid, _, vreg, value DEPTH_INIT DEBUG_MSG_INIT).
@@ -79,7 +79,7 @@
                      value: number
                      DEPTH_DECL
                      DEBUG_MSG_DECL)
-  OUTPUT(get_int_impl)
+  VA_OUTPUT(get_int_impl)
 
   // case ADD
   get_int_impl(fid, iid, vreg, value DEPTH_PARAM DEBUG_MSG_PARAM) :-

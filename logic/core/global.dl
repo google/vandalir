@@ -24,9 +24,9 @@
 #include "type.dl"
 
 #ifdef DEBUG_GLOBAL
-#define OUTPUT(x) .output x
+#define GLBL_OUTPUT(x) OUTPUT_IMPL(x)
 #else
-#define OUTPUT(x)
+#define GLBL_OUTPUT(x)
 #endif
 
 .comp _GlobalVar {

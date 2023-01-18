@@ -23,43 +23,43 @@
 #include "input/constants.dl"
 
 #ifdef DEBUG_CONSTANT
-#define OUTPUT(x) .output x
+#define CONST_OUTPUT(x) OUTPUT_IMPL(x)
 #else
-#define OUTPUT(x)
+#define CONST_OUTPUT(x)
 #endif
 
 .comp _Constant {
 
   .decl is_struct(id: const_t)
-  OUTPUT(is_struct)
+  CONST_OUTPUT(is_struct)
 
   is_struct(id) :-
     constant(id, family, _),
     family = "struct".
 
   .decl is_array(id: const_t)
-  OUTPUT(is_array)
+  CONST_OUTPUT(is_array)
 
   is_array(id) :-
     constant(id, family, _),
     family = "array".
 
   .decl is_vector(id: const_t)
-  OUTPUT(is_vector)
+  CONST_OUTPUT(is_vector)
 
   is_vector(id) :-
     constant(id, family, _),
     family = "vector".
 
   .decl is_int(id: const_t)
-  OUTPUT(is_int)
+  CONST_OUTPUT(is_int)
 
   is_int(id) :-
     constant(id, family, _),
     family = "int".
 
   .decl global_ref(id: const_t, name: symbol, tid: type_t)
-  OUTPUT(global_ref)
+  CONST_OUTPUT(global_ref)
   global_ref(id, name, tid) :-
     constant(id, family, family_id),
     family = "global_ref",

@@ -25,9 +25,9 @@
 #include "constant.dl"
 
 #ifdef DEBUG_OPERAND
-#define OUTPUT(x) .output x
+#define OP_OUTPUT(x) OUTPUT_IMPL(x)
 #else
-#define OUTPUT(x)
+#define OP_OUTPUT(x)
 #endif
 
 .comp _Operand {
@@ -44,7 +44,7 @@
 
 
   .decl global_ref(id: operand_t, name: symbol, tid: type_t)
-  OUTPUT(global_ref)
+  OP_OUTPUT(global_ref)
 
   global_ref(id, name, tid) :-
     operand(id, _, family, family_id),
@@ -53,7 +53,7 @@
 
 
   .decl int(id: operand_t, value: number)
-  OUTPUT(int)
+  OP_OUTPUT(int)
 
   int(id, value) :-
     operand(id, _, family, family_id),
@@ -62,7 +62,7 @@
 
 
   .decl vreg(id: operand_t, name: name_t, tid: type_t)
-  OUTPUT(vreg)
+  OP_OUTPUT(vreg)
   vreg(id, name, tid) :-
     operand(id, _, family, family_id),
     family = "local",

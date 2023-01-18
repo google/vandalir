@@ -23,15 +23,15 @@
 #include "input/function.dl"
 
 #ifdef DEBUG_FUNCTION
-#define OUTPUT(x) .output x
+#define FUNC_OUTPUT(x) OUTPUT_IMPL(x)
 #else
-#define OUTPUT(x)
+#define FUNC_OUTPUT(x)
 #endif
 
 
 .comp _Function {
   .decl get(fid: func_t, name: symbol, tid: type_t)
-  OUTPUT(get)
+  FUNC_OUTPUT(get)
 
   get(fid, name, tid) :-
     function(fid, name, _, tid).

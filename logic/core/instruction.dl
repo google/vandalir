@@ -27,9 +27,9 @@
 #include "vreg_analysis.dl"
 
 #ifdef DEBUG_INSTRUCTION
-#define OUTPUT(x) .output x
+#define INSTR_OUTPUT(x) OUTPUT_IMPL(x)
 #else
-#define OUTPUT(x)
+#define INSTR_OUTPUT(x)
 #endif
 
 #define UPPERBOUND_COND(x) \
@@ -53,7 +53,7 @@
 .comp _Instruction {
 
   .decl is_integer_binary_ops(bid: block_t, iid: instr_t)
-  OUTPUT(is_integer_binary_ops)
+  INSTR_OUTPUT(is_integer_binary_ops)
 
   is_integer_binary_ops(bid, iid) :-
     instruction(iid, bid, _, opcode, _, _, _, _),
@@ -67,7 +67,7 @@
 
 
   .decl is_bitwise_binary_ops(bid: block_t, iid: instr_t)
-  OUTPUT(is_bitwise_binary_ops)
+  INSTR_OUTPUT(is_bitwise_binary_ops)
 
   is_bitwise_binary_ops(bid, iid) :-
     instruction(iid, bid, _, opcode, _, _, _, _),
@@ -80,7 +80,7 @@
 
 
   .decl is_floating_point_ops(bid: block_t, iid: instr_t)
-  OUTPUT(is_floating_point_ops)
+  INSTR_OUTPUT(is_floating_point_ops)
 
   is_floating_point_ops(bid, iid) :-
     instruction(iid, bid, _, opcode, _, _, _, _),
@@ -93,7 +93,7 @@
 
 
   .decl is_vector_ops(bid: block_t, iid: instr_t)
-  OUTPUT(is_vector_ops)
+  INSTR_OUTPUT(is_vector_ops)
 
   is_vector_ops(bid, iid) :-
     instruction(iid, bid, _, opcode, _, _, _, _),
@@ -103,7 +103,7 @@
 
 
   .decl is_aggregate_ops(bid: block_t, iid: instr_t)
-  OUTPUT(is_aggregate_ops)
+  INSTR_OUTPUT(is_aggregate_ops)
 
   is_aggregate_ops(bid, iid) :-
     instruction(iid, bid, _, opcode, _, _, _, _),
@@ -112,7 +112,7 @@
 
 
   .decl is_memory_related_ops(bid: block_t, iid: instr_t)
-  OUTPUT(is_memory_related_ops)
+  INSTR_OUTPUT(is_memory_related_ops)
 
   is_memory_related_ops(bid, iid) :-
     instruction(iid, bid, _, opcode, _, _, _, _),
@@ -126,14 +126,14 @@
 
 
   .decl is_conversion_ops(bid: block_t, iid: instr_t)
-  OUTPUT(is_conversion_ops)
+  INSTR_OUTPUT(is_conversion_ops)
 
   is_conversion_ops(bid, iid) :-
     Conversation.get(iid, bid, _).
 
 
   .decl is_other_ops(bid: block_t, iid: instr_t)
-  OUTPUT(is_other_ops)
+  INSTR_OUTPUT(is_other_ops)
 
   is_other_ops(bid, iid) :-
     instruction(iid, bid, _, opcode, _, _, _, _),
@@ -161,10 +161,10 @@
 
   .comp Binary {
     .decl get(id: instr_t, bid: block_t, dest: name_t) overridable
-    OUTPUT(get)
+    INSTR_OUTPUT(get)
 
     .decl operands(id: instr_t, op0: operand_t, op1: operand_t, dest: name_t)
-    OUTPUT(operands)
+    INSTR_OUTPUT(operands)
 
     operands(id, op0, op1, dest) :-
       instruction(id, _, _, _, _, binary, _, opid),
@@ -174,7 +174,7 @@
 
   .comp Conversation {
     .decl get(id: instr_t, bid: block_t, dest: name_t) overridable
-    OUTPUT(get)
+    INSTR_OUTPUT(get)
     get(id, bid, name) :-
       instruction(id, bid, name, opcode, _, _, _, _),
       (opcode = "trunc";
@@ -192,7 +192,7 @@
        opcode = "addrspacecast").
 
     .decl operands(id: instr_t, op: operand_t, tid: type_t, dest: name_t)
-    OUTPUT(operands)
+    INSTR_OUTPUT(operands)
 
     operands(id, op, tid, name) :-
       instruction(id, _, _, _, _, _, unary, opid),
@@ -202,10 +202,10 @@
 
   .comp Cmp {
     .decl get(id: instr_t, bid: block_t, dest: name_t) overridable
-    OUTPUT(get)
+    INSTR_OUTPUT(get)
 
     .decl operands(id: instr_t, pred: symbol, op0: operand_t, op1: operand_t)
-    OUTPUT(operands)
+    INSTR_OUTPUT(operands)
     operands(id, pred, true_op, false_op) :-
       instruction(id, _, _, _, _, _, _, opid),
       instruction_cmp(opid, pred, true_op, false_op, _).
@@ -327,7 +327,7 @@
 
   .comp Load {
     .decl get(id: instr_t, bid: block_t, name: name_t, addr: operand_t)
-    OUTPUT(get)
+    INSTR_OUTPUT(get)
 
     get(id, bid, name, addr) :-
       instruction(id, bid, name, opcode, _, _, _, family_id),
@@ -337,7 +337,7 @@
 
   .comp Store {
     .decl get(id: instr_t, bid: block_t, name: name_t, value: operand_t)
-    OUTPUT(get)
+    INSTR_OUTPUT(get)
 
     get(id, bid, name, value) :-
       instruction(id, bid, _, opcode, _, _, _, family_id),
@@ -353,7 +353,7 @@
       opcode = "phi".
 
     .decl ith_operand(id: instr_t, idx: number, op: operand_t, dest: name_t)
-    OUTPUT(ith_operand)
+    INSTR_OUTPUT(ith_operand)
     ith_operand(id, idx, op, dest) :-
       instruction(id, _, _, opcode, _, _, _, family_id),
       opcode = "phi",
@@ -366,7 +366,7 @@
                            idx: number,
                            op: operand_t,
                            dest: name_t)
-    OUTPUT(ith_operand_impl)
+    INSTR_OUTPUT(ith_operand_impl)
     ith_operand_impl(id, family_id, idx, op, dest) :-
       idx=0,
       instruction_phi_value(id, family_id, op, dest),
@@ -379,7 +379,7 @@
 
   .comp Call {
     .decl get(id: instr_t, bid: block_t, dest: name_t, name: symbol)
-    OUTPUT(get)
+    INSTR_OUTPUT(get)
 
     get(id, bid, dest, name) :-
       instruction(id, bid, _, opcode, _, _, _, family_id),
@@ -388,7 +388,7 @@
       Operand.name(fname_op, name).
 
     .decl global_func(id: instr_t, bid: block_t, dest: name_t, name: symbol, tid: type_t)
-    OUTPUT(global_func)
+    INSTR_OUTPUT(global_func)
 
     global_func(id, bid, dest, name, tid) :-
       instruction(id, bid, _, opcode, _, _, _, family_id),
@@ -397,7 +397,7 @@
       Operand.global_ref(fname_op, name, tid).
 
     .decl ith_operand(id: instr_t, idx: number, op: operand_t)
-    OUTPUT(ith_operand)
+    INSTR_OUTPUT(ith_operand)
 
     ith_operand(id, idx, op) :-
       instruction(id, _, _, opcode, _, _, _, family_id),
@@ -410,7 +410,7 @@
                            family_id: instr_sub_t,
                            idx: number,
                            op: operand_t)
-    OUTPUT(ith_operand_impl)
+    INSTR_OUTPUT(ith_operand_impl)
     ith_operand_impl(id, family_id, idx, op) :-
       idx=0,
       instruction_call_op(id, family_id, op),
@@ -423,7 +423,7 @@
 
   .comp Alloca {
     .decl get(id: instr_t, bid: block_t, dest: name_t, tid: type_t, size: number)
-    OUTPUT(get)
+    INSTR_OUTPUT(get)
 
     get(id, bid, dest, tid, size) :-
       instruction(id, bid, _, opcode, _, _, _, family_id),
@@ -434,7 +434,7 @@
 
   .comp GetElementPtr {
     .decl get(id: instr_t, bid: block_t, dest: name_t, addr: operand_t, num_idx: number)
-    OUTPUT(get)
+    INSTR_OUTPUT(get)
 
     get(id, bid, dest, addr, num_idx) :-
       instruction(id, bid, _, opcode, _, _, _, family_id),
@@ -442,7 +442,7 @@
       instruction_gep(family_id, addr, num_idx, dest, _).
 
     .decl ith_index(id: instr_t, idx: number, op: operand_t)
-    OUTPUT(ith_index)
+    INSTR_OUTPUT(ith_index)
 
     ith_index(id, idx, op) :-
       instruction(id, _, _, opcode, _, _, _, family_id),
@@ -455,7 +455,7 @@
                          family_id: instr_sub_t,
                          idx: number,
                          op: operand_t)
-    OUTPUT(ith_index_impl)
+    INSTR_OUTPUT(ith_index_impl)
     ith_index_impl(id, family_id, idx, op) :-
       idx=0,
       instruction_gep_index(id, family_id, op),
@@ -488,7 +488,7 @@
       ith_index_impl(_, family_id, 1, op).
 
     .decl addr_size(id: instr_t, bid: block_t, name: name_t, size: number)
-    OUTPUT(addr_size)
+    INSTR_OUTPUT(addr_size)
 
     addr_size(id, bid, name, size) :-
       Block.get(_, bid, _),
@@ -537,7 +537,7 @@
 
   .comp Br {
     .decl get(id: instr_t, bid: block_t, label: name_t)
-    OUTPUT(get)
+    INSTR_OUTPUT(get)
     get(id, bid, label) :-
       instruction(id, bid, _, opcode, _, _, _, family_id),
       opcode = "br",
@@ -550,7 +550,7 @@
               cond: operand_t,
               true_label: name_t,
               false_label: name_t)
-    OUTPUT(get)
+    INSTR_OUTPUT(get)
     get(id, bid, cond, true_label, false_label) :-
       instruction(id, bid, _, opcode, _, _, _, family_id),
       opcode = "condbr",

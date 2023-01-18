@@ -23,29 +23,29 @@
 #include "input/types.dl"
 
 #ifdef DEBUG_TYPE
-#define OUTPUT(x) .output x
+#define TY_OUTPUT(x) OUTPUT_IMPL(x)
 #else
-#define OUTPUT(x)
+#define TY_OUTPUT(x)
 #endif
 
 .comp _Type {
 
   .decl is_struct(tid: type_t)
-  OUTPUT(is_struct)
+  TY_OUTPUT(is_struct)
 
   is_struct(tid) :-
     type(tid, _, _, family, _),
     family = "struct".
 
   .decl is_array(tid: type_t)
-  OUTPUT(is_array)
+  TY_OUTPUT(is_array)
 
   is_array(tid) :-
     type(tid, _, _, family, _),
     family = "array".
 
   .decl is_vector(tid: type_t)
-  OUTPUT(is_vector)
+  TY_OUTPUT(is_vector)
 
   // definitions
   is_vector(tid) :-
@@ -53,7 +53,7 @@
     family = "vector".
 
   .decl is_int(tid: type_t)
-  OUTPUT(is_int)
+  TY_OUTPUT(is_int)
 
   is_int(tid) :-
     type(tid, _, _, family, _),
@@ -70,7 +70,7 @@
 
   .comp Pointer {
     .decl pointee(id: type_t, tid: type_t)
-    OUTPUT(pointee)
+    TY_OUTPUT(pointee)
 
     pointee(id, tid) :-
       type(id, _, _, family, family_id),
@@ -80,7 +80,7 @@
 
   .comp FuncPointer {
     .decl ret_type(id: type_t, tid: type_t)
-    OUTPUT(ret_type)
+    TY_OUTPUT(ret_type)
 
     ret_type(id, tid) :-
       type(id, _, _, family, family_id),
@@ -90,7 +90,7 @@
 
   .comp Array {
     .decl get(id: type_t, tid: type_t, size: number)
-    OUTPUT(get)
+    TY_OUTPUT(get)
 
     get(id, tid, size) :-
       type(id, _, _, family, family_id),
@@ -100,7 +100,7 @@
 
   .comp Vector {
     .decl get(id: type_t, tid: type_t, size: number)
-    OUTPUT(get)
+    TY_OUTPUT(get)
 
     get(id, tid, size) :-
       type(id, _, _, family, family_id),
@@ -110,7 +110,7 @@
 
   .comp Struct {
     .decl get(id: type_t, field_num: number)
-    OUTPUT(get)
+    TY_OUTPUT(get)
 
     get(id, field_num) :-
       type(id, _, _, family, family_id),
@@ -119,7 +119,7 @@
       field_num != -1.
 
     .decl ith_field(id: type_t, idx: number, tid: type_t)
-    OUTPUT(ith_field)
+    TY_OUTPUT(ith_field)
 
     ith_field(id, idx, tid) :-
       type(id, _, _, family, family_id),
@@ -133,7 +133,7 @@
                          family_id: type_sub_t,
                          idx: number,
                          tid: type_t)
-    OUTPUT(ith_field_impl)
+    TY_OUTPUT(ith_field_impl)
     ith_field_impl(id, family_id, idx, tid) :-
       idx=0,
       id = min sub_id: type_struct_field(sub_id, family_id, _),

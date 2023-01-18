@@ -27,16 +27,16 @@
 #include "block.dl"
 
 #ifdef DEBUG_LOOP
-#define OUTPUT(x) OUTPUT_IMPL(x)
+#define LP_OUTPUT(x) OUTPUT_IMPL(x)
 #else
-#define OUTPUT(x)
+#define LP_OUTPUT(x)
 #endif
 
 
 .comp _Loop {
 
   .decl get(fid: func_t, head: block_t, tail: block_t)
-  OUTPUT(get)
+  LP_OUTPUT(get)
 
   get(fid, head, tail) :-
     Function.get(fid, fname, _),
@@ -45,7 +45,7 @@
     Block.get(fid, tail, tail_name).
 
   .decl node(fid: func_t, head: block_t, node: block_t)
-  OUTPUT(node)
+  LP_OUTPUT(node)
 
   node(fid, head, node) :-
     Function.get(fid, fname, _),
@@ -54,7 +54,7 @@
     CFG.block_loop_node(fname, head_name, node_name).
 
   .decl condition_instr(fid: func_t, head: block_t, iid: instr_t)
-  OUTPUT(condition_instr)
+  LP_OUTPUT(condition_instr)
 
   condition_instr(fid, head, iid) :-
     get(fid, head, _),

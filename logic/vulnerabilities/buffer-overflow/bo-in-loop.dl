@@ -31,14 +31,14 @@
 #include "core/loop.dl"
 
 #ifdef DEBUG_VULN_BO_IN_LOOP
-#define OUTPUT(x) OUTPUT_IMPL(x)
+#define VBL_OUTPUT(x) OUTPUT_IMPL(x)
 #else
-#define OUTPUT(x)
+#define VBL_OUTPUT(x)
 #endif
 
 
 .decl bo_in_loop(func: symbol, iid: instr_t, name: name_t, msg: symbol)
-OUTPUT(bo_in_loop)
+VBL_OUTPUT(bo_in_loop)
 
 bo_in_loop(func, iid, name, msg) :-
   Function.get(fid, func, _),
