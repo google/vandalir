@@ -58,6 +58,13 @@
     constant(id, family, _),
     family = "int".
 
+  .decl is_null(id: const_t)
+  CONST_OUTPUT(is_null)
+
+  is_null(id) :-
+    constant(id, family, _),
+    family = "null".
+
   .decl global_ref(id: const_t, name: symbol, tid: type_t)
   CONST_OUTPUT(global_ref)
   global_ref(id, name, tid) :-
