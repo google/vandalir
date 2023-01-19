@@ -246,6 +246,21 @@
     name = "%rand",
     DEBUG_MSG_ENDPOINT(iid, value)
     (value = RAND_MAX; value = 0).
+
+  .decl is_null(fid: func_t, iid: instr_t, vreg: name_t)
+  VA_OUTPUT(is_null)
+
+  is_null(fid, iid, vreg) :-
+    Block.get(fid, bid, _),
+    Instruction.Store.get(iid, bid, addr_op, value),
+    Operand.vreg(addr_op, vreg, _),
+    Operand.null(value).
+
+  is_null(fid, iid, vreg) :-
+    Block.get(fid, _, _),
+    VRegAnalysis.equel(fid, iid, vreg, vreg_sub),
+    is_null(fid, _, vreg_sub).
+
 }
 
 .init VRegValueAnalysis = _VRegValueAnalysis
