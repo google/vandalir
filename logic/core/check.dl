@@ -139,6 +139,27 @@ check_boundary_false(fid, bid, pred, vreg, value_op) :-
    Function.get(fid, fname, _),
    CFG.block_forward_egdes(fname, false_label, bname)
   ).
+
+
+.decl check_null(fid: func_t, bid: block_t, vreg: symbol)
+CH_OUTPUT(check_null)
+
+check_null(fid, bid, vreg) :-
+  check_boundary_true(fid, bid, pred, vreg, value_op),
+  IS_OP_NULL(fid, value_op),
+  !check_boundary_false(fid, bid, pred, vreg, _),
+  (
+   SMALLER_COND(pred);
+   BIGGER_COND(pred);
+   NOT_EQUAL_COND(pred)
+  ).
+
+check_null(fid, bid, vreg) :-
+  check_boundary_false(fid, bid, pred, vreg, value_op),
+  IS_OP_NULL(fid, value_op),
+  !check_boundary_true(fid, bid, pred, vreg, _),
+  EQUAL_COND(pred).
+
 }
 
 .init Check = _Check
