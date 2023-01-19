@@ -33,12 +33,6 @@
   #define CH_OUTPUT(x)
 #endif
 
-#define GET_INT_FROM_OP(fid, op, val) \
-    (Operand.int(op, val); \
-     Operand.vreg(op, op##_vreg, _), \
-     VRegValueAnalysis.get_int(fid, op##_vreg, val) \
-    )
-
 .comp _Check {
 
 .decl get_upperbound_limited_value(fid: func_t, bid: block_t, vreg: symbol, idx: number)
@@ -46,7 +40,8 @@ CH_OUTPUT(get_upperbound_limited_value)
 
 get_upperbound_limited_value(fid, bid, vreg, idx) :-
   VRegValueAnalysis.get_int(fid, vreg, value),
-  check_boundary_true(fid, bid, pred, vreg, bound_value),
+  check_boundary_true(fid, bid, pred, vreg, value_op),
+  GET_INT_FROM_OP(fid, value_op, bound_value),
   !check_boundary_false(fid, bid, pred, vreg, _),
   (
    SMALLER_COND(pred), check_value = bound_value - 1;
@@ -65,7 +60,8 @@ get_upperbound_limited_value(fid, bid, vreg, idx) :-
 
 get_upperbound_limited_value(fid, bid, vreg, idx) :-
   VRegValueAnalysis.get_int(fid, vreg, value),
-  check_boundary_false(fid, bid, pred, vreg, bound_value),
+  check_boundary_false(fid, bid, pred, vreg, value_op),
+  GET_INT_FROM_OP(fid, value_op, bound_value),
   !check_boundary_true(fid, bid, pred, vreg, _),
   (
    BIGGER_COND(pred), check_value = bound_value;
@@ -92,22 +88,21 @@ get_upperbound_limited_value(fid, bid, vreg, idx) :-
                      cmp_iid: instr_t,
                      pred: symbol,
                      vreg: name_t,
-                     value: number,
+                     value_op: operand_t,
                      true_label: name_t,
                      false_label: name_t)
 CH_OUTPUT(check_boundary)
 
-check_boundary(fid, bid, cmp_iid, pred, vreg, value, true_label, false_label) :-
+check_boundary(fid, bid, cmp_iid, pred, vreg, value_op, true_label, false_label) :-
   Block.get(fid, cmp_bid, cmp_bname),
   Block.get(fid, bid, bname),
   Function.get(fid, fname, _),
   CFG.block_forward_egdes(fname, cmp_bname, bname),
 
   Instruction.ICmp.get(cmp_iid, cmp_bid, cmp_dest),
-  Instruction.ICmp.operands(cmp_iid, pred, op0, op1),
+  Instruction.ICmp.operands(cmp_iid, pred, op0, value_op),
   VRegAnalysis.same(fid, op0_vreg, vreg),
   Operand.vreg(op0, op0_vreg, _),
-  GET_INT_FROM_OP(fid, op1, value),
 
   Block.get(fid, br_bid, _),
   Instruction.BrCond.get(_, br_bid, cond_op, true_label, false_label),
@@ -118,12 +113,12 @@ check_boundary(fid, bid, cmp_iid, pred, vreg, value, true_label, false_label) :-
                           bid: block_t,
                           pred: symbol,
                           vreg: name_t,
-                          value: number)
+                          value_op: operand_t)
 CH_OUTPUT(check_boundary_true)
 
-check_boundary_true(fid, bid, pred, vreg, value) :-
+check_boundary_true(fid, bid, pred, vreg, value_op) :-
   Block.get(fid, bid, bname),
-  check_boundary(fid, bid, _, pred, vreg, value, true_label, _),
+  check_boundary(fid, bid, _, pred, vreg, value_op, true_label, _),
   (true_label = bname;
    Function.get(fid, fname, _),
    CFG.block_forward_egdes(fname, true_label, bname)
@@ -134,12 +129,12 @@ check_boundary_true(fid, bid, pred, vreg, value) :-
                           bid: block_t,
                           pred: symbol,
                           vreg: name_t,
-                          value: number)
+                          value_op: operand_t)
 CH_OUTPUT(check_boundary_false)
 
-check_boundary_false(fid, bid, pred, vreg, value) :-
+check_boundary_false(fid, bid, pred, vreg, value_op) :-
   Block.get(fid, bid, bname),
-  check_boundary(fid, bid, _, pred, vreg, value, _, false_label),
+  check_boundary(fid, bid, _, pred, vreg, value_op, _, false_label),
   (false_label = bname;
    Function.get(fid, fname, _),
    CFG.block_forward_egdes(fname, false_label, bname)

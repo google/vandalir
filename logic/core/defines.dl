@@ -49,6 +49,11 @@ Depth(n) :-
 Depth(n + 1) :-
   Depth(n), n < DEPTH.
 
+#define GET_INT_FROM_OP(fid, op, val) \
+    (Operand.int(op, val); \
+     Operand.vreg(op, op##_vreg, _), \
+     VRegValueAnalysis.get_int(fid, op##_vreg, val) \
+    )
 
 #ifdef DEPTH_RECURSION
 

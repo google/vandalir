@@ -50,7 +50,8 @@ bo_in_loop(func, iid, level, msg) :-
 
   Loop.node(fid, loop_head, bid),
   Loop.condition_instr(fid, loop_head, cmp_iid),
-  Check.check_boundary(fid, _, cmp_iid, pred, cmp_vreg, value, _, _),
+  Check.check_boundary(fid, _, cmp_iid, pred, cmp_vreg, value_op, _, _),
+  GET_INT_FROM_OP(fid, value_op, value),
   cmp_vreg = idx_vreg,
   (
    SMALLER_COND(pred), iter_value = value - 1;
