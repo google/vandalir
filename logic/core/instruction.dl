@@ -336,14 +336,13 @@
   }
 
   .comp Store {
-    .decl get(id: instr_t, bid: block_t, name: name_t, value: operand_t)
+    .decl get(id: instr_t, bid: block_t, addr: operand_t, value: operand_t)
     INSTR_OUTPUT(get)
 
-    get(id, bid, name, value) :-
+    get(id, bid, addr, value) :-
       instruction(id, bid, _, opcode, _, _, _, family_id),
       opcode = "store",
-      instruction_store(family_id, addr, value, _, _),
-      Operand.vreg(addr, name, _).
+      instruction_store(family_id, addr, value, _, _).
   }
 
   .comp Phi {

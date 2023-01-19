@@ -226,7 +226,8 @@
   get_int_impl(fid, iid, vreg, value DEPTH_PARAM DEBUG_MSG_PARAM) :-
     DEPTH_CHECK
     Block.get(fid, bid, _),
-    Instruction.Store.get(iid, bid, vreg, val),
+    Instruction.Store.get(iid, bid, addr_op, val),
+    Operand.vreg(addr_op, vreg, _),
     VA_GET_INT_FROM_OP(fid, iid, val, value).
 
   // Phi
