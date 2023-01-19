@@ -76,6 +76,24 @@
       type(id, _, _, family, family_id),
       family = "pointer",
       type_ptr(family_id, tid, _).
+
+    .decl ptr_type(id: type_t, tid: type_t, level: number)
+    TY_OUTPUT(ptr_type)
+
+    ptr_type(id, tid, level) :-
+      type(id, _, _, family, family_id),
+      family = "pointer",
+      type_ptr(family_id, tid, _),
+      type(tid, _, _, sub_family, _),
+      sub_family != "pointer",
+      level = 1.
+
+    ptr_type(id, tid, level) :-
+      type(id, _, _, family, family_id),
+      family = "pointer",
+      type_ptr(family_id, ptid, _),
+      ptr_type(ptid, tid, sub_level),
+      level = sub_level + 1.
   }
 
   .comp FuncPointer {
