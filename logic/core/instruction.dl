@@ -50,6 +50,10 @@
 #define BIGGER_EQUAL_COND(x) \
   (x = "sge"; x = "uge")
 
+#define EQUAL_COND(x) x = "eq"
+
+#define NOT_EQUAL_COND(x) x = "ne"
+
 .comp _Instruction {
 
   .decl is_integer_binary_ops(bid: block_t, iid: instr_t)
@@ -204,11 +208,24 @@
     .decl get(id: instr_t, bid: block_t, dest: name_t) overridable
     INSTR_OUTPUT(get)
 
-    .decl operands(id: instr_t, pred: symbol, op0: operand_t, op1: operand_t)
+    .decl operands(id: instr_t, pred: symbol, op1: operand_t, op2: operand_t)
     INSTR_OUTPUT(operands)
-    operands(id, pred, true_op, false_op) :-
+    operands(id, pred, op1, op2) :-
       instruction(id, _, _, _, _, _, _, opid),
-      instruction_cmp(opid, pred, true_op, false_op, _).
+      instruction_cmp(opid, pred, op1, op2, _).
+
+    .decl op_vreg(id: instr_t, bid: block_t, vreg: name_t)
+    INSTR_OUTPUT(op_vreg)
+
+    op_vreg(id, bid, vreg) :-
+      instruction(id, bid, _, _, _, _, _, opid),
+      instruction_cmp(opid, _, op1, _, _),
+      Operand.vreg(op1, vreg, _).
+
+    op_vreg(id, bid, vreg) :-
+      instruction(id, bid, _, _, _, _, _, opid),
+      instruction_cmp(opid, _, _, op2, _),
+      Operand.vreg(op2, vreg, _).
   }
 
   .comp Add : Binary {
