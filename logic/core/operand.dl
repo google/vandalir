@@ -61,11 +61,22 @@
     Constant.Int.value(family_id, value).
 
 
+  .decl null(id: operand_t)
+  OP_OUTPUT(null)
+
+  null(id) :-
+    operand(id, _, family, family_id),
+    family = "constant",
+    Constant.is_null(family_id).
+
+
   .decl vreg(id: operand_t, name: name_t, tid: type_t)
   OP_OUTPUT(vreg)
+
   vreg(id, name, tid) :-
     operand(id, _, family, family_id),
     family = "local",
     operand_local(as(family_id, operand_sub_t), name, tid).
+
 }
 .init Operand = _Operand
