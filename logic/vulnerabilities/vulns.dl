@@ -20,3 +20,4 @@
 #pragma once
 
 #include "buffer-overflow/main.dl"
+#include "null-deref.dl"

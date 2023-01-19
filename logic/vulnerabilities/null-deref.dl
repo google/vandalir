@@ -1,0 +1,108 @@
+// Copyright (c) 2023 Google LLC
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy of
+// this software and associated documentation files (the "Software"), to deal in
+// the Software without restriction, including without limitation the rights to
+// use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+// the Software, and to permit persons to whom the Software is furnished to do so,
+// subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+// FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+// COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+// IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+// CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+#pragma once
+
+#include "core/defines.dl"
+#include "core/value_analysis.dl"
+#include "core/vreg_analysis.dl"
+#include "core/control_flow.dl"
+#include "core/operand.dl"
+#include "core/operand_utils.dl"
+#include "core/function.dl"
+#include "core/block.dl"
+#include "core/check.dl"
+#include "core/results.dl"
+
+#ifdef DEBUG_VULN_NULL_DEREF
+#define VND_OUTPUT(x) OUTPUT_IMPL(x)
+#else
+#define VND_OUTPUT(x)
+#endif
+
+
+.decl null_dereference(func: symbol, iid: instr_t, level: symbol, msg: symbol)
+VND_OUTPUT(null_dereference)
+
+null_dereference(func, iid, level, msg) :-
+  Function.get(fid, func, _),
+  Block.get(fid, bid, bname),
+  Instruction.Load.get(iid, bid, _, addr_op),
+  (Operand.vreg(addr_op, addr, _),
+   VRegValueAnalysis.is_null(fid, iid, addr),
+   msg_extra = cat("': possibly NULL dereference of ", addr);
+   Operand.null(addr_op),
+   addr = "null",
+   msg_extra = "': direct NULL access in load instruction"
+  ),
+  level = "Vulnerability",
+  msg = cat("NULL DEREFERENCE: block '", bname, msg_extra).
+
+null_dereference(func, iid, level, msg) :-
+  Function.get(fid, func, _),
+  Block.get(fid, bid, bname),
+  Instruction.Store.get(iid, bid, addr_op, _),
+  Operand.null(addr_op),
+  level = "Vulnerability",
+  msg = cat("NULL DEREFERENCE: block '", bname,
+            "': direct NULL access in store instruction").
+
+null_dereference(func, iid, level, msg) :-
+  Function.get(fid, func, _),
+  Block.get(fid, bid, bname),
+  Instruction.Store.get(iid, bid, addr_op, _),
+  Operand.vreg(addr_op, addr, vtid),
+  Type.Pointer.ptr_type(vtid, _, _),
+  VRegValueAnalysis.is_null(fid, iid2, addr),
+  InstructionAnalysis.is_instruction_before(iid, iid2),
+  !Check.check_null(fid, bid, addr),
+  level = "Vulnerability",
+  msg = cat("NULL DEREFERENCE: block '", bname,
+            "': possibly NULL dereference of ", addr).
+
+null_dereference(func, iid, level, msg) :-
+  Function.get(fid, func, _),
+  Block.get(fid, bid, bname),
+  Instruction.Load.get(iid, bid, dst_vreg, addr_op),
+  // exclude case where load is used by a ICMP instruction
+  !Instruction.ICmp.op_vreg(_, bid, dst_vreg),
+  Operand.vreg(addr_op, addr, vtid),
+  Type.Pointer.ptr_type(vtid, _, ptr_level),
+  ptr_level > 1,
+  VRegValueAnalysis.is_null(fid, iid2, addr),
+  InstructionAnalysis.is_instruction_before(iid, iid2),
+  !Check.check_null(fid, bid, addr),
+  level = "Vulnerability",
+  msg = cat("NULL DEREFERENCE: block '", bname,
+            "': possibly NULL dereference of ", addr).
+
+
+null_dereference(func, iid, level, msg) :-
+  Function.get(fid, func, _),
+  Block.get(fid, bid, bname),
+  Instruction.GetElementPtr.get(iid, bid, _, addr_op, _),
+  Operand.vreg(addr_op, addr, _),
+  VRegValueAnalysis.is_null(fid, iid2, addr),
+  InstructionAnalysis.is_instruction_before(iid, iid2),
+  !Check.check_null(fid, bid, addr),
+  level = "Vulnerability",
+  msg = cat("NULL DEREFERENCE: block '", bname,
+            "': possibly NULL value of ", addr).
+
+REPORT_RESULTS(null_dereference).
