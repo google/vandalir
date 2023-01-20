@@ -22,9 +22,13 @@
 #include <stdlib.h>
 
 int main() {
+  int i = 0;
   char *ptr = malloc(10);
 
-  free(ptr);
-  free(ptr);
+  if (i) {
+    free(ptr);
+  } else {
+    free(ptr);
+  }
   return 0;
 }

@@ -24,7 +24,9 @@
 int main() {
   char *ptr = malloc(10);
 
-  free(ptr);
+  char *ptr1 = ptr;
+
+  free(ptr1);
   free(ptr);
   return 0;
 }
