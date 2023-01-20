@@ -83,6 +83,13 @@
     InstructionAnalysis.is_instruction_before(iid1, iid_tmp),
     !modified(iid_tmp, iid1, tmp).
 
+  equel(fid, iid1, vreg1, vreg2) :-
+    equel(fid, iid1, vreg1, tmp),
+    equel(fid, iid_tmp, vreg2, tmp),
+    InstructionAnalysis.is_instruction_before(iid1, iid_tmp),
+    !modified(iid_tmp, iid1, tmp).
+
+
   .decl modified(iid_start: instr_t, iid_end: instr_t, vreg: name_t)
   VRA_OUTPUT(modified)
 
