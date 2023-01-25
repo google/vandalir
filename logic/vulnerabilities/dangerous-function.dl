@@ -20,37 +20,28 @@
 #pragma once
 
 #include "core/defines.dl"
-#include "core/value_analysis.dl"
-#include "core/vreg_analysis.dl"
-#include "core/control_flow.dl"
-#include "core/operand.dl"
-#include "core/operand_utils.dl"
 #include "core/function.dl"
+#include "core/instruction.dl"
 #include "core/block.dl"
-#include "core/check.dl"
+#include "core/results.dl"
 
-#ifdef DEBUG_VULN_BO_IN_ARRAY
-#define VBA_OUTPUT(x) OUTPUT_IMPL(x)
+#ifdef DEBUG_VULN_DANGEROUS_FUNC
+#define VDANF_OUTPUT(x) OUTPUT_IMPL(x)
 #else
-#define VBA_OUTPUT(x)
+#define VDANF_OUTPUT(x)
 #endif
 
 
-.decl bo_in_array(func: symbol, iid: instr_t, level: symbol, msg: symbol)
-VBA_OUTPUT(bo_in_array)
+.decl dangerous_function(func: symbol, iid: instr_t, level: symbol, msg: symbol)
+VDANF_OUTPUT(dangerous_function)
 
-bo_in_array(func, iid, level, msg) :-
+dangerous_function(func, iid, level, msg) :-
   Function.get(fid, func, _),
   Block.get(fid, bid, bname),
-  Instruction.GetElementPtr.addr_size(iid, bid, name, size),
-  Instruction.GetElementPtr.index(iid, idx_op),
-  (Operand.int(idx_op, idx);
-   OperandUtil.name(idx_op, idx_vreg, _),
-   Check.get_upperbound_limited_value(fid, bid, idx_vreg, idx)
-  ),
-  idx >= size,
+  Instruction.Call.global_func(iid, bid, _, name, _),
+  name = "%gets",
   level = "Vulnerability",
-  msg = cat("BUFFER OVERFLOW: block '", bname,
-            "': possibly insufficient buffer size of ",
-            name, "(", to_string(size), " elements). ",
-            "Detected to big index access ", to_string(idx)).
+  msg = cat("Block: ", bname,
+            ": Inherently dangerous functions 'get()' found.").
+
+REPORT_RESULTS(dangerous_function).

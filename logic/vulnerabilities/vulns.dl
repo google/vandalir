@@ -22,3 +22,4 @@
 #include "buffer-overflow/main.dl"
 #include "null-deref.dl"
 #include "double-free.dl"
+#include "dangerous-function.dl"
