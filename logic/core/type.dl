@@ -47,7 +47,6 @@
   .decl is_vector(tid: type_t)
   TY_OUTPUT(is_vector)
 
-  // definitions
   is_vector(tid) :-
     type(tid, _, _, family, _),
     family = "vector".
@@ -58,6 +57,13 @@
   is_int(tid) :-
     type(tid, _, _, family, _),
     family = "int".
+
+  .decl is_pointer(tid: type_t)
+  TY_OUTPUT(is_pointer)
+
+  is_pointer(tid) :-
+    type(tid, _, _, family, _),
+    family = "pointer".
 
   .decl name(tid: type_t, name: symbol)
   name(tid, name) :-
