@@ -1,0 +1,254 @@
+// Copyright (c) 2023 Google LLC
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy of
+// this software and associated documentation files (the "Software"), to deal in
+// the Software without restriction, including without limitation the rights to
+// use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+// the Software, and to permit persons to whom the Software is furnished to do so,
+// subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+// FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+// COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+// IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+// CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+#pragma once
+
+#include "core/defines.dl"
+#include "core/function.dl"
+#include "core/instruction.dl"
+#include "core/block.dl"
+#include "core/results.dl"
+
+#ifdef DEBUG_VULN_DANGEROUS_FUNC
+#define VDANF_OUTPUT(x) OUTPUT_IMPL(x)
+#else
+#define VDANF_OUTPUT(x)
+#endif
+
+
+.decl out_of_bounds(func: symbol, iid: instr_t, level: symbol, msg: symbol)
+VDANF_OUTPUT(out_of_bounds)
+
+out_of_bounds(func, iid, level, msg) :-
+  Function.get(fid, func, _),
+  Block.get(fid, bid, bname),
+  Instruction.Call.global_func(iid, bid, _, name, _),
+  name = "%strncpy",
+  Instruction.Call.ith_operand(iid, 1, buff_op),
+  Instruction.Call.ith_operand(iid, 2, size_op),
+  OperandUtil.name(buff_op, buff_name, _),
+  VRegValueAnalysis.buff_size(fid, iid, buff_name, buff_size),
+  GET_INT_FROM_OP(fid, size_op, size),
+  size > buff_size,
+  level = "Vulnerability",
+  msg = cat("Block: ", bname, "; vreg: ", buff_name,
+            ": strncpy: Possible out of bounds reading for SRC buffer: ",
+            "SRC size ", to_string(buff_size), "; SIZE ", to_string(size), ".").
+
+out_of_bounds(func, iid, level, msg) :-
+  Function.get(fid, func, _),
+  Block.get(fid, bid, bname),
+  Instruction.Call.global_func(iid, bid, _, name, _),
+  name = "%strncpy",
+  Instruction.Call.ith_operand(iid, 0, buff_op),
+  Instruction.Call.ith_operand(iid, 2, size_op),
+  OperandUtil.name(buff_op, buff_name, _),
+  VRegValueAnalysis.buff_size(fid, iid, buff_name, buff_size),
+  GET_INT_FROM_OP(fid, size_op, size),
+  size >= buff_size,
+  level = "Vulnerability",
+  msg = cat("Block: ", bname, "; vreg: ", buff_name,
+            ": strncpy: Possible out of bounds write to DEST buffer: ",
+            "DEST size ", to_string(buff_size), "; SIZE ", to_string(size), ".").
+
+out_of_bounds(func, iid, level, msg) :-
+  Function.get(fid, func, _),
+  Block.get(fid, bid, bname),
+  Instruction.Call.global_func(iid, bid, _, name, _),
+  name = "%fgets",
+  Instruction.Call.ith_operand(iid, 0, buff_op),
+  Instruction.Call.ith_operand(iid, 1, size_op),
+  OperandUtil.name(buff_op, buff_name, _),
+  VRegValueAnalysis.buff_size(fid, iid, buff_name, buff_size),
+  GET_INT_FROM_OP(fid, size_op, size),
+  size > buff_size,
+  level = "Vulnerability",
+  msg = cat("Block: ", bname, "; vreg: ", buff_name,
+            ": fgets: Possible out of bounds write to DEST buffer: ",
+            "DEST size ", to_string(buff_size), "; SIZE ", to_string(size), ".").
+
+out_of_bounds(func, iid, level, msg) :-
+  Function.get(fid, func, _),
+  Block.get(fid, bid, bname),
+  Instruction.Call.global_func(iid, bid, _, name, _),
+  name = "%snprintf",
+  Instruction.Call.ith_operand(iid, 0, buff_op),
+  Instruction.Call.ith_operand(iid, 1, size_op),
+  OperandUtil.name(buff_op, buff_name, _),
+  VRegValueAnalysis.buff_size(fid, iid, buff_name, buff_size),
+  GET_INT_FROM_OP(fid, size_op, size),
+  size > buff_size,
+  level = "Vulnerability",
+  msg = cat("Block: ", bname, "; vreg: ", buff_name,
+            ": snprintf: Possible out of bounds write to DEST buffer: ",
+            "DEST size ", to_string(buff_size), "; SIZE ", to_string(size), ".").
+
+out_of_bounds(func, iid, level, msg) :-
+  Function.get(fid, func, _),
+  Block.get(fid, bid, bname),
+  Instruction.Call.global_func(iid, bid, _, name, _),
+  name = "%memcpy",
+  Instruction.Call.ith_operand(iid, 0, buff_op),
+  Instruction.Call.ith_operand(iid, 2, size_op),
+  OperandUtil.name(buff_op, buff_name, _),
+  VRegValueAnalysis.buff_size(fid, iid, buff_name, buff_size),
+  GET_INT_FROM_OP(fid, size_op, size),
+  size > buff_size,
+  level = "Vulnerability",
+  msg = cat("Block: ", bname, "; vreg: ", buff_name,
+            ": memcpy: Possible out of bounds write to DEST buffer: ",
+            "DEST size ", to_string(buff_size), "; SIZE ", to_string(size), ".").
+
+out_of_bounds(func, iid, level, msg) :-
+  Function.get(fid, func, _),
+  Block.get(fid, bid, bname),
+  Instruction.Call.global_func(iid, bid, _, name, _),
+  name = "%memcpy",
+  Instruction.Call.ith_operand(iid, 1, buff_op),
+  Instruction.Call.ith_operand(iid, 2, size_op),
+  OperandUtil.name(buff_op, buff_name, _),
+  VRegValueAnalysis.buff_size(fid, iid, buff_name, buff_size),
+  GET_INT_FROM_OP(fid, size_op, size),
+  size > buff_size,
+  level = "Vulnerability",
+  msg = cat("Block: ", bname, "; vreg: ", buff_name,
+            ": memcpy: Possible out of bounds write to SRC buffer: ",
+            "SRC size ", to_string(buff_size), "; SIZE ", to_string(size), ".").
+
+out_of_bounds(func, iid, level, msg) :-
+  Function.get(fid, func, _),
+  Block.get(fid, bid, bname),
+  Instruction.Call.global_func(iid, bid, _, name, _),
+  name = "%memmove",
+  Instruction.Call.ith_operand(iid, 0, buff_op),
+  Instruction.Call.ith_operand(iid, 2, size_op),
+  OperandUtil.name(buff_op, buff_name, _),
+  VRegValueAnalysis.buff_size(fid, iid, buff_name, buff_size),
+  GET_INT_FROM_OP(fid, size_op, size),
+  size > buff_size,
+  level = "Vulnerability",
+  msg = cat("Block: ", bname, "; vreg: ", buff_name,
+            ": memmove: Possible out of bounds write to DEST buffer: ",
+            "DEST size ", to_string(buff_size), "; SIZE ", to_string(size), ".").
+
+out_of_bounds(func, iid, level, msg) :-
+  Function.get(fid, func, _),
+  Block.get(fid, bid, bname),
+  Instruction.Call.global_func(iid, bid, _, name, _),
+  name = "%strcpy",
+  Instruction.Call.ith_operand(iid, 0, dest_op),
+  Instruction.Call.ith_operand(iid, 1, src_op),
+  OperandUtil.name(dest_op, dest_name, _),
+  OperandUtil.name(src_op, src_name, _),
+  VRegValueAnalysis.buff_size(fid, iid, dest_name, dest_size),
+  VRegValueAnalysis.buff_size(fid, iid, src_name, src_size),
+  src_size > dest_size,
+  level = "Vulnerability",
+  msg = cat("Block: ", bname, "; vreg: ", dest_name,
+            ": strcpy: Possible out of bounds write to DEST buffer: ",
+            "DEST size ", to_string(dest_size), "; SRC size ",
+            to_string(src_size), ".").
+
+out_of_bounds(func, iid, level, msg) :-
+  Function.get(fid, func, _),
+  Block.get(fid, bid, bname),
+  Instruction.Call.global_func(iid, bid, _, name, _),
+  name = "%wscpy",
+  Instruction.Call.ith_operand(iid, 0, dest_op),
+  Instruction.Call.ith_operand(iid, 1, src_op),
+  OperandUtil.name(dest_op, dest_name, _),
+  OperandUtil.name(src_op, src_name, _),
+  VRegValueAnalysis.buff_size(fid, iid, dest_name, dest_size),
+  VRegValueAnalysis.buff_size(fid, iid, src_name, src_size),
+  src_size > dest_size,
+  level = "Vulnerability",
+  msg = cat("Block: ", bname, "; vreg: ", dest_name,
+            ": wscpy: Possible out of bounds write to DEST buffer: ",
+            "DEST size ", to_string(dest_size), "; SRC size ",
+            to_string(src_size), ".").
+
+out_of_bounds(func, iid, level, msg) :-
+  Function.get(fid, func, _),
+  Block.get(fid, bid, bname),
+  Instruction.Call.global_func(iid, bid, _, name, _),
+  name = "%wscpy",
+  Instruction.Call.ith_operand(iid, 0, dest_op),
+  Instruction.Call.ith_operand(iid, 1, src_op),
+  OperandUtil.name(dest_op, dest_name, _),
+  OperandUtil.name(src_op, src_name, _),
+  VRegValueAnalysis.buff_size(fid, iid, dest_name, dest_size),
+  VRegValueAnalysis.buff_size(fid, iid, src_name, src_size),
+  src_size > dest_size,
+  level = "Vulnerability",
+  msg = cat("Block: ", bname, "; vreg: ", dest_name,
+            ": wscpy: Possible out of bounds write to DEST buffer: ",
+            "DEST size ", to_string(dest_size), "; SRC size ",
+            to_string(src_size), ".").
+
+out_of_bounds(func, iid, level, msg) :-
+  Function.get(fid, func, _),
+  Block.get(fid, bid, bname),
+  Instruction.Call.global_func(iid, bid, _, name, _),
+  name = "%strcat",
+  Instruction.Call.ith_operand(iid, 0, dest_op),
+  Instruction.Call.ith_operand(iid, 1, src_op),
+  OperandUtil.name(dest_op, dest_name, _),
+  OperandUtil.name(src_op, src_name, _),
+  VRegValueAnalysis.buff_size(fid, iid, dest_name, dest_size),
+  VRegValueAnalysis.buff_size(fid, iid, src_name, src_size),
+  src_size > dest_size,
+  level = "Vulnerability",
+  msg = cat("Block: ", bname, "; vreg: ", dest_name,
+            ": strcat: Possible out of bounds write to DEST buffer: ",
+            "DEST size ", to_string(dest_size), "; SRC size ",
+            to_string(src_size), ".").
+
+out_of_bounds(func, iid, level, msg) :-
+  Function.get(fid, func, _),
+  Block.get(fid, bid, bname),
+  Instruction.Call.global_func(iid, bid, _, name, _),
+  name = "%strncat",
+  Instruction.Call.ith_operand(iid, 1, buff_op),
+  Instruction.Call.ith_operand(iid, 2, size_op),
+  OperandUtil.name(buff_op, buff_name, _),
+  VRegValueAnalysis.buff_size(fid, iid, buff_name, buff_size),
+  GET_INT_FROM_OP(fid, size_op, size),
+  size > buff_size,
+  level = "Vulnerability",
+  msg = cat("Block: ", bname, "; vreg: ", buff_name,
+            ": strncat: Possible out of bounds reading for SRC buffer: ",
+            "SRC size ", to_string(buff_size), "; SIZE ", to_string(size), ".").
+
+out_of_bounds(func, iid, level, msg) :-
+  Function.get(fid, func, _),
+  Block.get(fid, bid, bname),
+  Instruction.Call.global_func(iid, bid, _, name, _),
+  name = "%strncat",
+  Instruction.Call.ith_operand(iid, 0, buff_op),
+  Instruction.Call.ith_operand(iid, 2, size_op),
+  OperandUtil.name(buff_op, buff_name, _),
+  VRegValueAnalysis.buff_size(fid, iid, buff_name, buff_size),
+  GET_INT_FROM_OP(fid, size_op, size),
+  size >= buff_size,
+  level = "Vulnerability",
+  msg = cat("Block: ", bname, "; vreg: ", buff_name,
+            ": strncat: Possible out of bounds write to DEST buffer: ",
+            "DEST size ", to_string(buff_size), "; SIZE ", to_string(size), ".").
+
+REPORT_RESULTS(out_of_bounds).

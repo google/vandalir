@@ -107,7 +107,7 @@ do
   if [ ${REPORT} ]
   then
     echo "!!!!"
-    echo ">>>> ${i#${OUTPUT}/tests//}" >> ${REPORT}
+    echo ">>>> ${i#${OUTPUT}/tests/}" >> ${REPORT}
     cat ${OUTPUT}/out/RESULTS.csv >> ${REPORT}
     echo "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" >> ${REPORT}
     echo "" >> ${REPORT}
