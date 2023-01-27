@@ -261,6 +261,50 @@
     VRegAnalysis.equel(fid, iid, vreg, vreg_sub),
     is_null(fid, _, vreg_sub).
 
+  // get possible size of a VREG or a global var in bytes.
+  .decl buff_size(fid: func_t, iid: instr_t,
+                  name: name_t, size: number)
+  VA_OUTPUT(buff_size)
+
+  buff_size(fid, iid, name, size) :-
+    Block.get(fid, bid, _),
+    InstructionAnalysis.is_instruction_before(iid, iid_inst),
+    Instruction.GetElementPtr.get(iid_inst, bid, name, _, _),
+    Instruction.GetElementPtr.addr_size(iid_inst, bid, _, size).
+
+  buff_size(fid, iid, name, size) :-
+    Block.get(fid, bid, _),
+    Instruction.get(iid, bid, _, _),
+    GlobalVar.get(_, name, tid),
+    Type.size_in_bits(tid, size_in_bits),
+    size = size_in_bits / 8.
+
+  buff_size(fid, iid, name, size) :-
+    Block.get(fid, bid, _),
+    InstructionAnalysis.is_instruction_before(iid, iid_inst),
+    Instruction.Alloca.get(iid_inst, bid, name, tid, size),
+    !Type.is_pointer(tid),
+    !Type.is_vector(tid),
+    !Type.is_struct(tid),
+    !Type.is_array(tid).
+
+  buff_size(fid, iid, name, size) :-
+    Block.get(fid, bid, _),
+    InstructionAnalysis.is_instruction_before(iid, iid_inst),
+    Instruction.Alloca.get(iid_inst, bid, name, tid, _),
+    (Type.is_vector(tid);
+     Type.is_struct(tid);
+     Type.is_array(tid)
+    ),
+    Type.size_in_bits(tid, size_in_bits),
+    size = size_in_bits / 8.
+
+  buff_size(fid, iid, name, size) :-
+    Block.get(fid, _, _),
+    InstructionAnalysis.is_instruction_before(iid, iid_sub),
+    VRegAnalysis.equel(fid, iid_sub, name, vreg_sub),
+    buff_size(fid, iid_sub, vreg_sub, size).
+
 }
 
 .init VRegValueAnalysis = _VRegValueAnalysis
