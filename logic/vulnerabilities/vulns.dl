@@ -24,3 +24,4 @@
 #include "double-free.dl"
 #include "dangerous-function.dl"
 #include "out-of-bounds.dl"
+#include "format-string.dl"

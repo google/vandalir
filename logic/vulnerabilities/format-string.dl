@@ -1,0 +1,103 @@
+// Copyright (c) 2023 Google LLC
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy of
+// this software and associated documentation files (the "Software"), to deal in
+// the Software without restriction, including without limitation the rights to
+// use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+// the Software, and to permit persons to whom the Software is furnished to do so,
+// subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+// FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+// COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+// IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+// CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+#pragma once
+
+#include "core/defines.dl"
+#include "core/function.dl"
+#include "core/instruction.dl"
+#include "core/block.dl"
+#include "core/results.dl"
+
+#ifdef DEBUG_VULN_FORMAT_STRING
+#define VFS_OUTPUT(x) OUTPUT_IMPL(x)
+#else
+#define VFS_OUTPUT(x)
+#endif
+
+//returns a functionname with the relative argument number, which contains the formatstring
+.decl get_formatstring_arg(fname: symbol, num: number)
+
+get_formatstring_arg(fname, num) :-
+  fname="%printf",
+  num=0.
+get_formatstring_arg(fname, num) :-
+  fname="%fprintf",
+  num=1.
+get_formatstring_arg(fname, num) :-
+  fname="%sprintf",
+  num=1.
+get_formatstring_arg(fname, num) :-
+  fname="%snprintf",
+  num=2.
+get_formatstring_arg(fname, num) :-
+  fname="%vprintf",
+  num=0.
+get_formatstring_arg(fname, num) :-
+  fname="%vfprintf",
+  num=1.
+get_formatstring_arg(fname, num) :-
+  fname="%vsprintf",
+  num=1.
+get_formatstring_arg(fname, num) :-
+  fname="%vsnprintf",
+  num=2.
+get_formatstring_arg(fname, num) :-
+   fname="%syslog",
+   num=1.
+
+.decl format_string(func: symbol, iid: instr_t, level: symbol, msg: symbol)
+VFS_OUTPUT(format_string)
+
+format_string(func, iid, level, msg) :-
+  Function.get(fid, func, _),
+  Block.get(fid, bid, bname),
+  Instruction.Call.global_func(iid, bid, _, fname, _),
+  get_formatstring_arg(fname, arg_pos),
+  Instruction.Call.ith_operand(iid, arg_pos, arg_op),
+  Operand.vreg(arg_op, arg_vreg, _),
+  VRegAnalysis.equel(fid, iid_tmp, arg_vreg, name),
+  InstructionAnalysis.is_instruction_before(iid, iid_tmp),
+  GlobalVar.get(gid, name, _),
+  GlobalVar.modified(fid_mod, _, gid),
+  Function.get(fid_mod, fname_mod, _),
+  level = "Warning",
+  msg = cat("Block: ", bname, "; vreg: ", arg_vreg, ": ", fname,
+            ": Possible a non static format string is used.\n",
+            "The format string ", name, " can be modified by ",
+            fname_mod, " function.").
+
+format_string(func, iid, level, msg) :-
+  Function.get(fid, func, _),
+  Block.get(fid, bid, bname),
+  Instruction.Call.global_func(iid, bid, _, fname, _),
+  get_formatstring_arg(fname, arg_pos),
+  Instruction.Call.ith_operand(iid, arg_pos, arg_op),
+  Operand.vreg(arg_op, arg_vreg, _),
+  InstructionAnalysis.is_instruction_before(iid, iid_tmp),
+  VRegAnalysis.equel(fid, iid_tmp, arg_vreg, name),
+
+  Block.get(fid, bid_instr, bname),
+  Instruction.Alloca.get(_, bid_instr, name, tid, _),
+  !Type.is_pointer(tid),  // should be a real local buffer, not a pointer
+  level = "Warning",
+  msg = cat("Block: ", bname, "; vreg: ", arg_vreg,
+            ": Possible a non static formatstring is used in ", fname, ".").
+
+REPORT_RESULTS(format_string).
