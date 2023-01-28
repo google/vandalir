@@ -72,6 +72,11 @@
     family = "global_ref",
     constant_global_ref(family_id, name, tid).
 
+  global_ref(id, name, tid) :-
+    GetElementPtr.get(id, name, tid, _).
+
+  global_ref(id, name, tid) :-
+    Conversation.get(id, name, tid, _).
 
   .decl is_const_expr(id: const_t)
   is_const_expr(id) :-
