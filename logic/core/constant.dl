@@ -126,7 +126,71 @@
       constant_int(family_id, _, val).
   }
 
+  .comp GetElementPtr {
+    .decl get(id: const_t, addr: symbol, tid: type_t, num_idx: number)
+    CONST_OUTPUT(get)
+
+    get(id, addr, tid, num_idx) :-
+      constant(id, family, family_id),
+      family = "getelementptr",
+      constant_getelementptr(family_id, cid, _, num_idx),
+      constant(cid, family_sub, family_sub_id),
+      family_sub = "global_ref",
+      constant_global_ref(family_sub_id, addr, tid).
+
+    .decl ith_index(id: const_t, idx: number, value: number)
+    CONST_OUTPUT(ith_index)
+
+    ith_index(id, idx, value) :-
+      constant(id, family, family_id),
+      family = "getelementptr",
+      constant_getelementptr(family_id, _, _, idx_num),
+      idx < idx_num,
+      ith_index_impl(_, family_id, idx, cid),
+      Int.value(cid, value).
+
+    .decl ith_index_impl(id: const_sub_t,
+                         family_id: const_sub_t,
+                         idx: number,
+                         cid: const_t)
+    CONST_OUTPUT(ith_index_impl)
+    ith_index_impl(id, family_id, idx, cid) :-
+      idx=0,
+      constant_gep_index(id, family_id, cid),
+      !constant_gep_index(id - 1, family_id, _).
+
+    ith_index_impl(id, family_id, idx + 1, cid) :-
+      constant_gep_index(id, family_id, cid),
+      ith_index_impl(id - 1, family_id, idx, _).
+  }
+
+  .comp Conversation {
+    .decl get(id: const_t, name: symbol, tid_from: type_t, tid_to: type_t)
+    CONST_OUTPUT(get)
+    get(id, name, tid_from, tid_to) :-
+      constant(id, family, family_id),
+      (family = "trunc";
+       family = "zext";
+       family = "sext";
+       family = "fptrunc";
+       family = "fpext";
+       family = "fptoui";
+       family = "fptosi";
+       family = "uitofp";
+       family = "sitofp";
+       family = "ptrtoint";
+       family = "inttoptr";
+       family = "bitcast";
+       family = "addrspacecast"),
+      constant_unary_operand(family_id, cid, tid_to),
+      constant(cid, family_sub, family_sub_id),
+      family_sub = "global_ref",
+      constant_global_ref(family_sub_id, name, tid_from).
+  }
+
   .init Int = Int
+  .init GetElementPtr = GetElementPtr
+  .init Conversation = Conversation
 }
 
 .init Constant = _Constant
