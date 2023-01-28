@@ -34,6 +34,15 @@
   get(gid, name, tid) :-
     global_var(gid, name, _, _, _, tid_ptr, _, _, _, _, _, _),
     Type.Pointer.pointee(tid_ptr, tid).
+
+  .decl modified(fid: func_t, iid: instr_t, gid: global_t)
+  GLBL_OUTPUT(modified)
+
+  modified(fid, iid, gid) :-
+    Block.get(fid, bid, _),
+    global_var(gid, name, _, _, _, _, _, _, _, _, _, _),
+    Instruction.Store.get(iid, bid, addr_op, _),
+    OperandUtil.name(addr_op, name, _).
 }
 
 .init GlobalVar = _GlobalVar
