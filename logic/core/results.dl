@@ -19,4 +19,13 @@
 
 #pragma once
 
-#include "buffer-overflow/main.dl"
+#define REPORT_RESULTS(rule) \
+  RESULTS(func, msg) :- \
+    rule(func, _, level, sub_msg), \
+    msg = cat(level, ": ", sub_msg)
+
+.decl RESULTS(func: symbol, msg: symbol)
+.output RESULTS
+#ifndef NO_STDOUT_PRINT
+.output RESULTS(IO=stdout)
+#endif
