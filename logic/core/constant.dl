@@ -65,7 +65,7 @@
     constant(id, family, _),
     family = "null".
 
-  .decl global_ref(id: const_t, name: symbol, tid: type_t)
+  .decl global_ref(id: const_t, name: name_t, tid: type_t)
   CONST_OUTPUT(global_ref)
   global_ref(id, name, tid) :-
     constant(id, family, family_id),
@@ -132,7 +132,7 @@
   }
 
   .comp GetElementPtr {
-    .decl get(id: const_t, addr: symbol, tid: type_t, num_idx: number)
+    .decl get(id: const_t, addr: name_t, tid: type_t, num_idx: number)
     CONST_OUTPUT(get)
 
     get(id, addr, tid, num_idx) :-
@@ -170,7 +170,7 @@
   }
 
   .comp Conversation {
-    .decl get(id: const_t, name: symbol, tid_from: type_t, tid_to: type_t)
+    .decl get(id: const_t, name: name_t, tid_from: type_t, tid_to: type_t)
     CONST_OUTPUT(get)
     get(id, name, tid_from, tid_to) :-
       constant(id, family, family_id),

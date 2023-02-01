@@ -94,7 +94,7 @@ INPUT(constant_struct_value)
 
 .decl constant_global_ref (
     id: const_sub_t,
-    name: symbol,
+    name: name_t,
     tid: type_t
 )
 INPUT(constant_global_ref)

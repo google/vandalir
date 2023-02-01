@@ -41,8 +41,7 @@ name(op, name, tid) :-
    Operand.vreg(op, name, tid).
 
 name(op, name, tid) :-
-   Operand.global_ref(op, ref_name, tid),
-   name = as(ref_name, name_t).
+   Operand.global_ref(op, name, tid).
 
 }
 

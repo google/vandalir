@@ -43,7 +43,7 @@
     cid = as(family_id, const_t).
 
 
-  .decl global_ref(id: operand_t, name: symbol, tid: type_t)
+  .decl global_ref(id: operand_t, name: name_t, tid: type_t)
   OP_OUTPUT(global_ref)
 
   global_ref(id, name, tid) :-
