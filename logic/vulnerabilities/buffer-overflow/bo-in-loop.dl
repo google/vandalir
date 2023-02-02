@@ -45,6 +45,7 @@ bo_in_loop(func, iid, level, msg) :-
   Block.get(fid, bid, bname),
 
   Instruction.GetElementPtr.addr_size(iid, bid, name, size),
+
   Instruction.GetElementPtr.index(iid, idx_op),
   Operand.vreg(idx_op, idx_vreg, _),
 

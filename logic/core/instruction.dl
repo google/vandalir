@@ -438,7 +438,8 @@
   }
 
   .comp Alloca {
-    .decl get(id: instr_t, bid: block_t, dest: name_t, tid: type_t, size: number)
+    .decl get(id: instr_t, bid: block_t,
+              dest: name_t, tid: type_t, size: number)
     INSTR_OUTPUT(get)
 
     get(id, bid, dest, tid, size) :-
@@ -449,7 +450,8 @@
   }
 
   .comp GetElementPtr {
-    .decl get(id: instr_t, bid: block_t, dest: name_t, addr: operand_t, num_idx: number)
+    .decl get(id: instr_t, bid: block_t, dest: name_t,
+              addr: operand_t, num_idx: number)
     INSTR_OUTPUT(get)
 
     get(id, bid, dest, addr, num_idx) :-
@@ -507,36 +509,20 @@
     INSTR_OUTPUT(addr_size)
 
     addr_size(id, bid, name, size) :-
-      Block.get(_, bid, _),
+      Block.get(fid, bid, _),
       Instruction.GetElementPtr.get(id, bid, _, addr_op, _),
-      Operand.vreg(addr_op, name, addr_type_ptr),
-      Type.Pointer.pointee(addr_type_ptr, addr_type),
-      (Type.Array.get(addr_type, _, size);
-       Type.Vector.get(addr_type, _, size);
-       Type.Struct.get(addr_type, size)
-      ).
-
-    addr_size(id, bid, name, size) :-
-      Block.get(_, bid, _),
-      Instruction.GetElementPtr.get(id, bid, _, addr_op, _),
-      Operand.global_ref(addr_op, gname, tid),
-      name = as(gname, name_t),
-      (Type.Array.get(tid, _, size);
-       Type.Vector.get(tid, _, size);
-       Type.Struct.get(tid, size)
-      ).
+      OperandUtil.name(addr_op, name, tid),
+      Type.is_pointer(tid),
+      InstructionAnalysis.is_instruction_before(id, iid_buff),
+      VRegValueAnalysis.ptr_buff_size(fid, iid_buff, name, tid, size).
 
     addr_size(id, bid, name, size) :-
       Block.get(fid, bid, _),
-      Block.get(fid, bid2, _),
-
       Instruction.GetElementPtr.get(id, bid, _, addr_op, _),
-      Operand.vreg(addr_op, name, _),
-
-      VRegAnalysis.equel(fid, _, name, vreg),
-      get(iid2, bid2, vreg, _, _),
-      addr_size(iid2, bid2, _, size).
-
+      OperandUtil.name(addr_op, name, tid),
+      !Type.is_pointer(tid),
+      InstructionAnalysis.is_instruction_before(id, iid_buff),
+      VRegValueAnalysis.buff_size(fid, iid_buff, name, tid, size).
   }
 
   .comp ICmp : Cmp {

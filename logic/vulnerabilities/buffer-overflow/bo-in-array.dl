@@ -42,7 +42,9 @@ VBA_OUTPUT(bo_in_array)
 bo_in_array(func, iid, level, msg) :-
   Function.get(fid, func, _),
   Block.get(fid, bid, bname),
+
   Instruction.GetElementPtr.addr_size(iid, bid, name, size),
+
   Instruction.GetElementPtr.index(iid, idx_op),
   (Operand.int(idx_op, idx);
    OperandUtil.name(idx_op, idx_vreg, _),
