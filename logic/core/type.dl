@@ -30,6 +30,15 @@
 
 .comp _Type {
 
+  .decl collection(tid: type_t, size: number)
+  TY_OUTPUT(collection)
+
+  collection(tid, size) :-
+    (Type.Array.get(tid, _, size);
+     Type.Vector.get(tid, _, size);
+     Type.Struct.get(tid, size)
+    ).
+
   .decl is_struct(tid: type_t)
   TY_OUTPUT(is_struct)
 
