@@ -72,7 +72,7 @@ format_string(func, iid, level, msg) :-
   get_formatstring_arg(fname, arg_pos),
   Instruction.Call.ith_operand(iid, arg_pos, arg_op),
   Operand.vreg(arg_op, arg_vreg, _),
-  VRegAnalysis.equel(fid, iid_tmp, arg_vreg, name),
+  VRegAnalysis.equel(fid, iid_tmp, arg_vreg, _, name, _),
   InstructionAnalysis.is_instruction_before(iid, iid_tmp),
   GlobalVar.get(gid, name, _),
   GlobalVar.modified(fid_mod, _, gid),
@@ -91,7 +91,7 @@ format_string(func, iid, level, msg) :-
   Instruction.Call.ith_operand(iid, arg_pos, arg_op),
   Operand.vreg(arg_op, arg_vreg, _),
   InstructionAnalysis.is_instruction_before(iid, iid_tmp),
-  VRegAnalysis.equel(fid, iid_tmp, arg_vreg, name),
+  VRegAnalysis.equel(fid, iid_tmp, arg_vreg, _, name, _),
 
   Block.get(fid, bid_instr, bname),
   Instruction.Alloca.get(_, bid_instr, name, tid, _),
