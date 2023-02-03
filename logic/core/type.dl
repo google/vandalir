@@ -83,6 +83,24 @@
   size_in_bits(id, size) :-
     type(id, _, size, _, _).
 
+  .decl equel(tid1: type_t, tid2: type_t)
+  TY_OUTPUT(equel)
+
+  equel(tid1, tid2) :-
+    name(tid1, _),
+    name(tid2, _),
+    tid1 = tid2.
+
+  equel(tid1, tid2) :-
+    Pointer.pointee(tid1, tid1_sub),
+    (Array.get(tid2, tid2_sub, _);
+     Vector.get(tid2, tid2_sub, _)
+    ),
+    tid1_sub = tid2_sub.
+
+  equel(tid1, tid2) :-
+    equel(tid2, tid1).
+
   .comp Pointer {
     .decl pointee(id: type_t, tid: type_t)
     TY_OUTPUT(pointee)
@@ -183,6 +201,7 @@
   .init Array = Array
   .init Vector = Vector
   .init Struct = Struct
+  .init FuncPointer = FuncPointer
 }
 
 .init Type = _Type
