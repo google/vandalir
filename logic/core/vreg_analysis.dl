@@ -109,5 +109,42 @@
     Operand.vreg(addr_op, vreg, _),
     InstructionAnalysis.is_instruction_before(iid_store, iid_start),
     InstructionAnalysis.is_instruction_before(iid_end, iid_store).
+
+  .decl type(fid: func_t, name: name_t, tid: type_t)
+  VRA_OUTPUT(type)
+
+  type(fid, name, tid) :-
+    Block.get(fid, bid, _),
+    Instruction.Conversation.operands(_, bid, _, tid, name).
+
+  type(fid, name, tid) :-
+    Block.get(fid, bid, _),
+    Instruction.GetElementPtr.get(_, bid, name, addr_op, _),
+    Type.Pointer.pointee(tid_ptr, tid),
+    OperandUtil.name(addr_op, _, tid_ptr).
+
+  type(fid, name, tid) :-
+    Block.get(fid, bid, _),
+    Instruction.Load.get(_, bid, name, addr_op),
+    Type.Pointer.pointee(tid_ptr, tid),
+    OperandUtil.name(addr_op, _, tid_ptr).
+
+  type(fid, name, tid) :-
+    Block.get(fid, bid, _),
+    Instruction.Binary.operands(_, bid, op0, _, name),
+    OperandUtil.name(op0, _, tid).
+
+  type(fid, name, tid) :-
+    Block.get(fid, bid, _),
+    Instruction.Alloca.get(_, bid, name, tid, _).
+
+  type(fid, name, tid) :-
+    Block.get(fid, bid, _),
+    Instruction.Call.get(_, bid, name, _, tid_func),
+    Type.FuncPointer.ret_type(tid_func, tid).
+
+  type(fid, name, tid) :-
+    Block.get(fid, _, _),
+    GlobalVar.get(_, name, tid).
 }
 .init VRegAnalysis = _VRegAnalysis
