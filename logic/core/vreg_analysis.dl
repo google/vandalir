@@ -120,8 +120,22 @@
   type(fid, name, tid) :-
     Block.get(fid, bid, _),
     Instruction.GetElementPtr.get(_, bid, name, addr_op, _),
-    Type.Pointer.pointee(tid_ptr, tid),
+    Type.Pointer.pointee(tid_ptr, tid_collection),
+    (
+     Type.Array.get(tid_collection, tid, _);
+     Type.Vector.get(tid_collection, tid, _)
+    ),
     OperandUtil.name(addr_op, _, tid_ptr).
+
+  type(fid, name, tid) :-
+    Block.get(fid, bid, _),
+    Instruction.GetElementPtr.get(iid, bid, name, addr_op, _),
+    Instruction.GetElementPtr.index(iid, op),
+    OperandUtil.name(addr_op, _, tid_ptr),
+    GET_INT_FROM_OP(fid, op, idx),
+    Type.Pointer.pointee(tid_ptr, tid_str),
+    Type.Struct.get(tid_str, _),
+    Type.Struct.ith_field(tid_str, idx, tid).
 
   type(fid, name, tid) :-
     Block.get(fid, bid, _),
