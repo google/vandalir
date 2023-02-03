@@ -167,11 +167,16 @@
     .decl get(id: instr_t, bid: block_t, dest: name_t) overridable
     INSTR_OUTPUT(get)
 
-    .decl operands(id: instr_t, op0: operand_t, op1: operand_t, dest: name_t)
+    get(id, bid, dest) :-
+      instruction(id, bid, dest, _, _, binary, _, _),
+      binary = "true".
+
+    .decl operands(id: instr_t, bid: block_t,
+                   op0: operand_t, op1: operand_t, dest: name_t)
     INSTR_OUTPUT(operands)
 
-    operands(id, op0, op1, dest) :-
-      instruction(id, _, _, _, _, binary, _, opid),
+    operands(id, bid, op0, op1, dest) :-
+      instruction(id, bid, _, _, _, binary, _, opid),
       binary = "true",
       instruction_binary(opid, op0, op1, dest).
   }
@@ -195,11 +200,13 @@
        opcode = "bitcast";
        opcode = "addrspacecast").
 
-    .decl operands(id: instr_t, op: operand_t, tid: type_t, dest: name_t)
+    .decl operands(id: instr_t, bid: block_t,
+                   op: operand_t, tid: type_t,
+                   dest: name_t)
     INSTR_OUTPUT(operands)
 
-    operands(id, op, tid, name) :-
-      instruction(id, _, _, _, _, _, unary, opid),
+    operands(id, bid, op, tid, name) :-
+      instruction(id, bid, _, _, _, _, unary, opid),
       unary = "true",
       instruction_unary(opid, op, tid, name).
   }
@@ -229,114 +236,133 @@
   }
 
   .comp Add : Binary {
+    .override get
     get(id, bid, name) :-
       instruction(id, bid, name, opcode, _, _, _, _),
       opcode = "add".
   }
 
   .comp Sub : Binary {
+    .override get
     get(id, bid, name) :-
       instruction(id, bid, name, opcode, _, _, _, _),
       opcode = "sub".
   }
 
   .comp Mul : Binary {
+    .override get
     get(id, bid, name) :-
       instruction(id, bid, name, opcode, _, _, _, _),
       opcode = "mul".
   }
 
   .comp UDiv : Binary {
+    .override get
     get(id, bid, name) :-
       instruction(id, bid, name, opcode, _, _, _, _),
       opcode = "udiv".
   }
 
   .comp SDiv : Binary {
+    .override get
     get(id, bid, name) :-
       instruction(id, bid, name, opcode, _, _, _, _),
       opcode = "sdiv".
   }
 
   .comp URem : Binary {
+    .override get
     get(id, bid, name) :-
       instruction(id, bid, name, opcode, _, _, _, _),
       opcode = "urem".
   }
 
   .comp SRem : Binary {
+    .override get
     get(id, bid, name) :-
       instruction(id, bid, name, opcode, _, _, _, _),
       opcode = "srem".
   }
 
   .comp And : Binary {
+    .override get
     get(id, bid, name) :-
       instruction(id, bid, name, opcode, _, _, _, _),
       opcode = "and".
   }
 
   .comp Or : Binary {
+    .override get
     get(id, bid, name) :-
       instruction(id, bid, name, opcode, _, _, _, _),
       opcode = "or".
   }
 
   .comp Xor : Binary {
+    .override get
     get(id, bid, name) :-
       instruction(id, bid, name, opcode, _, _, _, _),
       opcode = "xor".
   }
 
   .comp Shl : Binary {
+    .override get
     get(id, bid, name) :-
       instruction(id, bid, name, opcode, _, _, _, _),
       opcode = "shl".
   }
 
   .comp LShr : Binary {
+    .override get
     get(id, bid, name) :-
       instruction(id, bid, name, opcode, _, _, _, _),
       opcode = "lshr".
   }
 
   .comp AShr : Binary {
+    .override get
     get(id, bid, name) :-
       instruction(id, bid, name, opcode, _, _, _, _),
       opcode = "ashr".
   }
 
   .comp FAdd : Binary {
+    .override get
     get(id, bid, name) :-
       instruction(id, bid, name, opcode, _, _, _, _),
       opcode = "fadd".
   }
 
   .comp FSub : Binary {
+    .override get
     get(id, bid, name) :-
       instruction(id, bid, name, opcode, _, _, _, _),
       opcode = "fsub".
   }
 
   .comp FMul : Binary {
+    .override get
     get(id, bid, name) :-
       instruction(id, bid, name, opcode, _, _, _, _),
       opcode = "fmul".
   }
 
   .comp FDiv : Binary {
+    .override get
     get(id, bid, name) :-
       instruction(id, bid, name, opcode, _, _, _, _),
       opcode = "fdiv".
   }
 
   .comp FRem : Binary {
+    .override get
     get(id, bid, name) :-
       instruction(id, bid, name, opcode, _, _, _, _),
       opcode = "frem".
   }
 
   .comp FNeg : Binary {
+    .override get
     get(id, bid, name) :-
       instruction(id, bid, name, opcode, _, _, _, _),
       opcode = "fneg".
@@ -394,14 +420,15 @@
   }
 
   .comp Call {
-    .decl get(id: instr_t, bid: block_t, dest: name_t, name: symbol)
+    .decl get(id: instr_t, bid: block_t, dest: name_t, name: symbol,
+              tid: type_t)
     INSTR_OUTPUT(get)
 
-    get(id, bid, dest, name) :-
+    get(id, bid, dest, name, tid) :-
       instruction(id, bid, _, opcode, _, _, _, family_id),
       opcode = "call",
       instruction_call(family_id, fname_op, _, dest, _),
-      Operand.name(fname_op, name).
+      OperandUtil.name(fname_op, name, tid).
 
     .decl global_func(id: instr_t, bid: block_t, dest: name_t, name: symbol, tid: type_t)
     INSTR_OUTPUT(global_func)
@@ -560,6 +587,7 @@
   }
 
   .init Conversation = Conversation
+  .init Binary = Binary
 
   .init Add = Add
   .init Sub = Sub

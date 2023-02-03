@@ -44,7 +44,7 @@
   same(fid, vreg1, vreg2) :-
     Block.get(fid, bid, _),
     Instruction.Conversation.get(iid, bid, vreg1),
-    Instruction.Conversation.operands(iid, op, _, _),
+    Instruction.Conversation.operands(iid, bid, op, _, _),
     Operand.vreg(op, vreg2, _).
 
   same(fid, vreg1, vreg2) :-
@@ -81,7 +81,7 @@
   equel(fid, iid1, vreg1, vreg2) :-
     Block.get(fid, bid, _),
     Instruction.Conversation.get(iid1, bid, vreg1),
-    Instruction.Conversation.operands(iid1, op, _, _),
+    Instruction.Conversation.operands(iid1, bid, op, _, _),
     OperandUtil.name(op, vreg2, _).
 
   equel(fid, iid1, vreg1, vreg2) :-
