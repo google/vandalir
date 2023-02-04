@@ -39,6 +39,8 @@ fn keyvalue_parse(s: &str) -> Result<(String, String), String> {
 struct CliArgs {
     #[command(subcommand)]
     command: Commands,
+    #[arg(short, long, default_value_t = 4)]
+    jobs: usize,
 }
 
 #[derive(Subcommand, Clone)]
@@ -106,6 +108,7 @@ fn main() -> Result<(), String> {
             generator.write_facts(fact_dir.to_str().ok_or("Failed to get fact path")?)?;
 
             let mut logic = SouffleLogic::new();
+            logic.set_num_threads(args.jobs);
             logic.run(
                 fact_dir.to_str().ok_or("Failed to get fact path")?,
                 out_dir.to_str().ok_or("Failed to get out path")?,
@@ -114,6 +117,7 @@ fn main() -> Result<(), String> {
         Commands::Analyze { facts, output } => {
             fs::create_dir_all(output.as_str()).expect("Failed to create fact directory");
             let mut logic = SouffleLogic::new();
+            logic.set_num_threads(args.jobs);
             logic.run(facts.as_str(), output.as_str());
         }
     };
