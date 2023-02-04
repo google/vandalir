@@ -35,6 +35,33 @@
 
   get(fid, name, tid, num_args) :-
     function(fid, name, _, tid, num_args).
+
+  .decl ith_arg(fid: func_t, idx: number, name: name_t, tid: type_t)
+  FUNC_OUTPUT(ith_arg)
+
+  ith_arg(fid, idx, name, tid) :-
+    function(fid, _, _, _, num),
+    num != -1,  // ignore opaque structs
+    idx < num,
+    ith_arg_impl(_, fid, idx, name, tid).
+
+  .decl ith_arg_impl(id: func_arg_t,
+                       fid: func_t,
+                       idx: number,
+                       name: name_t,
+                       tid: type_t)
+  FUNC_OUTPUT(ith_arg_impl)
+
+  ith_arg_impl(id, fid, idx, name, tid) :-
+    idx=0,
+    id = min arg_id: function_argument(arg_id, fid, _, _),
+    function_argument(id, fid, name, tid).
+
+
+  ith_arg_impl(id, fid, idx + 1, name, tid) :-
+    ith_arg_impl(id_prev, fid, idx, _, _),
+    id = min arg_id: {arg_id > id_prev, function_argument(arg_id, fid, _, _) },
+    function_argument(id, fid, name, tid).
 }
 
 .init Function = _Function
