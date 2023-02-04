@@ -23,7 +23,8 @@
     id: func_t,
     name: symbol,
     defined: symbol,
-    ret_tid: type_t
+    ret_tid: type_t,
+    num_args: number
 )
 INPUT(function)
 

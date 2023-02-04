@@ -41,7 +41,7 @@
 VND_OUTPUT(null_dereference)
 
 null_dereference(func, iid, level, msg) :-
-  Function.get(fid, func, _),
+  Function.get(fid, func, _, _),
   Block.get(fid, bid, bname),
   Instruction.Load.get(iid, bid, _, addr_op),
   (Operand.vreg(addr_op, addr, _),
@@ -55,7 +55,7 @@ null_dereference(func, iid, level, msg) :-
   msg = cat("NULL DEREFERENCE: block '", bname, msg_extra).
 
 null_dereference(func, iid, level, msg) :-
-  Function.get(fid, func, _),
+  Function.get(fid, func, _, _),
   Block.get(fid, bid, bname),
   Instruction.Store.get(iid, bid, addr_op, _),
   Operand.null(addr_op),
@@ -64,7 +64,7 @@ null_dereference(func, iid, level, msg) :-
             "': direct NULL access in store instruction").
 
 null_dereference(func, iid, level, msg) :-
-  Function.get(fid, func, _),
+  Function.get(fid, func, _, _),
   Block.get(fid, bid, bname),
   Instruction.Store.get(iid, bid, addr_op, _),
   Operand.vreg(addr_op, addr, vtid),
@@ -77,7 +77,7 @@ null_dereference(func, iid, level, msg) :-
             "': possibly NULL dereference of ", addr).
 
 null_dereference(func, iid, level, msg) :-
-  Function.get(fid, func, _),
+  Function.get(fid, func, _, _),
   Block.get(fid, bid, bname),
   Instruction.Load.get(iid, bid, dst_vreg, addr_op),
   // exclude case where load is used by a ICMP instruction
@@ -94,7 +94,7 @@ null_dereference(func, iid, level, msg) :-
 
 
 null_dereference(func, iid, level, msg) :-
-  Function.get(fid, func, _),
+  Function.get(fid, func, _, _),
   Block.get(fid, bid, bname),
   Instruction.GetElementPtr.get(iid, bid, _, addr_op, _),
   Operand.vreg(addr_op, addr, _),

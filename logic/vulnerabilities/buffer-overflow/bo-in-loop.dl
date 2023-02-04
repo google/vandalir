@@ -41,7 +41,7 @@
 VBL_OUTPUT(bo_in_loop)
 
 bo_in_loop(func, iid, level, msg) :-
-  Function.get(fid, func, _),
+  Function.get(fid, func, _, _),
   Block.get(fid, bid, bname),
 
   Instruction.GetElementPtr.addr_size(iid, bid, name, size),

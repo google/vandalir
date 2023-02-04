@@ -37,6 +37,7 @@ struct Function {
     pub name: String,
     pub defined: bool,
     pub ret_tid: i64,
+    pub num_params: i64,
 }
 
 impl_tostring!(Function);
@@ -48,6 +49,7 @@ impl ToStrArray for Function {
             self.name.clone(),
             self.defined.to_string(),
             self.ret_tid.to_string(),
+            self.num_params.to_string(),
         ]
     }
 }
@@ -269,6 +271,7 @@ impl FactGenerator {
                 name: func.name.clone(),
                 defined: true,
                 ret_tid,
+                num_params: func.parameters.len() as i64,
             });
 
             for param in &func.parameters {

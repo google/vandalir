@@ -36,7 +36,7 @@
 VDANF_OUTPUT(out_of_bounds)
 
 out_of_bounds(func, iid, level, msg) :-
-  Function.get(fid, func, _),
+  Function.get(fid, func, _, _),
   Block.get(fid, bid, bname),
   Instruction.Call.global_func(iid, bid, _, name, _),
   name = "%strncpy",
@@ -53,7 +53,7 @@ out_of_bounds(func, iid, level, msg) :-
             "SRC size ", to_string(buff_size), "; SIZE ", to_string(size), ".").
 
 out_of_bounds(func, iid, level, msg) :-
-  Function.get(fid, func, _),
+  Function.get(fid, func, _, _),
   Block.get(fid, bid, bname),
   Instruction.Call.global_func(iid, bid, _, name, _),
   name = "%strncpy",
@@ -70,7 +70,7 @@ out_of_bounds(func, iid, level, msg) :-
             "DEST size ", to_string(buff_size), "; SIZE ", to_string(size), ".").
 
 out_of_bounds(func, iid, level, msg) :-
-  Function.get(fid, func, _),
+  Function.get(fid, func, _, _),
   Block.get(fid, bid, bname),
   Instruction.Call.global_func(iid, bid, _, name, _),
   name = "%fgets",
@@ -87,7 +87,7 @@ out_of_bounds(func, iid, level, msg) :-
             "DEST size ", to_string(buff_size), "; SIZE ", to_string(size), ".").
 
 out_of_bounds(func, iid, level, msg) :-
-  Function.get(fid, func, _),
+  Function.get(fid, func, _, _),
   Block.get(fid, bid, bname),
   Instruction.Call.global_func(iid, bid, _, name, _),
   name = "%snprintf",
@@ -104,7 +104,7 @@ out_of_bounds(func, iid, level, msg) :-
             "DEST size ", to_string(buff_size), "; SIZE ", to_string(size), ".").
 
 out_of_bounds(func, iid, level, msg) :-
-  Function.get(fid, func, _),
+  Function.get(fid, func, _, _),
   Block.get(fid, bid, bname),
   Instruction.Call.global_func(iid, bid, _, name, _),
   (name = "%memcpy";
@@ -123,7 +123,7 @@ out_of_bounds(func, iid, level, msg) :-
             to_string(buff_size), "; SIZE ", to_string(size), ".").
 
 out_of_bounds(func, iid, level, msg) :-
-  Function.get(fid, func, _),
+  Function.get(fid, func, _, _),
   Block.get(fid, bid, bname),
   Instruction.Call.global_func(iid, bid, _, name, _),
   (name = "%memcpy";
@@ -142,7 +142,7 @@ out_of_bounds(func, iid, level, msg) :-
             to_string(buff_size), "; SIZE ", to_string(size), ".").
 
 out_of_bounds(func, iid, level, msg) :-
-  Function.get(fid, func, _),
+  Function.get(fid, func, _, _),
   Block.get(fid, bid, bname),
   Instruction.Call.global_func(iid, bid, _, name, _),
   name = "%memmove",
@@ -159,7 +159,7 @@ out_of_bounds(func, iid, level, msg) :-
             "DEST size ", to_string(buff_size), "; SIZE ", to_string(size), ".").
 
 out_of_bounds(func, iid, level, msg) :-
-  Function.get(fid, func, _),
+  Function.get(fid, func, _, _),
   Block.get(fid, bid, bname),
   Instruction.Call.global_func(iid, bid, _, name, _),
   name = "%strcpy",
@@ -179,7 +179,7 @@ out_of_bounds(func, iid, level, msg) :-
             to_string(src_size), ".").
 
 out_of_bounds(func, iid, level, msg) :-
-  Function.get(fid, func, _),
+  Function.get(fid, func, _, _),
   Block.get(fid, bid, bname),
   Instruction.Call.global_func(iid, bid, _, name, _),
   name = "%wscpy",
@@ -199,7 +199,7 @@ out_of_bounds(func, iid, level, msg) :-
             to_string(src_size), ".").
 
 out_of_bounds(func, iid, level, msg) :-
-  Function.get(fid, func, _),
+  Function.get(fid, func, _, _),
   Block.get(fid, bid, bname),
   Instruction.Call.global_func(iid, bid, _, name, _),
   name = "%wscpy",
@@ -219,7 +219,7 @@ out_of_bounds(func, iid, level, msg) :-
             to_string(src_size), ".").
 
 out_of_bounds(func, iid, level, msg) :-
-  Function.get(fid, func, _),
+  Function.get(fid, func, _, _),
   Block.get(fid, bid, bname),
   Instruction.Call.global_func(iid, bid, _, name, _),
   name = "%strcat",
@@ -239,7 +239,7 @@ out_of_bounds(func, iid, level, msg) :-
             to_string(src_size), ".").
 
 out_of_bounds(func, iid, level, msg) :-
-  Function.get(fid, func, _),
+  Function.get(fid, func, _, _),
   Block.get(fid, bid, bname),
   Instruction.Call.global_func(iid, bid, _, name, _),
   name = "%strncat",
@@ -256,7 +256,7 @@ out_of_bounds(func, iid, level, msg) :-
             "SRC size ", to_string(buff_size), "; SIZE ", to_string(size), ".").
 
 out_of_bounds(func, iid, level, msg) :-
-  Function.get(fid, func, _),
+  Function.get(fid, func, _, _),
   Block.get(fid, bid, bname),
   Instruction.Call.global_func(iid, bid, _, name, _),
   name = "%strncat",

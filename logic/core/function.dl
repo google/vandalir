@@ -30,11 +30,11 @@
 
 
 .comp _Function {
-  .decl get(fid: func_t, name: symbol, tid: type_t)
+  .decl get(fid: func_t, name: symbol, tid: type_t, num_args: number)
   FUNC_OUTPUT(get)
 
-  get(fid, name, tid) :-
-    function(fid, name, _, tid).
+  get(fid, name, tid, num_args) :-
+    function(fid, name, _, tid, num_args).
 }
 
 .init Function = _Function

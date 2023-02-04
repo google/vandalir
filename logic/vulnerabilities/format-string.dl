@@ -66,7 +66,7 @@ get_formatstring_arg(fname, num) :-
 VFS_OUTPUT(format_string)
 
 format_string(func, iid, level, msg) :-
-  Function.get(fid, func, _),
+  Function.get(fid, func, _, _),
   Block.get(fid, bid, bname),
   Instruction.Call.global_func(iid, bid, _, fname, _),
   get_formatstring_arg(fname, arg_pos),
@@ -76,7 +76,7 @@ format_string(func, iid, level, msg) :-
   InstructionAnalysis.is_instruction_before(iid, iid_tmp),
   GlobalVar.get(gid, name, _),
   GlobalVar.modified(fid_mod, _, gid),
-  Function.get(fid_mod, fname_mod, _),
+  Function.get(fid_mod, fname_mod, _, _),
   level = "Warning",
   msg = cat("Block: ", bname, "; vreg: ", arg_vreg, ": ", fname,
             ": Possible a non static format string is used.\n",
@@ -84,7 +84,7 @@ format_string(func, iid, level, msg) :-
             fname_mod, " function.").
 
 format_string(func, iid, level, msg) :-
-  Function.get(fid, func, _),
+  Function.get(fid, func, _, _),
   Block.get(fid, bid, bname),
   Instruction.Call.global_func(iid, bid, _, fname, _),
   get_formatstring_arg(fname, arg_pos),

@@ -36,7 +36,7 @@
 VDANF_OUTPUT(dangerous_function)
 
 dangerous_function(func, iid, level, msg) :-
-  Function.get(fid, func, _),
+  Function.get(fid, func, _, _),
   Block.get(fid, bid, bname),
   Instruction.Call.global_func(iid, bid, _, name, _),
   name = "%gets",

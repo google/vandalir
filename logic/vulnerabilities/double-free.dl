@@ -41,7 +41,7 @@
 VDF_OUTPUT(double_free)
 
 double_free(func, iid, level, msg) :-
-  Function.get(fid, func, _),
+  Function.get(fid, func, _, _),
   Block.get(fid, bid, bname),
   Block.get(fid, bid_prev, bname_prev),
   Instruction.Call.global_func(iid, bid, _, name, _),

@@ -96,7 +96,7 @@ CH_OUTPUT(check_boundary)
 check_boundary(fid, bid, cmp_iid, pred, vreg, value_op, true_label, false_label) :-
   Block.get(fid, cmp_bid, cmp_bname),
   Block.get(fid, bid, bname),
-  Function.get(fid, fname, _),
+  Function.get(fid, fname, _, _),
   CFG.block_forward_egdes(fname, cmp_bname, bname),
 
   Instruction.ICmp.get(cmp_iid, cmp_bid, cmp_dest),
@@ -120,7 +120,7 @@ check_boundary_true(fid, bid, pred, vreg, value_op) :-
   Block.get(fid, bid, bname),
   check_boundary(fid, bid, _, pred, vreg, value_op, true_label, _),
   (true_label = bname;
-   Function.get(fid, fname, _),
+   Function.get(fid, fname, _, _),
    CFG.block_forward_egdes(fname, true_label, bname)
   ).
 
@@ -136,7 +136,7 @@ check_boundary_false(fid, bid, pred, vreg, value_op) :-
   Block.get(fid, bid, bname),
   check_boundary(fid, bid, _, pred, vreg, value_op, _, false_label),
   (false_label = bname;
-   Function.get(fid, fname, _),
+   Function.get(fid, fname, _, _),
    CFG.block_forward_egdes(fname, false_label, bname)
   ).
 
