@@ -76,14 +76,15 @@
     Instruction.GetElementPtr.get(iid1, bid, vreg1, addr_op, _),
     Instruction.GetElementPtr.index(iid1, idx_op),
     Operand.int(idx_op, _),
+    OperandUtil.name(addr_op, vreg2, _),
     type(fid, vreg2, tid2),
-    OperandUtil.name(addr_op, vreg2, tid1).
+    type(fid, vreg1, tid1).
 
   equel(fid, iid1, vreg1, tid1, vreg2, tid2) :-
     Block.get(fid, bid, _),
     Instruction.Load.get(iid1, bid, vreg1, addr),
     Type.Pointer.pointee(tid2_ptr, tid2),
-    tid1 = tid2,
+    type(fid, vreg1, tid1),
     OperandUtil.name(addr, vreg2, tid2_ptr).
 
   equel(fid, iid1, vreg1, tid1, vreg2, tid2) :-
