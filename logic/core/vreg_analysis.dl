@@ -199,5 +199,8 @@
   type(fid, name, tid) :-
     Block.get(fid, _, _),
     GlobalVar.get(_, name, tid).
+
+  type(fid, name, tid) :-
+    Function.ith_arg(fid, _, name, tid).
 }
 .init VRegAnalysis = _VRegAnalysis
