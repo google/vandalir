@@ -124,15 +124,36 @@
     Block.get(fid, bid, _),
     Instruction.Conversation.operands(_, bid, _, tid, name).
 
+  // TODO: come up with a better solution for GEP cases.
+  // Theoretically, a result type of GEP instruction is a pointer to the type of
+  // addressed element, but sometimes it is convenient to treat it as just the
+  // addressed type. Thus let's use both types for now.
+  // Example:
+  //    %8 = getelementptr [7 x [6 x i8], [7 x [6 x i8]]* %7, i64 0, i64 5
+  //    %9 = getelementptr [7 x i8], [6 x i8]* %8, i64 0, i64 0
+  // here, %9 will have 'i8 *' (correct) and 'i8' (not correct) types,
+  // and, %8 - '[6 x i8] *' (correct) and '[6 x i8]' (not correct) types, but
+  // %8 is convenient to consider as [6 x i8] type, especially in `buff_size`
   type(fid, name, tid) :-
     Block.get(fid, bid, _),
     Instruction.GetElementPtr.get(_, bid, name, addr_op, _),
+    OperandUtil.name(addr_op, _, tid_ptr),
     Type.Pointer.pointee(tid_ptr, tid_collection),
     (
      Type.Array.get(tid_collection, tid, _);
      Type.Vector.get(tid_collection, tid, _)
+    ).
+
+  type(fid, name, tid) :-
+    Block.get(fid, bid, _),
+    Instruction.GetElementPtr.get(_, bid, name, addr_op, _),
+    OperandUtil.name(addr_op, _, tid_ptr),
+    Type.Pointer.pointee(tid_ptr, tid_collection),
+    (
+     Type.Array.get(tid_collection, tid_el, _);
+     Type.Vector.get(tid_collection, tid_el, _)
     ),
-    OperandUtil.name(addr_op, _, tid_ptr).
+    Type.Pointer.pointee(tid, tid_el).
 
   type(fid, name, tid) :-
     Block.get(fid, bid, _),
@@ -143,6 +164,17 @@
     Type.Pointer.pointee(tid_ptr, tid_str),
     Type.Struct.get(tid_str, _),
     Type.Struct.ith_field(tid_str, idx, tid).
+
+  type(fid, name, tid) :-
+    Block.get(fid, bid, _),
+    Instruction.GetElementPtr.get(iid, bid, name, addr_op, _),
+    Instruction.GetElementPtr.index(iid, op),
+    OperandUtil.name(addr_op, _, tid_ptr),
+    GET_INT_FROM_OP(fid, op, idx),
+    Type.Pointer.pointee(tid_ptr, tid_str),
+    Type.Struct.get(tid_str, _),
+    Type.Struct.ith_field(tid_str, idx, tid_fld),
+    Type.Pointer.pointee(tid, tid_fld).
 
   type(fid, name, tid) :-
     Block.get(fid, bid, _),

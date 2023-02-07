@@ -539,7 +539,7 @@
       Block.get(fid, bid, _),
       Instruction.GetElementPtr.get(id, bid, _, addr_op, _),
       OperandUtil.name(addr_op, name, tid),
-      Type.Pointer.pointee(tid, tid_sub),
+      Type.Pointer.pointee(tid, tid_sub),  // addr type is always a pointer
       Type.collection(tid_sub, _),
       InstructionAnalysis.is_instruction_before(id, iid_buff),
       VRegValueAnalysis.buff_size(fid, iid_buff, name, tid_sub, size).
