@@ -597,6 +597,17 @@
       instruction_condbr(family_id, cond, true_label, false_label).
   }
 
+  .comp Ret {
+    .decl get(id: instr_t,
+              bid: block_t,
+              op: operand_t)
+    INSTR_OUTPUT(get)
+    get(id, bid, op) :-
+      instruction(id, bid, _, opcode, _, _, _, fid),
+      op = as(fid, operand_t),
+      opcode = "ret".
+  }
+
   .init Conversation = Conversation
   .init Binary = Binary
 
@@ -628,6 +639,8 @@
 
   .init Br = Br
   .init BrCond = BrCond
+
+  .init Ret = Ret
 }
 
 .init Instruction = _Instruction
