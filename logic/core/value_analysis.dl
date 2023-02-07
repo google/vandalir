@@ -358,6 +358,12 @@
     size_in_bits != 0,
     total_bits = size_in_bits_sub * num,
     size = total_bits / size_in_bits.
+
+  buff_size(fid, iid, name, tid, size) :-
+    VRegAnalysis.same_external(fid, iid, name, tid, fid_ext, iid_ext,
+                               name_ext, tid_ext),
+    InstructionAnalysis.is_instruction_before(iid_ext, iid_bs),
+    buff_size(fid_ext, iid_bs, name_ext, tid_ext, size).
 }
 
 .init VRegValueAnalysis = _VRegValueAnalysis
