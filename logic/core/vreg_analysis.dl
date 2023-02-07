@@ -104,6 +104,34 @@
     InstructionAnalysis.is_instruction_before(iid1, iid_tmp),
     !modified(iid_tmp, iid1, tmp).
 
+  .decl same_external(fid1: func_t,
+                       iid1: instr_t,
+                       vreg1: name_t,
+                       tid1: type_t,
+                       fid2: func_t,
+                       iid2: instr_t,
+                       vreg2: name_t,
+                       tid2: type_t)
+  VRA_OUTPUT(same_external)
+
+  same_external(fid1, iid1, vreg1, tid1, fid2, iid2, vreg2, tid2) :-
+    bid1 = min bid: Block.get(fid1, bid, _),
+    iid1 = min iid: Instruction.get(iid, bid1, _, _),
+    Function.get(fid1, fname, _, _),
+    Function.ith_arg(fid1, idx, vreg1, tid1),
+    // get the caller
+    Block.get(fid2, bid, _),
+    Instruction.Call.global_func(iid2, bid, _, fname, _),
+    Instruction.Call.ith_operand(iid2, idx, arg_op),
+    OperandUtil.name(arg_op, vreg2, tid2).
+
+  same_external(fid1, iid1, vreg1, tid1, fid2, iid2, vreg2, tid2) :-
+    Block.get(fid1, bid1, _),
+    Instruction.Call.global_func(iid1, bid1, vreg1, fname, tid1),
+    Function.get(fid2, fname, _, _),
+    Block.get(fid2, bid2, _),
+    Instruction.Ret.get(iid2, bid2, op),
+    OperandUtil.name(op, vreg2, tid2).
 
   .decl modified(iid_start: instr_t, iid_end: instr_t, vreg: name_t)
   VRA_OUTPUT(modified)
