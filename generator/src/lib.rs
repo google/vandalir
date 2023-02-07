@@ -268,7 +268,7 @@ impl FactGenerator {
             let ret_tid = self.type_parser.parse(&module, &func.return_type)?;
             self.functions.push(Function {
                 id: func_id,
-                name: func.name.clone(),
+                name: format!("%{}", func.name),
                 defined: true,
                 ret_tid,
                 num_params: func.parameters.len() as i64,

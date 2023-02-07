@@ -149,6 +149,7 @@ impl Analysis {
         let call_graph = analysis.call_graph();
 
         for func in &module.functions {
+            let fname = format!("%{}", func.name);
             let fn_analysis = analysis.fn_analysis(&func.name);
             let cfg = fn_analysis.control_flow_graph();
             let cdg = fn_analysis.control_dependence_graph();
@@ -160,81 +161,81 @@ impl Analysis {
                 push_block_relations!(
                     self.block_preds,
                     cfg.preds(&block.name),
-                    func.name,
+                    fname,
                     block.name
                 );
                 push_block_relations!(
                     self.block_succs,
                     cfg.succs(&block.name),
-                    func.name,
+                    fname,
                     block.name
                 );
                 push_block_relations!(
                     self.block_imm_ctr_deps,
                     cdg.get_imm_control_dependencies(&block.name),
-                    func.name,
+                    fname,
                     block.name
                 );
                 push_block_relations!(
                     self.block_ctr_deps,
                     cdg.get_control_dependencies(&block.name),
-                    func.name,
+                    fname,
                     block.name
                 );
                 push_block_relations!(
                     self.block_imm_ctr_depndts,
                     cdg.get_imm_control_dependents(&block.name),
-                    func.name,
+                    fname,
                     block.name
                 );
                 push_block_relations!(
                     self.block_ctr_depndts,
                     cdg.get_control_dependents(&block.name),
-                    func.name,
+                    fname,
                     block.name
                 );
                 if let Some(blk) = postdom.ipostdom(&block.name) {
-                    push_block_relation!(self.block_ipostdom, blk, func.name, block.name);
+                    push_block_relation!(self.block_ipostdom, blk, fname, block.name);
                 }
                 push_block_relations!(
                     self.block_ipostdom_children,
                     postdom.children(&block.name),
-                    func.name,
+                    fname,
                     block.name
                 );
                 push_block_relations!(
                     self.block_ipostdom_children_of_ret,
                     postdom.children_of_return(),
-                    func.name,
+                    fname,
                     block.name
                 );
                 if let Some(blk) = dom.idom(&block.name) {
-                    push_block_relation!(self.block_idom, blk, func.name, block.name);
+                    push_block_relation!(self.block_idom, blk, fname, block.name);
                 }
                 push_block_relations!(
                     self.block_idom_children,
                     dom.children(&block.name),
-                    func.name,
+                    fname,
                     block.name
                 );
                 if let Some(blk) = dom.idom_of_return() {
-                    push_block_relation!(self.block_idom_children_of_ret, blk, func.name, block.name);
+                    push_block_relation!(self.block_idom_children_of_ret, blk, fname, block.name);
                 }
             }
 
             // FUNC
-            push_func_relations!(self.func_block_returns, cfg.preds_of_return(), func.name);
+            push_func_relations!(self.func_block_returns, cfg.preds_of_return(), fname);
             push_func_relations!(
                 self.func_callers,
                 call_graph.callers(func.name.as_str()),
-                func.name
+                fname
             );
             push_func_relations!(
                 self.func_callees,
                 call_graph.callees(func.name.as_str()),
-                func.name
+                fname
             );
-            push_func_relation!(self.func_entries, cfg.entry(), func.name);
+            push_func_relation!(self.func_entries, cfg.entry(), fname);
         }
 
         Ok(())
