@@ -27,7 +27,16 @@ import sys
 
 import numpy as np
 
-CWEs = ['121', '129', '131', '193', '242', '805', '806', '134', '415']
+CWEs = ['121',  # Stack-based Buffer Overflow
+        '129',  # Improper Validation of Array Index
+        '131',  # Incorrect Calculation of Buffer Size
+        '193',  # Off-by-one Error
+        '242',  # Use of Inherently Dangerous Function
+        '805',  # Buffer Access with Incorrect Length Value
+        '806',  # Buffer Access Using Size of Source Buffer
+        '134',  # Use of Externally-Controlled Format String
+        '415'   # Double Free
+       ]
 
 TESTS_DIR = '/tests/juliet'
 
