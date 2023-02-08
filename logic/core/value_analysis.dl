@@ -60,11 +60,10 @@
      Operand.int(op, val); \
      DEBUG_MSG_MOVE(iid, iid_##op, val) \
      Operand.vreg(op, op##_vreg, op##_type), \
-     Type.is_int(op##_type), \
      get_int_impl(fid, iid_##op, op##_vreg, val DEPTH_UPDATE DEBUG_MSG_INIT), \
-     InstructionAnalysis.is_instruction_before(iid, iid_##op) \
+     InstructionAnalysis.is_instruction_before(iid, iid_##op), \
+     !VRegAnalysis.modified(iid_##op, iid, op##_vreg) \
     )
-
 
   // get possible integer values of VREG in specific function
   .decl get_int(fid: func_t, vreg: name_t, value: number)
@@ -216,7 +215,6 @@
      Operand.int(addr, value);
      Operand.vreg(addr, addr_vreg, addr_vreg_type),
      Type.Pointer.pointee(addr_vreg_type, ptr_type),
-     Type.is_int(ptr_type),
      get_int_impl(fid, iid_sub, addr_vreg, value DEPTH_UPDATE DEBUG_MSG_INIT),
      DEBUG_MSG_MOVE(iid, iid_sub, value)
      InstructionAnalysis.is_instruction_before(iid, iid_sub)
@@ -246,6 +244,16 @@
     name = "%rand",
     DEBUG_MSG_ENDPOINT(iid, value)
     (value = RAND_MAX; value = 0).
+
+  get_int_impl(fid, iid, vreg, value DEPTH_PARAM DEBUG_MSG_PARAM) :-
+    DEPTH_CHECK
+    VRegAnalysis.same_external(fid, iid, vreg, _, fid_ext, iid_ext,
+                               vreg_ext, _),
+    InstructionAnalysis.is_instruction_before(iid_ext, iid_impl),
+    DEBUG_MSG_MOVE(iid, iid_impl, value)
+    !VRegAnalysis.modified(iid_impl, iid_ext, vreg_ext),
+    get_int_impl(fid_ext, iid_impl, vreg_ext, value DEPTH_UPDATE DEBUG_MSG_INIT).
+
 
   .decl is_null(fid: func_t, iid: instr_t, vreg: name_t)
   VA_OUTPUT(is_null)
