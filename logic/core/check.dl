@@ -101,7 +101,12 @@ check_boundary(fid, bid, cmp_iid, pred, vreg, value_op, true_label, false_label)
 
   Instruction.ICmp.get(cmp_iid, cmp_bid, cmp_dest),
   Instruction.ICmp.operands(cmp_iid, pred, op0, value_op),
-  VRegAnalysis.same(fid, op0_vreg, vreg),
+  (
+    VRegAnalysis.depends_on(fid, vreg, op0_vreg);
+    VRegAnalysis.depends_on(fid, op0_vreg, vreg);
+    VRegAnalysis.depends_on(fid, vreg, vreg_tmp),
+    VRegAnalysis.depends_on(fid, op0_vreg, vreg_tmp)
+  ),
   Operand.vreg(op0, op0_vreg, _),
 
   Block.get(fid, br_bid, _),

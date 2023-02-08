@@ -25,7 +25,7 @@ int a[10];
 int main() {
   int i = 0;
 
-  {
+  do {
     a[i] = i;
   }while(++i <= 10);
 
