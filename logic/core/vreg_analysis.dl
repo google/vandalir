@@ -54,6 +54,7 @@
     same(fid, vreg1, tmp),
     same(fid, tmp, vreg2).
 
+
   .decl equel(fid: func_t,
               iid1: instr_t,
               vreg1: name_t,
@@ -137,14 +138,15 @@
   VRA_OUTPUT(modified)
 
   modified(iid_start, iid_end, vreg) :-
-    Block.get(fid, bid_start, _),
-    Block.get(fid, bid_end, _),
-    Instruction.get(iid_start, bid_start, _, _),
-    Instruction.get(iid_end, bid_end, _, _),
     Instruction.Store.get(iid_store, _, addr_op, _),
     Operand.vreg(addr_op, vreg, _),
     InstructionAnalysis.is_instruction_before(iid_store, iid_start),
     InstructionAnalysis.is_instruction_before(iid_end, iid_store).
+
+  modified(iid_start, iid_end, vreg) :-
+    Instruction.Call.get(iid_call, _, vreg, _, _),
+    InstructionAnalysis.is_instruction_before(iid_call, iid_start),
+    InstructionAnalysis.is_instruction_before(iid_end, iid_call).
 
   .decl type(fid: func_t, name: name_t, tid: type_t)
   VRA_OUTPUT(type)
