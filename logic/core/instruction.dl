@@ -474,6 +474,14 @@
       opcode = "alloca",
       instruction_alloca(family_id, tid, size_op, dest, _),
       Operand.int(size_op, size).
+
+    get(id, bid, dest, tid, size) :-
+      Block.get(fid, bid, _),
+      instruction(id, bid, _, opcode, _, _, _, family_id),
+      opcode = "alloca",
+      instruction_alloca(family_id, tid, size_op, dest, _),
+      OperandUtil.name(size_op, vreg, _),
+      VRegValueAnalysis.get_int(fid, vreg, size).
   }
 
   .comp GetElementPtr {
