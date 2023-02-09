@@ -27,16 +27,26 @@ import sys
 
 import numpy as np
 
-CWEs = ['121',  # Stack-based Buffer Overflow
-        '129',  # Improper Validation of Array Index
-        '131',  # Incorrect Calculation of Buffer Size
-        '193',  # Off-by-one Error
-        '242',  # Use of Inherently Dangerous Function
-        '805',  # Buffer Access with Incorrect Length Value
-        '806',  # Buffer Access Using Size of Source Buffer
-        '134',  # Use of Externally-Controlled Format String
-        '415'   # Double Free
-       ]
+CWEs = {
+  '121': ("Stack-based Buffer Overflow",
+          ["Possible out of bounds"]),
+  '129': ("Improper Validation of Array Index",
+          ["possibly insufficient buffer size"]),
+  '131': ("Incorrect Calculation of Buffer Size",
+          ["Possible out of bounds", "Array access within a loop"]),
+  '193': ("Off-by-one Error",
+          ["Array access within a loop", "Possible out of bounds"]),
+  '242': ("Use of Inherently Dangerous Function",
+          ["Inherently dangerous functions"]),
+  '805': ("Buffer Access with Incorrect Length Value",
+          ["Array access within a loop", "Possible out of bounds"]),
+  '806': ("Buffer Access Using Size of Source Buffer",
+          ["Possible out of bounds", "Array access within a loop"]),
+  '134': ("Use of Externally-Controlled Format String",
+          ["Possibly a non static format string is used"]),
+  '415': ("Double Free",
+          ["Double Free"]),
+}
 
 TESTS_DIR = '/tests/juliet'
 
@@ -131,13 +141,20 @@ class JulietTest:
         pool.join()
         print('All ' + badgood + ' files processed')
 
+        cwe_msg_expected = CWEs[cwe][1]
         vuln_found_list = []
         warn_found_list = []
+        vuln_fp_list = []
         for filename, msg in results:
-            if 'Vulnerability' in msg:
-                vuln_found_list.append(filename)
-            if 'Warning' in msg:
-                warn_found_list.append(filename)
+            if any(m in msg for m in cwe_msg_expected):
+                if 'Vulnerability' in msg:
+                    vuln_found_list.append(filename)
+                if 'Warning' in msg:
+                    warn_found_list.append(filename)
+            else:
+                # unexpected VULN was detected.
+                # 99.99999% this is FP case.
+                vuln_fp_list.append(filename)
 
         results = sorted(results, key=lambda el: el[0])
         # create final report
@@ -149,16 +166,22 @@ class JulietTest:
 
             filename_list = [f.name for f in file_list]
             false_negative_list = np.setdiff1d(filename_list, vuln_found_list)
+            false_negative_list = np.setdiff1d(false_negative_list, warn_found_list)
             false_negatives_str = '\n'.join(false_negative_list)
             with open(self._output_dir + '/CWE' + cwe + '_report_fn.csv',
                       mode='w', encoding='utf8') as report:
                 report.write(false_negatives_str)
 
+            with open(self._output_dir + '/CWE' + cwe + '_report_bad_fp.csv',
+                      mode='w', encoding='utf8') as report:
+                report.write('\n'.join(vuln_fp_list))
+
             num_vulns = len(vuln_found_list)
             num_warns = len(warn_found_list)
             num_false_neg = len(false_negative_list)
             num_true_positives = num_total - num_false_neg
-            num_false_positives = num_vulns - num_true_positives
+            num_false_positives = (num_vulns + num_warns -
+                                   num_true_positives + len(vuln_fp_list))
             return (num_total, num_vulns, num_warns, num_false_neg,
                     num_true_positives, num_false_positives)
 
@@ -167,11 +190,11 @@ class JulietTest:
                       mode='w', encoding='utf8') as report:
                 report.write(full_report_str)
 
-            num_vulns = len(vuln_found_list)
+            num_vulns = len(vuln_found_list) + len(vuln_fp_list)
             num_warns = len(warn_found_list)
             num_false_neg = 0
             num_true_positives = 0
-            num_false_positives = len(vuln_found_list)
+            num_false_positives = num_vulns + num_warns
             return (num_total, num_vulns, num_warns, num_false_neg,
                     num_true_positives, num_false_positives)
 
@@ -188,7 +211,7 @@ class JulietTest:
         num_good_false_positives = 0
 
         self._print_and_report('\n')
-        self._print_and_report('CWE: ' + str(cwe))
+        self._print_and_report('CWE: ' + str(cwe) + " - " + CWEs[cwe][0])
         self._print_and_report('Testcases(bad/good): ' + str(num_total) + '/' +
                                str(num_total_good))
         self._print_and_report('Vulns: ' + str(num_vulns))
