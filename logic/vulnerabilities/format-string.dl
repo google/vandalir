@@ -98,6 +98,6 @@ format_string(func, iid, level, msg) :-
   !Type.is_pointer(tid),  // should be a real local buffer, not a pointer
   level = "Warning",
   msg = cat("Block: ", bname, "; vreg: ", arg_vreg,
-            ": Possible a non static formatstring is used in ", fname, ".").
+            ": Possibly a non static format string is used in ", fname, ".").
 
 REPORT_RESULTS(format_string).

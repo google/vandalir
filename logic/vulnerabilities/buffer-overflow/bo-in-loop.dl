@@ -61,7 +61,7 @@ bo_in_loop(func, iid, level, msg) :-
   size <= iter_value,
   level = "Vulnerability",
   msg = cat("BUFFER OVERFLOW: block '", bname,
-            "': Array access withing a loop with the loop variable ",
+            "': Array access within a loop with the loop variable ",
             name, "(", to_string(size), " elements) is out of bounds for i = ",
             to_string(iter_value)).
 

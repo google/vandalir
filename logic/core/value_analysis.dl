@@ -269,6 +269,12 @@
     VRegAnalysis.equel(fid, iid, vreg, _, vreg_sub, _),
     is_null(fid, _, vreg_sub).
 
+  is_null(fid, iid, vreg) :-
+    VRegAnalysis.same_external(fid, iid, vreg, _, fid_ext, iid_ext,
+                               vreg_ext, _),
+    InstructionAnalysis.is_instruction_before(iid_ext, iid_nl),
+    is_null(fid_ext, iid_nl, vreg_ext).
+
   // get possible size of a VREG or a global var in bytes.
   .decl buff_size(fid: func_t, iid: instr_t,
                   name: name_t, tid: type_t, size: number)
