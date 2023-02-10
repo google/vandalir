@@ -288,105 +288,115 @@
     is_null(fid_ext, iid_nl, vreg_ext).
 
   // get possible size of a VREG or a global var in bytes.
+  .decl size(fid: func_t, iid: instr_t,
+                  name: name_t, tid: type_t, size: number)
+  VA_OUTPUT(size)
+
+  // basic case
+  size(fid, iid, name, tid, size) :-
+    Block.get(fid, bid, _),
+    Instruction.get(iid, bid, _, _),
+    VRegAnalysis.type(fid, name, name_tid),
+    Type.equel(name_tid, tid),
+    Type.collection(name_tid, size).
+
+  size(fid, iid, name, tid, size) :-
+    Block.get(fid, bid, _),
+    Instruction.get(iid, bid, _, _),
+    VRegAnalysis.type(fid, name, name_tid),
+    Type.equel(name_tid, tid),
+    Type.collection(name_tid, size).
+
+  // special case for `alloca` instruction where type is not a collection
+  // accept both "type" and "type*".
+  size(fid, iid, name, tid, size) :-
+    Block.get(fid, bid, _),
+    Instruction.Alloca.get(iid, bid, name, name_tid, size),
+    !Type.collection(name_tid, _),
+    !Type.is_pointer(name_tid),
+    (
+      Type.Pointer.pointee(tid, name_tid);
+      tid = name_tid
+    ).
+
+  // 'alloca [6 x i8], i64 2' should be 2
+  size(fid, iid, name, tid, size) :-
+    Block.get(fid, bid, _),
+    Instruction.Alloca.get(iid, bid, name, name_tid, size),
+    size > 1,
+    Type.Pointer.pointee(tid, name_tid),
+    Type.collection(name_tid, _).
+
+  // size for 'alloca [6 x i8], i64 1' should be 6
+  size(fid, iid, name, tid, size) :-
+    Block.get(fid, bid, _),
+    Instruction.Alloca.get(iid, bid, name, name_tid, num),
+    num = 1,
+    Type.equel(name_tid, tid),
+    Type.collection(name_tid, size).
+
+  // get possible size of a VREG or a global var in bytes.
   .decl buff_size(fid: func_t, iid: instr_t,
                   name: name_t, tid: type_t, size: number)
   VA_OUTPUT(buff_size)
 
+  // simple case
   buff_size(fid, iid, name, tid, size) :-
-    Block.get(fid, bid, _),
-    Instruction.get(iid, bid, _, _),
-    VRegAnalysis.type(fid, name, tid),
-    Type.collection(tid, size).
+    size(fid, iid, name, tid, size).
 
   buff_size(fid, iid, name, tid, size) :-
-    Block.get(fid, bid, _),
-    Instruction.get(iid, bid, _, _),
-    !Type.collection(tid, _),
-    Type.name(tid, _),  // grounding `tid`
-
-    GlobalVar.get(_, name, gtid),
-    Type.size_in_bits(gtid, gsize_in_bits),
-
-    Type.Pointer.pointee(tid, ptid),
-    Type.size_in_bits(ptid, size_in_bits),
-    size_in_bits != 0,
-    size = gsize_in_bits / size_in_bits.
+    VRegAnalysis.equel(fid, iid, name, tid, name_new, tid_new),
+    Type.equel(tid, tid_new),
+    InstructionAnalysis.is_instruction_before(iid, iid_bz),
+    buff_size(fid, iid_bz, name_new, tid_new, size).
 
   buff_size(fid, iid, name, tid, size) :-
-    Block.get(fid, bid, _),
+    VRegAnalysis.equel(fid, iid, name, tid, name_new, tid_new),
+    Type.equel(tid, tid_new),
+    InstructionAnalysis.is_instruction_before(iid, iid_bz),
+    buff_size(fid, iid_bz, name_new, tid_new, size).
 
-    // |tid| is a type of the |name| or pointer
-    // to its type.
-    // Example:
-    //   %2 = alloca %struct.A, align 4
-    // |tid| can be either '%struct.A' or '%struct.A *'
-    (VRegAnalysis.type(fid, name, tid);
-     VRegAnalysis.type(fid, name, tid_tmp),
-     Type.Pointer.pointee(tid, tid_tmp)
+  buff_size(fid, iid, name, tid, size) :-
+    VRegAnalysis.equel(fid, iid, name, tid, name_new, tid_eq),
+    !Type.equel(tid, tid_eq),
+    (
+      !Type.Pointer.pointee(tid_eq, _),
+      tid_new = tid_eq;
+      Type.Pointer.pointee(tid_eq, tid_new)
     ),
+    (
+      size(fid, iid_bz, name_new, tid_new, _),
+      Type.collection(tid_new, _),
+      num = 1;
+      size(fid, iid_bz, name_new, tid_new, size_orig),
+      !Type.collection(tid_new, _),
+      num = size_orig
+    ),
+    InstructionAnalysis.is_instruction_before(iid, iid_bz),
+    (
+      Type.Pointer.pointee(tid, ptid),
+      dest_tid = ptid;
+      !Type.Pointer.pointee(tid, _),
+      dest_tid = tid
+    ),
+    Type.size_in_bits(tid_new, new_bits),
+    Type.size_in_bits(dest_tid, bits),
 
-    !Type.collection(tid, _),
-
-    Instruction.Alloca.get(iid, bid, name, atid, num),
-    !Type.is_pointer(atid),
-    Type.Pointer.pointee(tid, ptid),
-    Type.size_in_bits(ptid, size_in_bits),
-    Type.size_in_bits(atid, asize_in_bits),
-    total_bits = asize_in_bits * num,
-    size_in_bits != 0,
-    size = total_bits / size_in_bits.
-
-  buff_size(fid, iid, name, tid, size) :-
-    Block.get(fid, _, _),
-    !Type.collection(tid, _),
-    VRegAnalysis.type(fid, name, tid),
-    InstructionAnalysis.is_instruction_before(iid, iid_sub),
-    VRegAnalysis.type(fid, name, tid),
-    VRegAnalysis.equel(fid, iid, name, _, vreg_sub, tid_sub),
-    Type.equel(tid, tid_sub),
-    buff_size(fid, iid_sub, vreg_sub, tid_sub, size).
-
-  buff_size(fid, iid, name, tid, size) :-
-    Block.get(fid, _, _),
-    !Type.collection(tid, _),
-    VRegAnalysis.type(fid, name, tid),
-
-    Type.Pointer.pointee(tid, ptid),
-    VRegAnalysis.type(fid, name, tid),
-    VRegAnalysis.equel(fid, iid, name, _, _, tid_sub),
-    !Type.equel(tid, tid_sub),
-
-    Type.size_in_bits(tid_sub, size_in_bits_sub),
-    Type.size_in_bits(ptid, size_in_bits),
-    Type.collection(tid_sub, _),
-    size_in_bits != 0,
-    size = size_in_bits_sub / size_in_bits.
+    bits != 0,
+    total_bits = new_bits * num,
+    size = total_bits / bits.
 
   buff_size(fid, iid, name, tid, size) :-
-    Block.get(fid, _, _),
-    !Type.collection(tid, _),
-    VRegAnalysis.type(fid, name, tid),
-
-    Type.Pointer.pointee(tid, ptid),
-    VRegAnalysis.type(fid, name, tid),
-    VRegAnalysis.equel(fid, iid, name, _, vreg_sub, tid_sub),
-    !Type.equel(tid, tid_sub),
-    !Type.collection(tid_sub, _),
-
-    InstructionAnalysis.is_instruction_before(iid, iid_sub),
-    buff_size(fid, iid_sub, vreg_sub, tid_sub, num),
-
-    Type.Pointer.pointee(tid, ptid),
-    Type.size_in_bits(ptid, size_in_bits),
-    Type.Pointer.pointee(tid_sub, ptid_sub),
-    Type.size_in_bits(ptid_sub, size_in_bits_sub),
-
-    size_in_bits != 0,
-    total_bits = size_in_bits_sub * num,
-    size = total_bits / size_in_bits.
+    VRegAnalysis.equel(fid, iid, name, tid, tmp, tmp_tid),
+    InstructionAnalysis.is_instruction_before(iid, iid_pt),
+    VRegAnalysis.point_to(fid, iid_pt, tmp, tmp_tid, name_new, tid_new),
+    InstructionAnalysis.is_instruction_before(iid_pt, iid_bs),
+    buff_size(fid, iid_bs, name_new, tid_new, size).
 
   buff_size(fid, iid, name, tid, size) :-
-    VRegAnalysis.same_external(fid, iid, name, tid, fid_ext, iid_ext,
+    VRegAnalysis.equel(fid, iid, name, tid, name_new, tid_new),
+    InstructionAnalysis.is_instruction_before(iid, iid_new),
+    VRegAnalysis.same_external(fid, iid_new, name_new, tid_new, fid_ext, iid_ext,
                                name_ext, tid_ext),
     InstructionAnalysis.is_instruction_before(iid_ext, iid_bs),
     buff_size(fid_ext, iid_bs, name_ext, tid_ext, size).

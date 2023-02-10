@@ -78,8 +78,12 @@
   equel(fid, iid1, vreg1, tid1, vreg2, tid2) :-
     Block.get(fid, bid, _),
     Instruction.Store.get(iid1, bid, addr_op, value_op),
-    OperandUtil.name(addr_op, vreg1, tid1_ptr),
-    Type.Pointer.pointee(tid1_ptr, tid1),
+    (
+      Type.Pointer.pointee(tid1_ptr, tid1),
+      Operand.vreg(addr_op, vreg1, tid1_ptr);
+      Operand.global_ref(addr_op, vreg1, tid1)
+    ),
+    tid1 = tid2,
     OperandUtil.name(value_op, vreg2, tid2).
 
   // TODO: this case is true only if index is 0.
@@ -90,15 +94,40 @@
     Instruction.GetElementPtr.index(iid1, idx_op),
     Operand.int(idx_op, _),
     OperandUtil.name(addr_op, vreg2, _),
+    !Type.is_struct(tid2),
     type(fid, vreg2, tid2),
     type(fid, vreg1, tid1).
 
   equel(fid, iid1, vreg1, tid1, vreg2, tid2) :-
     Block.get(fid, bid, _),
-    Instruction.Load.get(iid1, bid, vreg1, addr),
-    Type.Pointer.pointee(tid2_ptr, tid2),
-    type(fid, vreg1, tid1),
-    OperandUtil.name(addr, vreg2, tid2_ptr).
+    Instruction.Load.get(iid1, bid, vreg1, addr_op),
+    (
+      Type.Pointer.pointee(addr_ptr, tid1),
+      Operand.vreg(addr_op, vreg2, addr_ptr);
+      Operand.global_ref(addr_op, vreg2, tid1)
+    ),
+    tid2 = tid1,
+    type(fid, vreg2, tid2).
+
+  // Example:
+  // If %0 is i8** type, then
+  //    `%1 = load i8*, i8** %0`
+  // means that %1 is equel to the vreg which is pointed by %0
+  equel(fid, iid1, vreg1, tid1, vreg2, tid2) :-
+    Block.get(fid, bid, _),
+    Instruction.Load.get(iid1, bid, vreg1, addr_op),
+    OperandUtil.name(addr_op, tmp, addr_tid),
+    Type.Pointer.pointee(addr_tid, tid1),
+    type(fid, tmp, tmp_tid),
+    tmp_tid = addr_tid,
+    InstructionAnalysis.is_instruction_before(iid1, iid_tmp),
+    point_to(fid, iid_tmp, tmp, tmp_tid, vreg2, tid2).
+
+  // if %10 -> %1 and %11 -> %1, then %10 == %11
+  equel(fid, iid1, vreg1, tid1, vreg2, tid2) :-
+    point_to(fid, iid1, vreg1, tid1, tmp, tid_tmp),
+    InstructionAnalysis.is_instruction_before(iid1, iid_tmp),
+    point_to(fid, iid_tmp, vreg2, tid2, tmp, tid_tmp).
 
   equel(fid, iid1, vreg1, tid1, vreg2, tid2) :-
     Block.get(fid, bid, _),
@@ -106,16 +135,71 @@
     OperandUtil.name(op, vreg2, tid2).
 
   equel(fid, iid1, vreg1, tid1, vreg2, tid2) :-
-    equel(fid, iid1, vreg1, tid1, tmp, _),
-    equel(fid, iid_tmp, tmp, _, vreg2, tid2),
+    Block.get(fid, bid, _),
+    Instruction.Conversation.operands(iid1, bid, op, tid1, vreg1),
+    OperandUtil.name(op, vreg2, tid2),
+    Type.Pointer.ptr_type(tid1, _, lvl),
+    Type.Pointer.ptr_type(tid2, _, lvl).
+
+  equel(fid, iid1, vreg1, tid1, vreg2, tid2) :-
+    equel(fid, iid1, vreg1, tid1, tmp, tid_tmp),
+    equel(fid, iid_tmp, tmp, tid_tmp, vreg2, tid2),
     InstructionAnalysis.is_instruction_before(iid1, iid_tmp),
     !modified(iid_tmp, iid1, tmp).
 
   equel(fid, iid1, vreg1, tid1, vreg2, tid2) :-
-    equel(fid, iid1, vreg1, tid1, tmp, _),
-    equel(fid, iid_tmp, vreg2, tid2, tmp, _),
+    equel(fid, iid1, vreg1, tid1, tmp, tid_tmp),
+    equel(fid, iid_tmp, vreg2, tid2, tmp, tid_tmp),
     InstructionAnalysis.is_instruction_before(iid1, iid_tmp),
     !modified(iid_tmp, iid1, tmp).
+
+  // Same as `equel` except it ignores types matching.
+  .decl point_to(fid: func_t,
+              iid1: instr_t,
+              vreg1: name_t,
+              tid1: type_t,
+              vreg2: name_t,
+              tid2: type_t)
+  VRA_OUTPUT(point_to)
+
+  point_to(fid, iid1, vreg1, tid1, vreg2, tid2) :-
+    Block.get(fid, bid, _),
+    Instruction.Store.get(iid1, bid, addr_op, value_op),
+    OperandUtil.name(addr_op, vreg1, tid_addr),
+    OperandUtil.name(value_op, vreg2, tid_value),
+    type(fid, vreg1, tid1),
+    type(fid, vreg2, tid2),
+    Type.Pointer.pointee(tid_addr, tid1),
+    Type.Pointer.pointee(tid_value, tid2),
+    tid1 = tid_value.
+
+  // case:
+  //   %12 = load i8*, i8** %1, align 8
+  //   %13 = bitcast %union.Type* %2 to i8**
+  //   store i8* %12, i8** %13, align 8
+  // result: %13 -> %12
+  point_to(fid, iid1, vreg1, tid1, vreg2, tid2) :-
+    Block.get(fid, bid, _),
+    Instruction.Store.get(iid1, bid, addr_op, value_op),
+    OperandUtil.name(addr_op, vreg1, tid1),
+    OperandUtil.name(value_op, vreg2, tid2),
+    type(fid, vreg1, tid1),
+    type(fid, vreg2, tid2),
+    Type.is_pointer(tid2),
+    Type.Pointer.pointee(tid1, tid2).
+
+  point_to(fid, iid1, vreg1, tid1, vreg2, tid2) :-
+    point_to(fid, iid1, vreg1, tid1, tmp, tid_tmp),
+    equel(fid, iid_tmp, tmp, tid_tmp, vreg2, tid2),
+    InstructionAnalysis.is_instruction_before(iid1, iid_tmp),
+    !modified(iid_tmp, iid1, tmp).
+
+  point_to(fid, iid1, vreg1, tid1, vreg2, tid2) :-
+    equel(fid, iid1, vreg1, tid1, tmp, tmp_tid),
+    point_to(fid, iid_tmp, tmp, tmp_tid, vreg2, tid2),
+    InstructionAnalysis.is_instruction_before(iid1, iid_tmp),
+    !modified(iid_tmp, iid1, tmp).
+
 
   .decl same_external(fid1: func_t,
                        iid1: instr_t,
@@ -221,9 +305,19 @@
 
   type(fid, name, tid) :-
     Block.get(fid, bid, _),
+    Instruction.GetElementPtr.get(_, bid, name, addr_op, _),
+    OperandUtil.name(addr_op, _, tid),
+    Type.Pointer.pointee(tid, ptid),
+    !Type.collection(ptid, _).
+
+  type(fid, name, tid) :-
+    Block.get(fid, bid, _),
     Instruction.Load.get(_, bid, name, addr_op),
-    Type.Pointer.pointee(tid_ptr, tid),
-    OperandUtil.name(addr_op, _, tid_ptr).
+    (
+      Type.Pointer.pointee(tid_ptr, tid),
+      Operand.vreg(addr_op, _, tid_ptr);
+      Operand.global_ref(addr_op, _, tid)
+    ).
 
   type(fid, name, tid) :-
     Block.get(fid, bid, _),
