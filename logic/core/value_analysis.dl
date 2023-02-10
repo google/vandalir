@@ -247,6 +247,18 @@
 
   get_int_impl(fid, iid, vreg, value DEPTH_PARAM DEBUG_MSG_PARAM) :-
     DEPTH_CHECK
+    Block.get(fid, bid, _),
+    Instruction.Call.global_func(iid, bid, vreg, name, _),
+    name = "%strlen",
+    DEBUG_MSG_ENDPOINT(iid, value)
+    Instruction.Call.ith_operand(iid, 0, op),
+    OperandUtil.name(op, arg_name, arg_tid),
+    InstructionAnalysis.is_instruction_before(iid, iid_sz),
+    buff_size(fid, iid_sz, arg_name, arg_tid, size),
+    value = size - 1.  // last byte is '\0'
+
+  get_int_impl(fid, iid, vreg, value DEPTH_PARAM DEBUG_MSG_PARAM) :-
+    DEPTH_CHECK
     VRegAnalysis.same_external(fid, iid, vreg, _, fid_ext, iid_ext,
                                vreg_ext, _),
     InstructionAnalysis.is_instruction_before(iid_ext, iid_impl),
