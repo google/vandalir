@@ -88,18 +88,15 @@
 
   equel(tid1, tid2) :-
     name(tid1, _),
-    name(tid2, _),
     tid1 = tid2.
 
+  // Example [6 x i8] == i8*, but i8* =/= [6 x i8]
   equel(tid1, tid2) :-
-    Pointer.pointee(tid1, tid1_sub),
-    (Array.get(tid2, tid2_sub, _);
-     Vector.get(tid2, tid2_sub, _)
+    Pointer.pointee(tid2, tid2_sub),
+    (Array.get(tid1, tid1_sub, _);
+     Vector.get(tid1, tid1_sub, _)
     ),
     tid1_sub = tid2_sub.
-
-  equel(tid1, tid2) :-
-    equel(tid2, tid1).
 
   .comp Pointer {
     .decl pointee(id: type_t, tid: type_t)
