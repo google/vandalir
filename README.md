@@ -15,9 +15,17 @@ Development is ongoing.
 
 Install [clang](https://clang.llvm.org) (version >= 10, currently supported: LLVM 14)
 
+#### MacOS:
+```
+brew install llvm@14
+export LLVM_SYS_140_PREFIX=/usr/local/Cellar/llvm@14/14.0.6
+```
+
 Install [rust](https://clang.llvm.org)
 
 Build and install [souffle](https://souffle-lang.github.io/) (version >=2.0.2i, with SOUFFLE_DOMAIN_64BIT ).
+
+GCC version >= 11. 
 
 ## Build
 ```
