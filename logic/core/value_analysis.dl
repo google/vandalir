@@ -268,26 +268,34 @@
     !VRegAnalysis.modified(iid_impl, iid_ext, vreg_ext),
     get_int_impl(fid_ext, iid_impl, vreg_ext, value DEPTH_UPDATE DEBUG_MSG_INIT).
 
-
-  .decl is_null(fid: func_t, iid: instr_t, vreg: name_t)
+  .decl is_null(fid: func_t, iid: instr_t, vreg: name_t, tid: type_t)
   VA_OUTPUT(is_null)
 
-  is_null(fid, iid, vreg) :-
+  is_null(fid, iid, vreg, tid) :-
     Block.get(fid, bid, _),
     Instruction.Store.get(iid, bid, addr_op, value),
-    Operand.vreg(addr_op, vreg, _),
+    Operand.vreg(addr_op, vreg, tid_op),
+    Type.Pointer.pointee(tid_op, tid),
     Operand.null(value).
 
-  is_null(fid, iid, vreg) :-
+  is_null(fid, iid, vreg, tid) :-
     Block.get(fid, _, _),
-    VRegAnalysis.equel(fid, iid, vreg, _, vreg_sub, _),
-    is_null(fid, _, vreg_sub).
+    VRegAnalysis.equel(fid, iid, vreg, tid, vreg_sub, _),
+    InstructionAnalysis.is_instruction_before(iid, iid_n),
 
-  is_null(fid, iid, vreg) :-
-    VRegAnalysis.same_external(fid, iid, vreg, _, fid_ext, iid_ext,
-                               vreg_ext, _),
+    C = count : {
+      InstructionAnalysis.is_instruction_before(iid, iid_mod2),
+      InstructionAnalysis.is_instruction_before(iid_mod2, iid_n),
+      VRegAnalysis.modified_at(fid, iid, vreg, iid_mod2)
+    },
+    C = 0,
+    is_null(fid, iid_n, vreg_sub, tid).
+
+  is_null(fid, iid, vreg, tid) :-
+    VRegAnalysis.same_external(fid, iid, vreg, tid, fid_ext, iid_ext,
+                               vreg_ext, tid_ext),
     InstructionAnalysis.is_instruction_before(iid_ext, iid_nl),
-    is_null(fid_ext, iid_nl, vreg_ext).
+    is_null(fid_ext, iid_nl, vreg_ext, tid_ext).
 
   // get possible size of a VREG or a global var in bytes.
   .decl size(fid: func_t, iid: instr_t,

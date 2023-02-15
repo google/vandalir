@@ -56,8 +56,8 @@ Depth(n + 1) :-
   )
 
 #define IS_OP_NULL(fid, op) \
-  (Operand.vreg(op, op##_vreg, _), \
-   VRegValueAnalysis.is_null(fid, _, op##_vreg); \
+  (Operand.vreg(op, op##_vreg, tid##_vreg), \
+   VRegValueAnalysis.is_null(fid, _, op##_vreg, tid##_vreg); \
    Operand.null(op) \
   )
 

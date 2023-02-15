@@ -245,6 +245,23 @@
     InstructionAnalysis.is_instruction_before(iid_call, iid_start),
     InstructionAnalysis.is_instruction_before(iid_end, iid_call).
 
+  .decl modified_at(fid: func_t, iid: instr_t, vreg: name_t, iid_mod: instr_t)
+  VRA_OUTPUT(modified_at)
+
+  modified_at(fid, iid, vreg, iid) :-
+    Block.get(fid, bid, _),
+    Instruction.Store.get(iid, bid, addr_op, _),
+    Operand.vreg(addr_op, vreg, _).
+
+  modified_at(fid, iid, vreg, iid) :-
+    Block.get(fid, bid, _),
+    Instruction.Call.get(iid, bid, vreg, _, _).
+
+  modified_at(fid, iid, vreg, iid_mod) :-
+    equel(fid, iid, vreg, _, vreg_new, _),
+    InstructionAnalysis.is_instruction_before(iid, iid_tmp),
+    modified_at(fid, iid_tmp, vreg_new, iid_mod).
+
   .decl type(fid: func_t, name: name_t, tid: type_t)
   VRA_OUTPUT(type)
 
