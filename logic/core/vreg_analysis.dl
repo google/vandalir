@@ -20,10 +20,11 @@
 #pragma once
 
 #include "defines.dl"
-#include "type.dl"
+#include "block.dl"
 #include "type.dl"
 #include "operand.dl"
 #include "instruction.dl"
+#include "value_analysis.dl"
 
 #ifdef DEBUG_VREG_ANALYSIS
 #define VRA_OUTPUT(x) OUTPUT_IMPL(x)

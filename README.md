@@ -198,5 +198,3 @@ merchantability, or fitness for a particular purpose.
 ## License
 
 VANDALIR is distributed under the MIT License.
-* 1. 1. 1. 
-

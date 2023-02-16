@@ -23,6 +23,7 @@
 #include "input/instructions.dl"
 #include "type.dl"
 #include "operand.dl"
+#include "operand_utils.dl"
 #include "function.dl"
 #include "vreg_analysis.dl"
 

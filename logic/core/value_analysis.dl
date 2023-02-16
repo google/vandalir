@@ -20,9 +20,11 @@
 #pragma once
 
 #include "defines.dl"
+#include "block.dl"
 #include "instruction_analysis.dl"
 #include "instruction.dl"
 #include "operand.dl"
+#include "operand_utils.dl"
 #include "type.dl"
 #include "global.dl"
 

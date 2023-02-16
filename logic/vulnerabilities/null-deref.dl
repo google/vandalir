@@ -48,7 +48,6 @@ null_dereference(func, iid, level, msg) :-
    VRegValueAnalysis.is_null(fid, iid, addr),
    msg_extra = cat("': possibly NULL dereference of ", addr);
    Operand.null(addr_op),
-   addr = "null",
    msg_extra = "': direct NULL access in load instruction"
   ),
   level = "Vulnerability",

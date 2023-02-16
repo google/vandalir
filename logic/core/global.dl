@@ -20,6 +20,7 @@
 #pragma once
 
 #include "defines.dl"
+#include "block.dl"
 #include "input/globals.dl"
 #include "type.dl"
 
