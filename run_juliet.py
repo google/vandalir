@@ -46,6 +46,8 @@ CWEs = {
           ["Possibly a non static format string is used"]),
   '415': ("Double Free",
           ["Double Free"]),
+  '476': ("NULL_Pointer_Dereference",
+          ["NULL DEREFERENCE"]),
 }
 
 TESTS_DIR = '/tests/juliet'
