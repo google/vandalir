@@ -35,34 +35,15 @@
   #define VA_OUTPUT(x)
 #endif
 
-#if defined(TRACE_VREG_VALUE_ANALYSIS) && defined(DEBUG_VREG_VALUE_ANALYSIS)
-  #define DEBUG_MSG_DECL TRACE_MSG_DECL
-  #define DEBUG_MSG_PARAM TRACE_MSG_PARAM
-  #define DEBUG_MSG_INIT TRACE_MSG_INIT
-  #define DEBUG_MSG_ENDPOINT(iid, value) \
-    TRACE_MSG(cat("ENDPOINT ", DEPTH_MSG ": (", to_string(iid), \
-              ") = ", to_string(value)))
-  #define DEBUG_MSG_MOVE(iid, iid_to, value) \
-    TRACE_MSG(cat("MOVE ", DEPTH_MSG ": (", to_string(iid), \
-              ") -> (", to_string(iid_to), ") = ", to_string(value)))
-#else
-  #define DEBUG_MSG_DECL
-  #define DEBUG_MSG_PARAM
-  #define DEBUG_MSG_INIT
-  #define DEBUG_MSG_ENDPOINT(iid, value)
-  #define DEBUG_MSG_MOVE(iid, iid_to, value )
-#endif
-
 .comp _VRegValueAnalysis {
 
 #define RAND_MAX 32767
 
 #define VA_GET_INT_FROM_OP(fid, iid, op, val) \
-    (DEBUG_MSG_ENDPOINT(iid, val) \
+    ( \
      Operand.int(op, val); \
-     DEBUG_MSG_MOVE(iid, iid_##op, val) \
      Operand.vreg(op, op##_vreg, op##_type), \
-     get_int_impl(fid, iid_##op, op##_vreg, val DEPTH_UPDATE DEBUG_MSG_INIT), \
+     get_int_impl(fid, iid_##op, op##_vreg, val), \
      InstructionAnalysis.is_instruction_before(iid, iid_##op), \
      !VRegAnalysis.modified(iid_##op, iid, op##_vreg) \
     )
@@ -72,19 +53,13 @@
   VA_OUTPUT(get_int)
 
   get_int(fid, vreg, value) :-
-    get_int_impl(fid, _, vreg, value DEPTH_INIT DEBUG_MSG_INIT).
+    get_int_impl(fid, _, vreg, value).
 
-  .decl get_int_impl(fid: func_t,
-                     iid: instr_t,
-                     vreg: name_t,
-                     value: number
-                     DEPTH_DECL
-                     DEBUG_MSG_DECL)
+  .decl get_int_impl(fid: func_t, iid: instr_t, vreg: name_t, value: number)
   VA_OUTPUT(get_int_impl)
 
   // case ADD
-  get_int_impl(fid, iid, vreg, value DEPTH_PARAM DEBUG_MSG_PARAM) :-
-    DEPTH_CHECK
+  get_int_impl(fid, iid, vreg, value) :-
     Block.get(fid, bid, _),
     Instruction.Add.get(iid, bid, vreg),
     Instruction.Add.operands(iid, bid, op0, op1, _),
@@ -93,8 +68,7 @@
     value = val0 + val1.
 
   // case MULL
-  get_int_impl(fid, iid, vreg, value DEPTH_PARAM DEBUG_MSG_PARAM) :-
-    DEPTH_CHECK
+  get_int_impl(fid, iid, vreg, value) :-
     Block.get(fid, bid, _),
     Instruction.Mul.get(iid, bid, vreg),
     Instruction.Mul.operands(iid, bid, op0, op1, _),
@@ -103,8 +77,7 @@
     value = val0 * val1.
 
   // case SUB
-  get_int_impl(fid, iid, vreg, value DEPTH_PARAM DEBUG_MSG_PARAM) :-
-    DEPTH_CHECK
+  get_int_impl(fid, iid, vreg, value) :-
     Block.get(fid, bid, _),
     Instruction.Sub.get(iid, bid, vreg),
     Instruction.Sub.operands(iid, bid, op0, op1, _),
@@ -114,8 +87,7 @@
 
   // case UDIV, SDIV
   // TODO: fix correct value calc
-  get_int_impl(fid, iid, vreg, value DEPTH_PARAM DEBUG_MSG_PARAM) :-
-    DEPTH_CHECK
+  get_int_impl(fid, iid, vreg, value) :-
     Block.get(fid, bid, _),
     (Instruction.UDiv.get(iid, bid, vreg),
      Instruction.UDiv.operands(iid, bid, op0, op1, _);
@@ -128,8 +100,7 @@
 
   // case URem, SRem
   // TODO: fix correct value calc
-  get_int_impl(fid, iid, vreg, value DEPTH_PARAM DEBUG_MSG_PARAM) :-
-    DEPTH_CHECK
+  get_int_impl(fid, iid, vreg, value) :-
     Block.get(fid, bid, _),
     (Instruction.URem.get(iid, bid, vreg),
      Instruction.URem.operands(iid, bid, op0, op1, _);
@@ -141,8 +112,7 @@
     value = val0 % val1.
 
   // case And
-  get_int_impl(fid, iid, vreg, value DEPTH_PARAM DEBUG_MSG_PARAM) :-
-    DEPTH_CHECK
+  get_int_impl(fid, iid, vreg, value) :-
     Block.get(fid, bid, _),
     Instruction.And.get(iid, bid, vreg),
     Instruction.And.operands(iid, bid, op0, op1, _),
@@ -151,8 +121,7 @@
     value = val0 band val1.
 
   // case Or
-  get_int_impl(fid, iid, vreg, value DEPTH_PARAM DEBUG_MSG_PARAM) :-
-    DEPTH_CHECK
+  get_int_impl(fid, iid, vreg, value) :-
     Block.get(fid, bid, _),
     Instruction.Or.get(iid, bid, vreg),
     Instruction.Or.operands(iid, bid, op0, op1, _),
@@ -161,8 +130,7 @@
     value = val0 bor val1.
 
   // case Xor
-  get_int_impl(fid, iid, vreg, value DEPTH_PARAM DEBUG_MSG_PARAM) :-
-    DEPTH_CHECK
+  get_int_impl(fid, iid, vreg, value) :-
     Block.get(fid, bid, _),
     Instruction.Xor.get(iid, bid, vreg),
     Instruction.Xor.operands(iid, bid, op0, op1, _),
@@ -171,8 +139,7 @@
     value = val0 bxor val1.
 
   // case Shl
-  get_int_impl(fid, iid, vreg, value DEPTH_PARAM DEBUG_MSG_PARAM) :-
-    DEPTH_CHECK
+  get_int_impl(fid, iid, vreg, value) :-
     Block.get(fid, bid, _),
     Instruction.Shl.get(iid, bid, vreg),
     Instruction.Shl.operands(iid, bid, op0, op1, _),
@@ -181,8 +148,7 @@
     value = val0 bshl val1.
 
   // case LShr
-  get_int_impl(fid, iid, vreg, value DEPTH_PARAM DEBUG_MSG_PARAM) :-
-    DEPTH_CHECK
+  get_int_impl(fid, iid, vreg, value) :-
     Block.get(fid, bid, _),
     Instruction.LShr.get(iid, bid, vreg),
     Instruction.LShr.operands(iid, bid, op0, op1, _),
@@ -191,8 +157,7 @@
     value = val0 bshru val1.
 
   // case Ashr
-  get_int_impl(fid, iid, vreg, value DEPTH_PARAM DEBUG_MSG_PARAM) :-
-    DEPTH_CHECK
+  get_int_impl(fid, iid, vreg, value) :-
     Block.get(fid, bid, _),
     Instruction.AShr.get(iid, bid, vreg),
     Instruction.AShr.operands(iid, bid, op0, op1, _),
@@ -201,72 +166,61 @@
     value = val0 bshr val1.
 
   // case Conversation ops
-  get_int_impl(fid, iid, vreg, value DEPTH_PARAM DEBUG_MSG_PARAM) :-
-    DEPTH_CHECK
+  get_int_impl(fid, iid, vreg, value) :-
     Block.get(fid, bid, _),
     Instruction.Conversation.get(iid, bid, vreg),
     Instruction.Conversation.operands(iid, bid, op, _, _),
     VA_GET_INT_FROM_OP(fid, iid, op, value).
 
   // LOAD
-  get_int_impl(fid, iid, vreg, value DEPTH_PARAM DEBUG_MSG_PARAM) :-
-    DEPTH_CHECK
+  get_int_impl(fid, iid, vreg, value) :-
     Block.get(fid, bid, _),
     Instruction.Load.get(iid, bid, vreg, addr),
-    (DEBUG_MSG_ENDPOINT(iid, value)
+    (
      Operand.int(addr, value);
      Operand.vreg(addr, addr_vreg, addr_vreg_type),
      Type.Pointer.pointee(addr_vreg_type, ptr_type),
-     get_int_impl(fid, iid_sub, addr_vreg, value DEPTH_UPDATE DEBUG_MSG_INIT),
-     DEBUG_MSG_MOVE(iid, iid_sub, value)
+     get_int_impl(fid, iid_sub, addr_vreg, value),
      InstructionAnalysis.is_instruction_before(iid, iid_sub)
     ).
 
   // STORE
-  get_int_impl(fid, iid, vreg, value DEPTH_PARAM DEBUG_MSG_PARAM) :-
-    DEPTH_CHECK
+  get_int_impl(fid, iid, vreg, value) :-
     Block.get(fid, bid, _),
     Instruction.Store.get(iid, bid, addr_op, val),
     Operand.vreg(addr_op, vreg, _),
     VA_GET_INT_FROM_OP(fid, iid, val, value).
 
   // Phi
-  get_int_impl(fid, iid, vreg, value DEPTH_PARAM DEBUG_MSG_PARAM) :-
-    DEPTH_CHECK
+  get_int_impl(fid, iid, vreg, value) :-
     Block.get(fid, bid, _),
     Instruction.Phi.get(iid, bid, vreg),
     Instruction.Phi.ith_operand(iid, _, op, _),
     VA_GET_INT_FROM_OP(fid, iid, op, value).
 
   // Call rand
-  get_int_impl(fid, iid, vreg, value DEPTH_PARAM DEBUG_MSG_PARAM) :-
-    DEPTH_CHECK
+  get_int_impl(fid, iid, vreg, value) :-
     Block.get(fid, bid, _),
     Instruction.Call.global_func(iid, bid, vreg, name, _),
     name = "%rand",
-    DEBUG_MSG_ENDPOINT(iid, value)
     (value = RAND_MAX; value = 0).
 
-  get_int_impl(fid, iid, vreg, value DEPTH_PARAM DEBUG_MSG_PARAM) :-
-    DEPTH_CHECK
+  get_int_impl(fid, iid, vreg, value) :-
     Block.get(fid, bid, _),
     Instruction.Call.global_func(iid, bid, vreg, name, _),
     name = "%strlen",
-    DEBUG_MSG_ENDPOINT(iid, value)
     Instruction.Call.ith_operand(iid, 0, op),
     OperandUtil.name(op, arg_name, arg_tid),
     InstructionAnalysis.is_instruction_before(iid, iid_sz),
     buff_size(fid, iid_sz, arg_name, arg_tid, size),
     value = size - 1.  // last byte is '\0'
 
-  get_int_impl(fid, iid, vreg, value DEPTH_PARAM DEBUG_MSG_PARAM) :-
-    DEPTH_CHECK
+  get_int_impl(fid, iid, vreg, value) :-
     VRegAnalysis.same_external(fid, iid, vreg, _, fid_ext, iid_ext,
                                vreg_ext, _),
     InstructionAnalysis.is_instruction_before(iid_ext, iid_impl),
-    DEBUG_MSG_MOVE(iid, iid_impl, value)
     !VRegAnalysis.modified(iid_impl, iid_ext, vreg_ext),
-    get_int_impl(fid_ext, iid_impl, vreg_ext, value DEPTH_UPDATE DEBUG_MSG_INIT).
+    get_int_impl(fid_ext, iid_impl, vreg_ext, value).
 
   .decl is_null(fid: func_t, iid: instr_t, vreg: name_t, tid: type_t)
   VA_OUTPUT(is_null)
