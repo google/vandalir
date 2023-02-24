@@ -28,34 +28,29 @@
 #include "core/check.dl"
 #include "core/results.dl"
 
-#ifdef DEBUG_VULN_DOUBLE_FREE
-#define VDF_OUTPUT(x) OUTPUT_IMPL(x)
+#ifdef DEBUG_VULN_NULL_FREE
+#define VNF_OUTPUT(x) OUTPUT_IMPL(x)
 #else
-#define VDF_OUTPUT(x)
+#define VNF_OUTPUT(x)
 #endif
 
 
-.decl double_free(func: symbol, iid: instr_t, level: symbol, msg: symbol)
-VDF_OUTPUT(double_free)
+.decl null_free(func: symbol, iid: instr_t, level: symbol, msg: symbol)
+VNF_OUTPUT(null_free)
 
-double_free(func, iid, level, msg) :-
+null_free(func, iid, level, msg) :-
   Function.get(fid, func, _, _),
   Block.get(fid, bid, bname),
-  Block.get(fid, bid_prev, bname_prev),
-  Instruction.Call.global_func(iid, bid, _, name, _),
+  Instruction.Call.global_func(iid, bid, _, fname, _),
+  fname = "%free",
   Instruction.Call.ith_operand(iid, 0, op),
   OperandUtil.name(op, vreg, _),
-  name = "%free",
-  iid != iid_prev,
-  Instruction.Call.global_func(iid_prev, bid_prev, _, name, _),
-  Instruction.Call.ith_operand(iid_prev, 0, op_prev),
-  OperandUtil.name(op_prev, vreg_prev, _),
-  VRegAnalysis.equel(fid, iid_tmp, vreg, _, vreg_prev, _),
-  InstructionAnalysis.is_instruction_before(iid, iid_tmp),
+  InstructionAnalysis.is_instruction_before(iid, iid_null),
+  !Check.check_null(fid, bid, vreg),
+  VRegValueAnalysis.is_null(fid, iid_null, vreg, _),
   level = "Vulnerability",
-  msg = cat("Double Free: VREG:", vreg, "(block ", bname, " / iid ", to_string(iid),
-            ") has already been freed here: (block ", bname_prev, " / iid ",
-            to_string(iid_prev), ") VREG: ", vreg_prev).
+  msg = cat("NULL Free: VREG:", vreg, "(block ", bname,
+            " / iid ", to_string(iid), ") attempt to free NULL pointer!").
 
 
-REPORT_RESULTS(double_free).
+REPORT_RESULTS(null_free).
