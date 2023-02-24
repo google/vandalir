@@ -31,8 +31,8 @@ $(BUILD)/%.elf: $(SDIR)/%.cpp
 all: build_dir $(LL) $(BC) $(ELF)
 
 build_dir:
-	mkdir -p $(BUILD)/good
-	mkdir -p $(BUILD)/bad
+	@mkdir -p $(BUILD)/good
+	@mkdir -p $(BUILD)/bad
 
 .PHONY: clean build_dir
 

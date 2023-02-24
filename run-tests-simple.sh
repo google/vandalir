@@ -23,6 +23,9 @@ PROG=$0
 OS=$(uname -s)
 MY_DIR=$(realpath $(dirname $0))
 
+OK="\e[32mOK\e[0m"
+FAIL="\e[31mFAIL\e[0m"
+
 help()
 {
     echo "Usage: ${PROG} ${HELP_STR}"
@@ -92,23 +95,33 @@ rm -f ${REPORT}
 # compile simple tests
 DEST=${OUTPUT}/tests make -C ${MY_DIR}/tests/simple
 
-if [ "${OS}" = "Linux" ];
-then
-  # compile vandalir
-  python3 ${MY_DIR}/run.py -o ${OUTPUT} -c
-fi
-
 for i in  `find ${OUTPUT}/tests/ -name \*.bc`;
 do
-  echo "Running $i test"
+  TEST=${i#${OUTPUT}/tests/}
+  TEST_RES=${OK}
+  echo -n "Running ${TEST} "
   IN=$(realpath $i)
-  python3 ${MY_DIR}/run.py -o ${OUTPUT} $IN
+
+  rm -rf ${OUTPUT}/facts
+  rm -rf ${OUTPUT}/out
+  python3 ${MY_DIR}/run.py -o ${OUTPUT} $IN >/dev/null 2>&1
+  RESULT=`cat ${OUTPUT}/out/RESULTS.csv`
+
+  if [[ ${TEST} == *"bad"* ]];
+  then
+    if [ -z "${RESULT}" ]; then TEST_RES=${FAIL}; fi
+  else
+    if [ -n "${RESULT}" ]; then TEST_RES=${FAIL}; fi
+  fi
+  echo -e ${TEST_RES}
 
   if [ ${REPORT} ]
   then
-    echo "!!!!"
-    echo ">>>> ${i#${OUTPUT}/tests/}" >> ${REPORT}
-    cat ${OUTPUT}/out/RESULTS.csv >> ${REPORT}
+    echo ">>>>>>>> ${TEST}" >> ${REPORT}
+    if [ -n "${RESULT}" ];
+    then
+      echo ${RESULT} >> ${REPORT}
+    fi
     echo "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" >> ${REPORT}
     echo "" >> ${REPORT}
   fi
