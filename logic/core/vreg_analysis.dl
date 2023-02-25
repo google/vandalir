@@ -87,6 +87,13 @@
     tid1 = tid2,
     OperandUtil.name(value_op, vreg2, tid2).
 
+  equel(fid, iid1, vreg1, tid1, vreg2, tid2) :-
+    Block.get(fid, bid, _),
+    Instruction.Store.get(iid1, bid, addr_op, value_op),
+    Type.Pointer.pointee(tid1_ptr, tid1),
+    Operand.vreg(addr_op, vreg1, tid1_ptr),
+    Operand.global_ref(value_op, vreg2, tid2).
+
   // TODO: this case is true only if index is 0.
   // in other cases it is 'partial' true.
   equel(fid, iid1, vreg1, tid1, vreg2, tid2) :-
