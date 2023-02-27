@@ -34,6 +34,8 @@ fn main() {
         "core/",
         "-I",
         "vulnerabilities/",
+        "-j",
+        "2", // any value > 1 to enable multi-threading in generaged files.
         "-g",
         out_logic_file.to_str().unwrap(),
     ];
@@ -69,6 +71,7 @@ fn main() {
         .file("src/logic_wrapper.cpp")
         .include(Path::new(out_dir.as_str()))
         .flag_if_supported("-std=c++17")
+        .flag_if_supported("-fopenmp")
         .define("__EMBEDDED_SOUFFLE__", None)
         .define("RAM_DOMAIN_SIZE", Some("64"))
         .warnings(false) // souffle's generated code has a lot of warning.
@@ -78,4 +81,5 @@ fn main() {
     println!("cargo:rerun-if-changed=src/lib.rs");
     println!("cargo:rerun-if-changed=src/logic_wrapper.cpp");
     println!("cargo:rerun-if-env-changed=VANDALIR_SOUFFLE_DEBUG");
+    println!("cargo:rustc-link-arg=-fopenmp");
 }
