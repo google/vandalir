@@ -24,7 +24,8 @@
     name: symbol,
     defined: symbol,
     ret_tid: type_t,
-    num_args: number
+    num_args: number,
+    line: symbol
 )
 INPUT(function)
 

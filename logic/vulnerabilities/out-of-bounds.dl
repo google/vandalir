@@ -30,11 +30,11 @@
 #endif
 
 
-.decl out_of_bounds(func: symbol, iid: instr_t, level: symbol, msg: symbol)
+.decl out_of_bounds(func: symbol, iid: instr_t, level: symbol, msg: symbol, line: symbol)
 VDANF_OUTPUT(out_of_bounds)
 
-out_of_bounds(func, iid, level, msg) :-
-  Function.get(fid, func, _, _),
+out_of_bounds(func, iid, level, msg, line) :-
+  Function.get(fid, func, _, _, line),
   Block.get(fid, bid, bname),
   Instruction.Call.global_func(iid, bid, _, name, _),
   name = "%strncpy",
@@ -50,8 +50,8 @@ out_of_bounds(func, iid, level, msg) :-
             ": strncpy: Possible out of bounds reading for SRC buffer: ",
             "SRC size ", to_string(buff_size), "; SIZE ", to_string(size), ".").
 
-out_of_bounds(func, iid, level, msg) :-
-  Function.get(fid, func, _, _),
+out_of_bounds(func, iid, level, msg, line) :-
+  Function.get(fid, func, _, _, line),
   Block.get(fid, bid, bname),
   Instruction.Call.global_func(iid, bid, _, name, _),
   name = "%strncpy",
@@ -67,8 +67,8 @@ out_of_bounds(func, iid, level, msg) :-
             ": strncpy: Possible out of bounds write to DEST buffer: ",
             "DEST size ", to_string(buff_size), "; SIZE ", to_string(size), ".").
 
-out_of_bounds(func, iid, level, msg) :-
-  Function.get(fid, func, _, _),
+out_of_bounds(func, iid, level, msg, line) :-
+  Function.get(fid, func, _, _, line),
   Block.get(fid, bid, bname),
   Instruction.Call.global_func(iid, bid, _, name, _),
   name = "%fgets",
@@ -84,8 +84,8 @@ out_of_bounds(func, iid, level, msg) :-
             ": fgets: Possible out of bounds write to DEST buffer: ",
             "DEST size ", to_string(buff_size), "; SIZE ", to_string(size), ".").
 
-out_of_bounds(func, iid, level, msg) :-
-  Function.get(fid, func, _, _),
+out_of_bounds(func, iid, level, msg, line) :-
+  Function.get(fid, func, _, _, line),
   Block.get(fid, bid, bname),
   Instruction.Call.global_func(iid, bid, _, name, _),
   name = "%snprintf",
@@ -101,8 +101,8 @@ out_of_bounds(func, iid, level, msg) :-
             ": snprintf: Possible out of bounds write to DEST buffer: ",
             "DEST size ", to_string(buff_size), "; SIZE ", to_string(size), ".").
 
-out_of_bounds(func, iid, level, msg) :-
-  Function.get(fid, func, _, _),
+out_of_bounds(func, iid, level, msg, line) :-
+  Function.get(fid, func, _, _, line),
   Block.get(fid, bid, bname),
   Instruction.Call.global_func(iid, bid, _, name, _),
   (name = "%memcpy";
@@ -120,8 +120,8 @@ out_of_bounds(func, iid, level, msg) :-
             ": Possible out of bounds write to DEST buffer: DEST size ",
             to_string(buff_size), "; SIZE ", to_string(size), ".").
 
-out_of_bounds(func, iid, level, msg) :-
-  Function.get(fid, func, _, _),
+out_of_bounds(func, iid, level, msg, line) :-
+  Function.get(fid, func, _, _, line),
   Block.get(fid, bid, bname),
   Instruction.Call.global_func(iid, bid, _, name, _),
   (name = "%memcpy";
@@ -139,8 +139,8 @@ out_of_bounds(func, iid, level, msg) :-
             ": Possible out of bounds write to SRC buffer: SRC size ",
             to_string(buff_size), "; SIZE ", to_string(size), ".").
 
-out_of_bounds(func, iid, level, msg) :-
-  Function.get(fid, func, _, _),
+out_of_bounds(func, iid, level, msg, line) :-
+  Function.get(fid, func, _, _, line),
   Block.get(fid, bid, bname),
   Instruction.Call.global_func(iid, bid, _, name, _),
   (name = "%memmove";
@@ -158,8 +158,8 @@ out_of_bounds(func, iid, level, msg) :-
             ": memmove: Possible out of bounds write to DEST buffer: ",
             "DEST size ", to_string(buff_size), "; SIZE ", to_string(size), ".").
 
-out_of_bounds(func, iid, level, msg) :-
-  Function.get(fid, func, _, _),
+out_of_bounds(func, iid, level, msg, line) :-
+  Function.get(fid, func, _, _, line),
   Block.get(fid, bid, bname),
   Instruction.Call.global_func(iid, bid, _, name, _),
   name = "%strcpy",
@@ -178,8 +178,8 @@ out_of_bounds(func, iid, level, msg) :-
             "DEST size ", to_string(dest_size), "; SRC size ",
             to_string(src_size), ".").
 
-out_of_bounds(func, iid, level, msg) :-
-  Function.get(fid, func, _, _),
+out_of_bounds(func, iid, level, msg, line) :-
+  Function.get(fid, func, _, _, line),
   Block.get(fid, bid, bname),
   Instruction.Call.global_func(iid, bid, _, name, _),
   name = "%wscpy",
@@ -198,8 +198,8 @@ out_of_bounds(func, iid, level, msg) :-
             "DEST size ", to_string(dest_size), "; SRC size ",
             to_string(src_size), ".").
 
-out_of_bounds(func, iid, level, msg) :-
-  Function.get(fid, func, _, _),
+out_of_bounds(func, iid, level, msg, line) :-
+  Function.get(fid, func, _, _, line),
   Block.get(fid, bid, bname),
   Instruction.Call.global_func(iid, bid, _, name, _),
   name = "%wscpy",
@@ -218,8 +218,8 @@ out_of_bounds(func, iid, level, msg) :-
             "DEST size ", to_string(dest_size), "; SRC size ",
             to_string(src_size), ".").
 
-out_of_bounds(func, iid, level, msg) :-
-  Function.get(fid, func, _, _),
+out_of_bounds(func, iid, level, msg, line) :-
+  Function.get(fid, func, _, _, line),
   Block.get(fid, bid, bname),
   Instruction.Call.global_func(iid, bid, _, name, _),
   name = "%strcat",
@@ -238,8 +238,8 @@ out_of_bounds(func, iid, level, msg) :-
             "DEST size ", to_string(dest_size), "; SRC size ",
             to_string(src_size), ".").
 
-out_of_bounds(func, iid, level, msg) :-
-  Function.get(fid, func, _, _),
+out_of_bounds(func, iid, level, msg, line) :-
+  Function.get(fid, func, _, _, line),
   Block.get(fid, bid, bname),
   Instruction.Call.global_func(iid, bid, _, name, _),
   name = "%strncat",
@@ -255,8 +255,8 @@ out_of_bounds(func, iid, level, msg) :-
             ": strncat: Possible out of bounds reading for SRC buffer: ",
             "SRC size ", to_string(buff_size), "; SIZE ", to_string(size), ".").
 
-out_of_bounds(func, iid, level, msg) :-
-  Function.get(fid, func, _, _),
+out_of_bounds(func, iid, level, msg, line) :-
+  Function.get(fid, func, _, _, line),
   Block.get(fid, bid, bname),
   Instruction.Call.global_func(iid, bid, _, name, _),
   name = "%strncat",

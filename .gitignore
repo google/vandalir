@@ -10,3 +10,6 @@
 
 *.swp
 *.swo
+
+# idea
+.idea

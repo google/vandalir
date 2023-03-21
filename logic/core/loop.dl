@@ -39,7 +39,7 @@
   LP_OUTPUT(get)
 
   get(fid, head, tail) :-
-    Function.get(fid, fname, _, _),
+    Function.get(fid, fname, _, _, line),
     CFG.block_back_egde(fname, tail_name, head_name),
     Block.get(fid, head, head_name),
     Block.get(fid, tail, tail_name).
@@ -48,7 +48,7 @@
   LP_OUTPUT(node)
 
   node(fid, head, node) :-
-    Function.get(fid, fname, _, _),
+    Function.get(fid, fname, _, _, _),
     Block.get(fid, head, head_name),
     Block.get(fid, node, node_name),
     CFG.block_loop_node(fname, head_name, node_name).

@@ -47,7 +47,7 @@
     bid != bid_before,
     Block.get(fid, bid, bname),
     Block.get(fid, bid_before, bname_before),
-    Function.get(fid, fname, _, _),
+    Function.get(fid, fname, _, _, _),
     CFG.block_forward_egdes(fname, bname_before, bname).
 }
 

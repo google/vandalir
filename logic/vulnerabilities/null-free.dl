@@ -35,11 +35,11 @@
 #endif
 
 
-.decl null_free(func: symbol, iid: instr_t, level: symbol, msg: symbol)
+.decl null_free(func: symbol, iid: instr_t, level: symbol, msg: symbol, line: symbol)
 VNF_OUTPUT(null_free)
 
-null_free(func, iid, level, msg) :-
-  Function.get(fid, func, _, _),
+null_free(func, iid, level, msg, line) :-
+  Function.get(fid, func, _, _, line),
   Block.get(fid, bid, bname),
   Instruction.Call.global_func(iid, bid, _, fname, _),
   fname = "%free",
