@@ -60,11 +60,11 @@ get_formatstring_arg(fname, num) :-
    fname="%syslog",
    num=1.
 
-.decl format_string(func: symbol, iid: instr_t, level: symbol, msg: symbol)
+.decl format_string(func: symbol, iid: instr_t, level: symbol, msg: symbol, line: symbol)
 VFS_OUTPUT(format_string)
 
-format_string(func, iid, level, msg) :-
-  Function.get(fid, func, _, _),
+format_string(func, iid, level, msg, line) :-
+  Function.get(fid, func, _, _, line),
   Block.get(fid, bid, bname),
   Instruction.Call.global_func(iid, bid, _, fname, _),
   get_formatstring_arg(fname, arg_pos),
@@ -74,15 +74,14 @@ format_string(func, iid, level, msg) :-
   InstructionAnalysis.is_instruction_before(iid, iid_tmp),
   GlobalVar.get(gid, name, _),
   GlobalVar.modified(fid_mod, _, gid),
-  Function.get(fid_mod, fname_mod, _, _),
   level = "Warning",
   msg = cat("Block: ", bname, "; vreg: ", arg_vreg, ": ", fname,
             ": Possible a non static format string is used.\n",
             "The format string ", name, " can be modified by ",
-            fname_mod, " function.").
+            func, " function.").
 
-format_string(func, iid, level, msg) :-
-  Function.get(fid, func, _, _),
+format_string(func, iid, level, msg, line) :-
+  Function.get(fid, func, _, _, line),
   Block.get(fid, bid, bname),
   Instruction.Call.global_func(iid, bid, _, fname, _),
   get_formatstring_arg(fname, arg_pos),

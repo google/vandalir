@@ -27,7 +27,7 @@ pub mod types;
 use std::path::Path;
 
 use llvm_ir::module::{DLLStorageClass, Linkage, ThreadLocalMode, UnnamedAddr, Visibility};
-use llvm_ir::Module as LLVMModule;
+use llvm_ir::{HasDebugLoc, Module as LLVMModule};
 
 use crate::common::{fact_create, FactContainer, ToStrArray};
 
@@ -38,6 +38,7 @@ struct Function {
     pub defined: bool,
     pub ret_tid: i64,
     pub num_params: i64,
+    pub line: u32,
 }
 
 impl_tostring!(Function);
@@ -50,6 +51,7 @@ impl ToStrArray for Function {
             self.defined.to_string(),
             self.ret_tid.to_string(),
             self.num_params.to_string(),
+            self.line.to_string(),
         ]
     }
 }
@@ -266,12 +268,20 @@ impl FactGenerator {
             let func_id = self.functions.get_id();
 
             let ret_tid = self.type_parser.parse(&module, &func.return_type)?;
+
+            let func_loc = func.get_debug_loc().clone();
+            let mut loc_line:u32 = 0;
+            if func_loc != None {
+                loc_line = func_loc.unwrap().line;
+            }
+
             self.functions.push(Function {
                 id: func_id,
                 name: format!("%{}", func.name),
                 defined: true,
                 ret_tid,
                 num_params: func.parameters.len() as i64,
+                line: loc_line
             });
 
             for param in &func.parameters {

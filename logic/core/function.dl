@@ -30,17 +30,17 @@
 
 
 .comp _Function {
-  .decl get(fid: func_t, name: symbol, tid: type_t, num_args: number)
+  .decl get(fid: func_t, name: symbol, tid: type_t, num_args: number, line: symbol)
   FUNC_OUTPUT(get)
 
-  get(fid, name, tid, num_args) :-
-    function(fid, name, _, tid, num_args).
+  get(fid, name, tid, num_args, line) :-
+    function(fid, name, _, tid, num_args, line).
 
   .decl ith_arg(fid: func_t, idx: number, name: name_t, tid: type_t)
   FUNC_OUTPUT(ith_arg)
 
   ith_arg(fid, idx, name, tid) :-
-    function(fid, _, _, _, num),
+    function(fid, _, _, _, num, line),
     num != -1,  // ignore opaque structs
     idx < num,
     ith_arg_impl(_, fid, idx, name, tid).

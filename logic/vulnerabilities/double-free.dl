@@ -35,11 +35,11 @@
 #endif
 
 
-.decl double_free(func: symbol, iid: instr_t, level: symbol, msg: symbol)
+.decl double_free(func: symbol, iid: instr_t, level: symbol, msg: symbol, line: symbol)
 VDF_OUTPUT(double_free)
 
-double_free(func, iid, level, msg) :-
-  Function.get(fid, func, _, _),
+double_free(func, iid, level, msg, line) :-
+  Function.get(fid, func, _, _, line),
   Block.get(fid, bid, bname),
   Block.get(fid, bid_prev, bname_prev),
   Instruction.Call.global_func(iid, bid, _, name, _),

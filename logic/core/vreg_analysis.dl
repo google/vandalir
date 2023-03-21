@@ -222,7 +222,7 @@
   same_external(fid1, iid1, vreg1, tid1, fid2, iid2, vreg2, tid2) :-
     bid1 = min bid: Block.get(fid1, bid, _),
     iid1 = min iid: Instruction.get(iid, bid1, _, _),
-    Function.get(fid1, fname, _, _),
+    Function.get(fid1, fname, _, _, _),
     Function.ith_arg(fid1, idx, vreg1, tid1),
     // get the caller
     Block.get(fid2, bid, _),
@@ -233,7 +233,7 @@
   same_external(fid1, iid1, vreg1, tid1, fid2, iid2, vreg2, tid2) :-
     Block.get(fid1, bid1, _),
     Instruction.Call.global_func(iid1, bid1, vreg1, fname, tid1),
-    Function.get(fid2, fname, _, _),
+    Function.get(fid2, fname, _, _, _),
     Block.get(fid2, bid2, _),
     Instruction.Ret.get(iid2, bid2, op),
     OperandUtil.name(op, vreg2, tid2).

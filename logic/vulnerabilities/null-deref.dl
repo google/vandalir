@@ -35,11 +35,11 @@
 #endif
 
 
-.decl null_dereference(func: symbol, iid: instr_t, level: symbol, msg: symbol)
+.decl null_dereference(func: symbol, iid: instr_t, level: symbol, msg: symbol, line: symbol)
 VND_OUTPUT(null_dereference)
 
-null_dereference(func, iid, level, msg) :-
-  Function.get(fid, func, _, _),
+null_dereference(func, iid, level, msg, line) :-
+  Function.get(fid, func, _, _, line),
   Block.get(fid, bid, bname),
   Instruction.Load.get(iid, bid, _, addr_op),
   (Operand.vreg(addr_op, addr, addr_tid),
@@ -52,8 +52,8 @@ null_dereference(func, iid, level, msg) :-
   msg = cat("NULL DEREFERENCE: block '", bname, "; iid ", to_string(iid),
             msg_extra).
 
-null_dereference(func, iid, level, msg) :-
-  Function.get(fid, func, _, _),
+null_dereference(func, iid, level, msg, line) :-
+  Function.get(fid, func, _, _, line),
   Block.get(fid, bid, bname),
   Instruction.Store.get(iid, bid, addr_op, _),
   Operand.null(addr_op),
@@ -61,8 +61,8 @@ null_dereference(func, iid, level, msg) :-
   msg = cat("NULL DEREFERENCE: block '", bname, "; iid ", to_string(iid),
             "': 1 direct NULL access in store instruction").
 
-null_dereference(func, iid, level, msg) :-
-  Function.get(fid, func, _, _),
+null_dereference(func, iid, level, msg, line) :-
+  Function.get(fid, func, _, _, line),
   Block.get(fid, bid, bname),
   Instruction.Store.get(iid, bid, addr_op, _),
   Operand.vreg(addr_op, addr, addr_tid),
@@ -73,8 +73,8 @@ null_dereference(func, iid, level, msg) :-
   msg = cat("NULL DEREFERENCE: block '", bname, "; iid ", to_string(iid),
             "': 2 possibly NULL dereference of ", addr).
 
-null_dereference(func, iid, level, msg) :-
-  Function.get(fid, func, _, _),
+null_dereference(func, iid, level, msg, line) :-
+  Function.get(fid, func, _, _, line),
   Block.get(fid, bid, bname),
   Instruction.Load.get(iid, bid, dst_vreg, addr_op),
   // exclude case where load is used by a ICMP instruction
@@ -88,8 +88,8 @@ null_dereference(func, iid, level, msg) :-
             "': 3 possibly NULL dereference of ", addr).
 
 
-null_dereference(func, iid, level, msg) :-
-  Function.get(fid, func, _, _),
+null_dereference(func, iid, level, msg, line) :-
+  Function.get(fid, func, _, _, line),
   Block.get(fid, bid, bname),
   Instruction.GetElementPtr.get(iid, bid, _, addr_op, _),
   Operand.vreg(addr_op, addr, addr_tid),
