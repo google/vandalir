@@ -20,8 +20,8 @@
 use std::collections::HashMap;
 
 use llvm_ir::types;
-use llvm_ir::Module;
 use llvm_ir::types::FPType;
+use llvm_ir::Module;
 
 use crate::common::{fact_create, FactContainer, ToStrArray};
 use crate::impl_tostring;
@@ -342,9 +342,7 @@ impl TypeParser {
                 }
                 ("struct", size, tid)
             }
-            types::Type::IntegerType { bits } => {
-                ("int", *bits as i64, -1)
-            }
+            types::Type::IntegerType { bits } => ("int", *bits as i64, -1),
             types::Type::PointerType {
                 pointee_type,
                 addr_space,
@@ -399,7 +397,7 @@ impl TypeParser {
                     FPType::BFloat => 16,
                 };
                 ("float", bits, -1)
-            },
+            }
             types::Type::X86_MMXType => ("mmx_type", 0, -1),
             types::Type::MetadataType => ("metadata", 0, -1),
             types::Type::LabelType => ("label", 0, -1),

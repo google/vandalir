@@ -29,8 +29,8 @@ use llvm_ir::Module as LLVMModule;
 
 use crate::common::{fact_create, FactContainer, ToStrArray};
 use crate::constants::ConstantParser;
-use crate::types::TypeParser;
 use crate::impl_tostring;
+use crate::types::TypeParser;
 
 #[derive(Debug, Clone)]
 pub struct Operand {
@@ -1012,7 +1012,7 @@ impl InstructionParser {
         const_parser: &mut ConstantParser,
         bid: i64,
         instruction: &LLVMInstruction,
-    ) -> Result<(), String> {
+    ) -> Result<i64, String> {
         let iid = self.instructions.get_id();
 
         let vreg = if let Some(name) = instruction.try_get_result() {
@@ -1535,7 +1535,7 @@ impl InstructionParser {
             family_id: instr_id,
         });
 
-        Ok(())
+        Ok(iid)
     }
 
     pub fn parse_terminator(

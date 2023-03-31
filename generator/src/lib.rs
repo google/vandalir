@@ -21,6 +21,7 @@ pub mod analysis;
 pub mod common;
 pub mod config;
 pub mod constants;
+pub mod data_flow;
 pub mod instructions;
 pub mod types;
 
@@ -202,6 +203,7 @@ pub struct FactGenerator {
     config_parser: config::ConfigParser,
 
     analysis: analysis::Analysis,
+    data_flow: data_flow::DataFlow,
 }
 
 impl FactGenerator {
@@ -218,10 +220,15 @@ impl FactGenerator {
             config_parser: config::ConfigParser::new()?,
 
             analysis: analysis::Analysis::new()?,
+            data_flow: data_flow::DataFlow::new(),
         })
     }
 
-    pub fn parse_globals(&mut self, module: &LLVMModule) -> Result<(), String> {
+    pub fn parse_globals(
+        &mut self,
+        module: &LLVMModule,
+        globals_map: &mut HashMap<String, i64>,
+    ) -> Result<(), String> {
         for var in &module.global_vars {
             let gid = self.globals.get_id();
 
@@ -254,6 +261,8 @@ impl FactGenerator {
                 value_id: val,
                 alignment: var.alignment,
             });
+
+            globals_map.insert(var.name.to_string(), gid);
         }
 
         Ok(())
@@ -263,7 +272,8 @@ impl FactGenerator {
         let module = LLVMModule::from_bc_path(path)?;
         let analysis = LLVMModuleAnalysis::new(&module);
 
-        self.parse_globals(&module)?;
+        let mut globals_map = HashMap::new();
+        self.parse_globals(&module, &mut globals_map)?;
 
         let mut funcs_map = HashMap::new();
 
@@ -282,6 +292,7 @@ impl FactGenerator {
                 num_params: func.parameters.len() as i64,
             });
 
+            let mut args_map = HashMap::new();
             for param in &func.parameters {
                 let arg_id = self.arguments.get_id();
                 let param_tid = self.type_parser.parse(&module, &param.ty)?;
@@ -291,6 +302,7 @@ impl FactGenerator {
                     name: param.name.to_string(),
                     tid: param_tid,
                 });
+                args_map.insert(param.name.to_string(), arg_id);
             }
 
             for block in &func.basic_blocks {
@@ -298,11 +310,18 @@ impl FactGenerator {
                 blocks_map.insert(block.name.to_string(), block_id);
 
                 for instr in &block.instrs {
-                    self.instr_parser.parse(
+                    let iid = self.instr_parser.parse(
                         &module,
                         &mut self.type_parser,
                         &mut self.const_parser,
                         block_id,
+                        instr,
+                    )?;
+                    self.data_flow.add_instruction(
+                        &self.const_parser,
+                        func_id,
+                        block_id,
+                        iid,
                         instr,
                     )?;
                 }
@@ -314,6 +333,13 @@ impl FactGenerator {
                     block_id,
                     &block.term,
                 )?;
+                self.data_flow.add_terminator(
+                    &self.const_parser,
+                    func_id,
+                    block_id,
+                    term_id,
+                    &block.term,
+                )?;
 
                 self.blocks.push(Block {
                     id: block_id,
@@ -322,7 +348,19 @@ impl FactGenerator {
                     tid: term_id,
                 });
             }
-            self.analysis.parse_blocks(&analysis, func_id, &blocks_map, func)?;
+
+            // BLOCKs Pred list will be used to build Data control flow
+            let mut block_pred_cfg: HashMap<i64, Vec<i64>> = HashMap::new();
+            self.analysis.parse_blocks(
+                &analysis,
+                func_id,
+                &blocks_map,
+                func,
+                &mut block_pred_cfg,
+            )?;
+
+            self.data_flow
+                .finalize(func_id, &block_pred_cfg, &args_map, &globals_map)?;
         }
 
         self.analysis.parse_functions(&analysis, &funcs_map)?;
@@ -349,6 +387,7 @@ impl FactGenerator {
         self.instr_parser.write_files(dir)?;
         self.config_parser.write_files(dir)?;
         self.analysis.write_files(dir)?;
+        self.data_flow.write_files(dir)?;
 
         Ok(())
     }

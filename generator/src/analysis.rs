@@ -26,6 +26,8 @@ use llvm_ir_analysis::ModuleAnalysis as LLVMModuleAnalysis;
 use crate::common::{fact_create, FactContainer, ToStrArray};
 use crate::impl_tostring;
 
+pub const ENTRY_BLOCK_PRED: i64 = -1;
+
 #[derive(Debug, Clone)]
 pub struct FuncRelation {
     id: i64,
@@ -50,10 +52,13 @@ impl ToStrArray for FuncExternalRelation {
     }
 }
 
-
 impl ToStrArray for FuncRelation {
     fn to_array(&self) -> Vec<String> {
-        vec![self.id.to_string(), self.func.to_string(), self.arg.to_string()]
+        vec![
+            self.id.to_string(),
+            self.func.to_string(),
+            self.arg.to_string(),
+        ]
     }
 }
 
@@ -94,10 +99,12 @@ macro_rules! push_block_relation {
 macro_rules! push_block_relations {
     ($container:expr, $map:ident, $iter:expr, $fid:expr, $bid:expr) => {
         for blk in $iter {
-            push_block_relation!($container,
-                                 get_id_by_name($map, &blk.to_string())?,
-                                 $fid,
-                                 $bid);
+            push_block_relation!(
+                $container,
+                get_id_by_name($map, &blk.to_string())?,
+                $fid,
+                $bid
+            );
         }
     };
 }
@@ -118,20 +125,16 @@ macro_rules! push_func_relation {
 macro_rules! push_func_relations {
     ($container:expr, $map:ident, $iter:expr, $fid:expr) => {
         for el in $iter {
-            push_func_relation!($container,
-                                get_id_by_name($map, &el.to_string())?,
-                                $fid);
+            push_func_relation!($container, get_id_by_name($map, &el.to_string())?, $fid);
         }
     };
 }
 
-
-fn get_id_by_name(name_map: &HashMap<String, i64>,
-                  name: &str) -> Result<i64, String> {
+fn get_id_by_name(name_map: &HashMap<String, i64>, name: &str) -> Result<i64, String> {
     match name_map.get(name) {
         Some(id) => {
             return Ok(*id);
-        },
+        }
         None => {
             if name == "Return" {
                 return Ok(-1);
@@ -140,7 +143,6 @@ fn get_id_by_name(name_map: &HashMap<String, i64>,
         }
     };
 }
-
 
 pub struct Analysis {
     func_callers: FactContainer<FuncRelation>,
@@ -184,12 +186,14 @@ impl Analysis {
             block_idom_children_of_ret: FactContainer::new("block_idom_children_of_ret"),
         })
     }
-    pub fn parse_blocks(&mut self,
-                        analysis: &LLVMModuleAnalysis,
-                        fid: i64,
-                        blocks: &HashMap<String, i64>,
-                        func: &LLVMFunction) -> Result<(), String> {
-
+    pub fn parse_blocks(
+        &mut self,
+        analysis: &LLVMModuleAnalysis,
+        fid: i64,
+        blocks: &HashMap<String, i64>,
+        func: &LLVMFunction,
+        block_pred_cfg: &mut HashMap<i64, Vec<i64>>,
+    ) -> Result<(), String> {
         let fn_analysis = analysis.fn_analysis(&func.name);
         let cfg = fn_analysis.control_flow_graph();
         let cdg = fn_analysis.control_dependence_graph();
@@ -200,20 +204,16 @@ impl Analysis {
         for block in &func.basic_blocks {
             let bid = get_id_by_name(blocks, &block.name.to_string())?;
 
-            push_block_relations!(
-                self.block_preds,
-                blocks,
-                cfg.preds(&block.name),
-                fid,
-                bid
-            );
-            push_block_relations!(
-                self.block_succs,
-                blocks,
-                cfg.succs(&block.name),
-                fid,
-                bid
-            );
+            for blk in cfg.preds(&block.name) {
+                let pred_bid = get_id_by_name(blocks, &blk.to_string())?;
+                push_block_relation!(self.block_preds, pred_bid, fid, bid);
+                block_pred_cfg
+                    .entry(bid)
+                    .or_insert_with(|| Vec::new())
+                    .push(pred_bid);
+            }
+
+            push_block_relations!(self.block_succs, blocks, cfg.succs(&block.name), fid, bid);
             push_block_relations!(
                 self.block_imm_ctr_deps,
                 blocks,
@@ -243,10 +243,12 @@ impl Analysis {
                 bid
             );
             if let Some(blk) = postdom.ipostdom(&block.name) {
-                push_block_relation!(self.block_ipostdom,
-                                     get_id_by_name(blocks, &blk.to_string())?,
-                                     fid,
-                                     bid);
+                push_block_relation!(
+                    self.block_ipostdom,
+                    get_id_by_name(blocks, &blk.to_string())?,
+                    fid,
+                    bid
+                );
             }
             push_block_relations!(
                 self.block_ipostdom_children,
@@ -263,10 +265,12 @@ impl Analysis {
                 bid
             );
             if let Some(blk) = dom.idom(&block.name) {
-                push_block_relation!(self.block_idom,
-                                     get_id_by_name(blocks, &blk.to_string())?,
-                                     fid,
-                                     bid);
+                push_block_relation!(
+                    self.block_idom,
+                    get_id_by_name(blocks, &blk.to_string())?,
+                    fid,
+                    bid
+                );
             }
             push_block_relations!(
                 self.block_idom_children,
@@ -276,28 +280,31 @@ impl Analysis {
                 bid
             );
             if let Some(blk) = dom.idom_of_return() {
-                push_block_relation!(self.block_idom_children_of_ret,
-                                     get_id_by_name(blocks, &blk.to_string())?,
-                                     fid,
-                                     bid);
+                push_block_relation!(
+                    self.block_idom_children_of_ret,
+                    get_id_by_name(blocks, &blk.to_string())?,
+                    fid,
+                    bid
+                );
             }
         }
 
-        push_func_relations!(self.func_block_returns,
-                                blocks,
-                                cfg.preds_of_return(),
-                                fid);
-        push_func_relation!(self.func_entries,
-                            get_id_by_name(blocks,
-                                            &cfg.entry().to_string())?,
-                            fid);
+        push_func_relations!(self.func_block_returns, blocks, cfg.preds_of_return(), fid);
+        let entry_bid = get_id_by_name(blocks, &cfg.entry().to_string())?;
+        push_func_relation!(self.func_entries, entry_bid, fid);
+        block_pred_cfg
+            .entry(entry_bid)
+            .or_insert_with(|| Vec::new())
+            .push(ENTRY_BLOCK_PRED);
 
         Ok(())
     }
 
-    pub fn parse_functions(&mut self,
-                           analysis: &LLVMModuleAnalysis,
-                           funcs: &HashMap<String, i64>) -> Result<(), String> {
+    pub fn parse_functions(
+        &mut self,
+        analysis: &LLVMModuleAnalysis,
+        funcs: &HashMap<String, i64>,
+    ) -> Result<(), String> {
         let call_graph = analysis.call_graph();
 
         for func in &analysis.module().functions {

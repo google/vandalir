@@ -27,8 +27,8 @@ use llvm_ir::types::Typed;
 use llvm_ir::Module as LLVMModule;
 
 use crate::common::{fact_create, FactContainer, ToStrArray};
-use crate::types::TypeParser;
 use crate::impl_tostring;
+use crate::types::TypeParser;
 
 #[derive(Debug, Clone)]
 pub struct Constant {
@@ -426,6 +426,11 @@ impl ConstantParser {
             tid,
         });
         Ok(cid)
+    }
+
+    pub fn get(&self, constant: &&LLVMConstant) -> Option<i64> {
+        let name = &constant.to_string();
+        self.constants_map.get(name).copied()
     }
 
     pub fn parse(
