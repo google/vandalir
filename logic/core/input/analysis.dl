@@ -23,124 +23,131 @@
 
 .decl func_caller (
     id: id_t,
-    func: symbol,
-    arg: symbol
+    func: func_t,
+    arg: func_t
 )
 INPUT(func_caller)
 
 .decl func_callee (
     id: id_t,
-    func: symbol,
-    arg: symbol
+    func: func_t,
+    arg: func_t
 )
 INPUT(func_callee)
 
+.decl func_ext_callee (
+    id: id_t,
+    func: func_t,
+    arg: symbol
+)
+INPUT(func_ext_callee)
+
 .decl func_block_return (
     id: id_t,
-    func: symbol,
-    arg: name_t
+    func: func_t,
+    arg: block_t
 )
 INPUT(func_block_return)
 
 .decl func_block_entry (
     id: id_t,
-    func: symbol,
-    arg: name_t
+    func: func_t,
+    arg: block_t
 )
 INPUT(func_block_entry)
 
 .decl block_pred (
     id: id_t,
-    func: symbol,
-    blk: name_t,
-    arg: name_t
+    func: func_t,
+    blk: block_t,
+    arg: block_t
 )
 INPUT(block_pred)
 
 .decl block_succ (
     id: id_t,
-    func: symbol,
-    blk: name_t,
-    arg: name_t
+    func: func_t,
+    blk: block_t,
+    arg: block_t
 )
 INPUT(block_succ)
 
 .decl block_control_dependency (
     id: id_t,
-    func: symbol,
-    blk: name_t,
-    arg: name_t
+    func: func_t,
+    blk: block_t,
+    arg: block_t
 )
 INPUT(block_control_dependency)
 
 .decl block_imm_control_dependency (
     id: id_t,
-    func: symbol,
-    blk: name_t,
-    arg: name_t
+    func: func_t,
+    blk: block_t,
+    arg: block_t
 )
 INPUT(block_imm_control_dependency)
 
 .decl block_control_dependent (
     id: id_t,
-    func: symbol,
-    blk: name_t,
-    arg: name_t
+    func: func_t,
+    blk: block_t,
+    arg: block_t
 )
 INPUT(block_control_dependent)
 
 .decl block_imm_control_dependent (
     id: id_t,
-    func: symbol,
-    blk: name_t,
-    arg: name_t
+    func: func_t,
+    blk: block_t,
+    arg: block_t
 )
 INPUT(block_imm_control_dependent)
 
 .decl block_ipostdom (
     id: id_t,
-    func: symbol,
-    blk: name_t,
-    arg: name_t
+    func: func_t,
+    blk: block_t,
+    arg: block_t
 )
 INPUT(block_ipostdom)
 
 .decl block_ipostdom_children (
     id: id_t,
-    func: symbol,
-    blk: name_t,
-    arg: name_t
+    func: func_t,
+    blk: block_t,
+    arg: block_t
 )
 INPUT(block_ipostdom_children)
 
 .decl block_ipostdom_children_of_ret (
     id: id_t,
-    func: symbol,
-    blk: name_t,
-    arg: name_t
+    func: func_t,
+    blk: block_t,
+    arg: block_t
 )
 INPUT(block_ipostdom_children_of_ret)
 
 .decl block_idom (
     id: id_t,
-    func: symbol,
-    blk: name_t,
-    arg: name_t
+    func: func_t,
+    blk: block_t,
+    arg: block_t
 )
 INPUT(block_idom)
 
 .decl block_idom_children (
     id: id_t,
-    func: symbol,
-    blk: name_t,
-    arg: name_t
+    func: func_t,
+    blk: block_t,
+    arg: block_t
 )
 INPUT(block_idom_children)
 
 .decl block_idom_children_of_ret (
     id: id_t,
-    func: symbol,
-    blk: name_t,
-    arg: name_t
+    func: func_t,
+    blk: block_t,
+    arg: block_t
 )
 INPUT(block_idom_children_of_ret)

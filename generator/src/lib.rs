@@ -24,10 +24,12 @@ pub mod constants;
 pub mod instructions;
 pub mod types;
 
+use std::collections::HashMap;
 use std::path::Path;
 
 use llvm_ir::module::{DLLStorageClass, Linkage, ThreadLocalMode, UnnamedAddr, Visibility};
 use llvm_ir::Module as LLVMModule;
+use llvm_ir_analysis::ModuleAnalysis as LLVMModuleAnalysis;
 
 use crate::common::{fact_create, FactContainer, ToStrArray};
 
@@ -259,11 +261,17 @@ impl FactGenerator {
 
     pub fn parse_llvm(&mut self, path: &Path) -> Result<(), String> {
         let module = LLVMModule::from_bc_path(path)?;
+        let analysis = LLVMModuleAnalysis::new(&module);
 
         self.parse_globals(&module)?;
 
+        let mut funcs_map = HashMap::new();
+
         for func in &module.functions {
             let func_id = self.functions.get_id();
+            let mut blocks_map = HashMap::new();
+
+            funcs_map.insert(func.name.clone(), func_id);
 
             let ret_tid = self.type_parser.parse(&module, &func.return_type)?;
             self.functions.push(Function {
@@ -287,6 +295,8 @@ impl FactGenerator {
 
             for block in &func.basic_blocks {
                 let block_id = self.blocks.get_id();
+                blocks_map.insert(block.name.to_string(), block_id);
+
                 for instr in &block.instrs {
                     self.instr_parser.parse(
                         &module,
@@ -312,9 +322,10 @@ impl FactGenerator {
                     tid: term_id,
                 });
             }
+            self.analysis.parse_blocks(&analysis, func_id, &blocks_map, func)?;
         }
 
-        self.analysis.parse(&module)?;
+        self.analysis.parse_functions(&analysis, &funcs_map)?;
 
         Ok(())
     }

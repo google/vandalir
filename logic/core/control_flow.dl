@@ -31,111 +31,111 @@
 
 .comp _ControlFlowGraph {
 
-  .decl block_predecessor(func_name: symbol, bname: name_t, bname1: name_t)
+  .decl block_predecessor(fid: func_t, bid: block_t, bid_pred: block_t)
   CF_OUTPUT(block_predecessor)
 
-  block_predecessor(func_name, bname, bname_pred) :-
-    block_pred(_, func_name, bname, bname_pred).
+  block_predecessor(fid, bid, bid_pred) :-
+    block_pred(_, fid, bid, bid_pred).
 
-  block_predecessor(func_name, bname, bname_pred) :-
-    block_pred(_, func_name, bname, tmp),
-    block_predecessor(func_name, tmp, bname_pred).
+  block_predecessor(fid, bid, bid_pred) :-
+    block_pred(_, fid, bid, tmp),
+    block_predecessor(fid, tmp, bid_pred).
 
-  .decl block_successor(func_name: symbol, bname_A: name_t, bname_B: name_t)
+  .decl block_successor(fid: func_t, A: block_t, B: block_t)
   CF_OUTPUT(block_successor)
 
-  block_successor(func_name, A, B) :-
-    block_succ(_, func_name, A, B).
+  block_successor(fid, A, B) :-
+    block_succ(_, fid, A, B).
 
-  block_successor(func_name, A, B) :-
-    block_succ(_, func_name, A, tmp),
-    block_successor(func_name, tmp, B).
+  block_successor(fid, A, B) :-
+    block_succ(_, fid, A, tmp),
+    block_successor(fid, tmp, B).
 
-  .decl block_successor_without_node(func_name: symbol,
-                                     bname_A: name_t,
-                                     bname_B: name_t,
-                                     bname_C: name_t)  // exclude path with this node in it
+  .decl block_successor_without_node(fid: func_t,
+                                     A: block_t,
+                                     B: block_t,
+                                     C: block_t)  // exclude path with this node in it
   CF_OUTPUT(block_successor_without_node)
 
-  block_successor_without_node(func_name, A, B, C) :-
-    block_succ(_, func_name, C, _),
-    block_succ(_, func_name, A, B),
+  block_successor_without_node(fid, A, B, C) :-
+    block_succ(_, fid, C, _),
+    block_succ(_, fid, A, B),
     C != B.
 
-  block_successor_without_node(func_name, A, B, C) :-
-    block_succ(_, func_name, A, tmp),
+  block_successor_without_node(fid, A, B, C) :-
+    block_succ(_, fid, A, tmp),
     C != tmp,
-    block_successor_without_node(func_name, tmp, B, C).
+    block_successor_without_node(fid, tmp, B, C).
 
-  .decl block_successor_without_node1(func_name: symbol,
-                                     bname_A: name_t,
-                                     bname_B: name_t,
-                                     bname_C: name_t)  // exclude path with this node in it
+  .decl block_successor_without_node1(fid: func_t,
+                                      A: block_t,
+                                      B: block_t,
+                                      C: block_t)  // exclude path with this node in it
   CF_OUTPUT(block_successor_without_node1)
 
-  block_successor_without_node1(func_name, C, A, B) :-
-    block_succ(_, func_name, C, _),
-    block_succ(_, func_name, A, B),
+  block_successor_without_node1(fid, C, A, B) :-
+    block_succ(_, fid, C, _),
+    block_succ(_, fid, A, B),
     C != B.
 
-  block_successor_without_node1(func_name, C, A, B) :-
-    block_succ(_, func_name, A, tmp),
+  block_successor_without_node1(fid, C, A, B) :-
+    block_succ(_, fid, A, tmp),
     C != tmp,
-    block_successor_without_node1(func_name, C, tmp, B).
+    block_successor_without_node1(fid, C, tmp, B).
 
   // A dom B
-  .decl block_dom(func_name: symbol, bname_A: name_t, bname_B: name_t)
+  .decl block_dom(fid: func_t, A: block_t, B: block_t)
   CF_OUTPUT(block_dom)
 
-  block_dom(func_name, A, B) :-
-    block_idom(_, func_name, B, A).
+  block_dom(fid, A, B) :-
+    block_idom(_, fid, B, A).
 
-  block_dom(func_name, A, B) :-
-    block_idom(_, func_name, B, tmp),
-    block_dom(func_name, A, tmp).
+  block_dom(fid, A, B) :-
+    block_idom(_, fid, B, tmp),
+    block_dom(fid, A, tmp).
 
 
-  .decl block_forward_egdes(func_name: symbol, bname_A: name_t, bname_B: name_t)
+  .decl block_forward_egdes(fid: func_t, A: block_t, B: block_t)
   CF_OUTPUT(block_forward_egdes)
 
-  block_forward_egdes(func_name, A, B) :-
-    block_forward_egde(func_name, A, B).
+  block_forward_egdes(fid, A, B) :-
+    block_forward_egde(fid, A, B).
 
-  block_forward_egdes(func_name, A, B) :-
-    block_forward_egde(func_name, A, tmp),
-    block_forward_egdes(func_name, tmp, B).
+  block_forward_egdes(fid, A, B) :-
+    block_forward_egde(fid, A, tmp),
+    block_forward_egdes(fid, tmp, B).
 
 
-  .decl block_forward_egde(func_name: symbol, bname_A: name_t, bname_B: name_t)
+  .decl block_forward_egde(fid: func_t, A: block_t, B: block_t)
   CF_OUTPUT(block_forward_egde)
 
-  block_forward_egde(func_name, A, B) :-
-    block_succ(_, func_name, A, B),
-    !block_dom(func_name, B, A).
+  block_forward_egde(fid, A, B) :-
+    block_succ(_, fid, A, B),
+    !block_dom(fid, B, A).
 
 
-  .decl block_back_egde(func_name: symbol, bname_A: name_t, bname_B: name_t)
+  .decl block_back_egde(fid: func_t, A: block_t, B: block_t)
   CF_OUTPUT(block_back_egde)
 
-  block_back_egde(func_name, A, B) :-
-    block_succ(_, func_name, A, B),
-    block_dom(func_name, B, A).
+  block_back_egde(fid, A, B) :-
+    block_succ(_, fid, A, B),
+    block_dom(fid, B, A).
 
   // Natural loop nodes
-  .decl block_loop_node(func_name: symbol, head: name_t, node: name_t)
+  .decl block_loop_node(fid: func_t, head: block_t, node: block_t)
   CF_OUTPUT(block_loop_node)
 
-  block_loop_node(func_name, head, node) :-
-    block_back_egde(func_name, tail, head),
-    block_successor_without_node(func_name, node, tail, head),
-    block_dom(func_name, head, node).
+  block_loop_node(fid, head, node) :-
+    block_back_egde(fid, tail, head),
+    block_successor_without_node(fid, node, tail, head),
+    block_dom(fid, head, node).
 
-  block_loop_node(func_name, head, node) :-
-    block_back_egde(func_name, tail, head),
+  block_loop_node(fid, head, node) :-
+    block_back_egde(fid, tail, head),
     node = tail.
 
-  block_loop_node(func_name, head, node) :-
-    block_back_egde(func_name, _, head),
+  block_loop_node(fid, head, node) :-
+    block_back_egde(fid, _, head),
     node = head.
 }
 

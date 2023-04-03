@@ -39,19 +39,17 @@
   LP_OUTPUT(get)
 
   get(fid, head, tail) :-
-    Function.get(fid, fname, _, _),
-    CFG.block_back_egde(fname, tail_name, head_name),
-    Block.get(fid, head, head_name),
-    Block.get(fid, tail, tail_name).
+    CFG.block_back_egde(fid, tail, head),
+    Block.get(fid, head, _),
+    Block.get(fid, tail, _).
 
   .decl node(fid: func_t, head: block_t, node: block_t)
   LP_OUTPUT(node)
 
   node(fid, head, node) :-
-    Function.get(fid, fname, _, _),
-    Block.get(fid, head, head_name),
-    Block.get(fid, node, node_name),
-    CFG.block_loop_node(fname, head_name, node_name).
+    Block.get(fid, head, _),
+    Block.get(fid, node, _),
+    CFG.block_loop_node(fid, head, node).
 
   .decl condition_instr(fid: func_t, head: block_t, iid: instr_t)
   LP_OUTPUT(condition_instr)

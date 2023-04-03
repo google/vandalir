@@ -45,10 +45,8 @@
     Instruction.get(iid, bid, _, _),
     Instruction.get(iid_before, bid_before, _, _),
     bid != bid_before,
-    Block.get(fid, bid, bname),
-    Block.get(fid, bid_before, bname_before),
-    Function.get(fid, fname, _, _),
-    CFG.block_forward_egdes(fname, bname_before, bname).
+    Block.get(fid, bid, _),
+    CFG.block_forward_egdes(fid, bid_before, bid).
 }
 
 .init InstructionAnalysis = _InstructionAnalysis
