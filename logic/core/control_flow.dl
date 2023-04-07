@@ -20,7 +20,7 @@
 #pragma once
 
 #include "defines.dl"
-#include "input/analysis.dl"
+#include "input/control_flow.dl"
 
 #ifdef DEBUG_CFG
 #define CF_OUTPUT(x) OUTPUT_IMPL(x)
@@ -66,22 +66,6 @@
     block_succ(_, fid, A, tmp),
     C != tmp,
     block_successor_without_node(fid, tmp, B, C).
-
-  .decl block_successor_without_node1(fid: func_t,
-                                      A: block_t,
-                                      B: block_t,
-                                      C: block_t)  // exclude path with this node in it
-  CF_OUTPUT(block_successor_without_node1)
-
-  block_successor_without_node1(fid, C, A, B) :-
-    block_succ(_, fid, C, _),
-    block_succ(_, fid, A, B),
-    C != B.
-
-  block_successor_without_node1(fid, C, A, B) :-
-    block_succ(_, fid, A, tmp),
-    C != tmp,
-    block_successor_without_node1(fid, C, tmp, B).
 
   // A dom B
   .decl block_dom(fid: func_t, A: block_t, B: block_t)
