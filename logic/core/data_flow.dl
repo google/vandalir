@@ -1,0 +1,76 @@
+// Copyright (c) 2023 Google LLC
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy of
+// this software and associated documentation files (the "Software"), to deal in
+// the Software without restriction, including without limitation the rights to
+// use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+// the Software, and to permit persons to whom the Software is furnished to do so,
+// subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+// FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+// COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+// IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+// CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+#pragma once
+
+#include "defines.dl"
+#include "input/data_flow_local.dl"
+#include "function.dl"
+#include "global.dl"
+
+#ifdef DEBUG_DFG
+#define DFG_OUTPUT(x) OUTPUT_IMPL(x)
+#else
+#define DFG_OUTPUT(x)
+#endif
+
+
+.comp _DataFlowGraph {
+
+  .decl source_instr(fid: func_t, bid: block_t, sink: instr_t, src: instr_t)
+  DFG_OUTPUT(source_instr)
+
+  source_instr(fid, bid, sink, src) :-
+    data_flow_local(_, fid, bid, sink, DFL_STYPE_INSTR, id),
+    src = as(id, instr_t).
+
+
+  .decl source_arg(fid: func_t, bid: block_t, sink: instr_t, name: name_t)
+  DFG_OUTPUT(source_arg)
+
+  source_arg(fid, bid, sink, name) :-
+    data_flow_local(_, fid, bid, sink, DFL_STYPE_FUNC_ARG, id),
+    aid = as(id, func_arg_t),
+    Function.arg(fid, aid, name, _).
+
+
+  .decl source_global(fid: func_t, bid: block_t, sink: instr_t, name: name_t)
+  DFG_OUTPUT(source_global)
+
+  source_global(fid, bid, sink, name) :-
+    data_flow_local(_, fid, bid, sink, DFL_STYPE_GLOBAL, id),
+    gid = as(id, global_t),
+    GlobalVar.get(gid, name, _).
+
+
+  .decl sources(fid: func_t, bid: block_t, sink: instr_t, src: instr_t)
+  DFG_OUTPUT(sources)
+
+  sources(fid, bid, sink, src) :-
+    data_flow_local(_, fid, bid, sink, DFL_STYPE_INSTR, id),
+    src = as(id, instr_t).
+
+  sources(fid, bid, sink, src) :-
+    sources(fid, bid, sink, tmp),
+    data_flow_local(_, fid, _, tmp, DFL_STYPE_INSTR, id),
+    src = as(id, instr_t),
+    sink != src.
+}
+
+.init DFG = _DataFlowGraph
