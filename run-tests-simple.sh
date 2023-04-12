@@ -104,7 +104,16 @@ do
 
   rm -rf ${OUTPUT}/facts
   rm -rf ${OUTPUT}/out
-  python3 ${MY_DIR}/run.py -o ${OUTPUT} $IN >/dev/null 2>&1
+
+  ERROR=$( { python3 ${MY_DIR}/run.py -o ${OUTPUT} $IN; } 2>&1 )
+
+  if [ $? -ne 0 ];
+  then
+    echo -e "\n\e[31mERROR\e[0m Failed to execute 'run.py':\n\n"
+    echo "${ERROR}"
+    exit 1
+  fi
+
   RESULT=`cat ${OUTPUT}/out/RESULTS.csv`
 
   if [[ ${TEST} == *"bad"* ]];
