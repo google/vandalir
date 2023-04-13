@@ -27,6 +27,7 @@
 #include "operand_utils.dl"
 #include "type.dl"
 #include "global.dl"
+#include "data_flow.dl"
 
 
 #ifdef DEBUG_VREG_VALUE_ANALYSIS
@@ -42,10 +43,12 @@
 #define VA_GET_INT_FROM_OP(fid, iid, op, val) \
     ( \
      Operand.int(op, val); \
-     Operand.vreg(op, op##_vreg, op##_type), \
-     get_int_impl(fid, iid_##op, op##_vreg, val), \
-     InstructionAnalysis.is_instruction_before(iid, iid_##op), \
-     !VRegAnalysis.modified(iid_##op, iid, op##_vreg) \
+     Operand.vreg(op, vreg_##op, type), \
+     get_int_impl(fid, iid_##op, vreg_##op, val), \
+     DFG.source_instr(fid, _, iid, iid_##op); \
+     Operand.vreg(op, vreg_##op, type_##op), \
+     get_int_impl(fid, iid_##op, vreg_##op, val), \
+     DFG.source_arg(fid, _, iid, vreg_##op) \
     )
 
   // get possible integer values of VREG in specific function
@@ -218,8 +221,7 @@
   get_int_impl(fid, iid, vreg, value) :-
     VRegAnalysis.same_external(fid, iid, vreg, _, fid_ext, iid_ext,
                                vreg_ext, _),
-    InstructionAnalysis.is_instruction_before(iid_ext, iid_impl),
-    !VRegAnalysis.modified(iid_impl, iid_ext, vreg_ext),
+    DFG.source_instr(fid_ext, _, iid_ext, iid_impl),
     get_int_impl(fid_ext, iid_impl, vreg_ext, value).
 
   .decl is_null(fid: func_t, iid: instr_t, vreg: name_t, tid: type_t)
@@ -234,15 +236,13 @@
 
   is_null(fid, iid, vreg, tid) :-
     Block.get(fid, _, _),
-    VRegAnalysis.equel(fid, iid, vreg, tid, vreg_sub, _),
-    InstructionAnalysis.is_instruction_before(iid, iid_n),
+    VRegAnalysis.equel(fid, iid, vreg, tid, _, vreg_sub, _),
 
-    C = count : {
-      InstructionAnalysis.is_instruction_before(iid, iid_mod2),
-      InstructionAnalysis.is_instruction_before(iid_mod2, iid_n),
-      VRegAnalysis.modified_at(fid, iid, vreg, iid_mod2)
-    },
-    C = 0,
+    (
+      DFG.source_instr(fid, _, iid, iid_n);
+      DFG.source_arg(fid, _, iid, vreg_sub);
+      DFG.source_global(fid, _, iid, vreg_sub)
+    ),
     is_null(fid, iid_n, vreg_sub, tid).
 
   is_null(fid, iid, vreg, tid) :-
@@ -309,19 +309,19 @@
     size(fid, iid, name, tid, size).
 
   buff_size(fid, iid, name, tid, size) :-
-    VRegAnalysis.equel(fid, iid, name, tid, name_new, tid_new),
+    VRegAnalysis.equel(fid, iid, name, tid, _, name_new, tid_new),
     Type.equel(tid, tid_new),
     InstructionAnalysis.is_instruction_before(iid, iid_bz),
     buff_size(fid, iid_bz, name_new, tid_new, size).
 
   buff_size(fid, iid, name, tid, size) :-
-    VRegAnalysis.equel(fid, iid, name, tid, name_new, tid_new),
+    VRegAnalysis.equel(fid, iid, name, tid, _, name_new, tid_new),
     Type.equel(tid, tid_new),
     InstructionAnalysis.is_instruction_before(iid, iid_bz),
     buff_size(fid, iid_bz, name_new, tid_new, size).
 
   buff_size(fid, iid, name, tid, size) :-
-    VRegAnalysis.equel(fid, iid, name, tid, name_new, tid_eq),
+    VRegAnalysis.equel(fid, iid, name, tid, _, name_new, tid_eq),
     !Type.equel(tid, tid_eq),
     (
       !Type.Pointer.pointee(tid_eq, _),
@@ -351,14 +351,14 @@
     size = total_bits / bits.
 
   buff_size(fid, iid, name, tid, size) :-
-    VRegAnalysis.equel(fid, iid, name, tid, tmp, tmp_tid),
+    VRegAnalysis.equel(fid, iid, name, tid, _, tmp, tmp_tid),
     InstructionAnalysis.is_instruction_before(iid, iid_pt),
-    VRegAnalysis.point_to(fid, iid_pt, tmp, tmp_tid, name_new, tid_new),
+    VRegAnalysis.point_to(fid, iid_pt, tmp, tmp_tid, _, name_new, tid_new),
     InstructionAnalysis.is_instruction_before(iid_pt, iid_bs),
     buff_size(fid, iid_bs, name_new, tid_new, size).
 
   buff_size(fid, iid, name, tid, size) :-
-    VRegAnalysis.equel(fid, iid, name, tid, name_new, tid_new),
+    VRegAnalysis.equel(fid, iid, name, tid, _, name_new, tid_new),
     InstructionAnalysis.is_instruction_before(iid, iid_new),
     VRegAnalysis.same_external(fid, iid_new, name_new, tid_new, fid_ext, iid_ext,
                                name_ext, tid_ext),

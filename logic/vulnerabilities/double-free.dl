@@ -50,7 +50,7 @@ double_free(func, iid, level, msg) :-
   Instruction.Call.global_func(iid_prev, bid_prev, _, name, _),
   Instruction.Call.ith_operand(iid_prev, 0, op_prev),
   OperandUtil.name(op_prev, vreg_prev, _),
-  VRegAnalysis.equel(fid, iid_tmp, vreg, _, vreg_prev, _),
+  VRegAnalysis.equel(fid, iid_tmp, vreg, _, _, vreg_prev, _),
   InstructionAnalysis.is_instruction_before(iid, iid_tmp),
   level = "Vulnerability",
   msg = cat("Double Free: VREG:", vreg, "(block ", bname, " / iid ", to_string(iid),

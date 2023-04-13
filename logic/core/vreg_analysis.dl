@@ -72,11 +72,12 @@
               iid1: instr_t,
               vreg1: name_t,
               tid1: type_t,
+              iid2: instr_t,
               vreg2: name_t,
               tid2: type_t)
   VRA_OUTPUT(equel)
 
-  equel(fid, iid1, vreg1, tid1, vreg2, tid2) :-
+  equel(fid, iid1, vreg1, tid1, iid2, vreg2, tid2) :-
     Block.get(fid, bid, _),
     Instruction.Store.get(iid1, bid, addr_op, value_op),
     (
@@ -85,10 +86,12 @@
       Operand.global_ref(addr_op, vreg1, tid1)
     ),
     tid1 = tid2,
+    iid2 = iid1,
     OperandUtil.name(value_op, vreg2, tid2).
 
-  equel(fid, iid1, vreg1, tid1, vreg2, tid2) :-
+  equel(fid, iid1, vreg1, tid1, iid2, vreg2, tid2) :-
     Block.get(fid, bid, _),
+    iid2 = iid1,
     Instruction.Store.get(iid1, bid, addr_op, value_op),
     Type.Pointer.pointee(tid1_ptr, tid1),
     Operand.vreg(addr_op, vreg1, tid1_ptr),
@@ -96,8 +99,9 @@
 
   // TODO: this case is true only if index is 0.
   // in other cases it is 'partial' true.
-  equel(fid, iid1, vreg1, tid1, vreg2, tid2) :-
+  equel(fid, iid1, vreg1, tid1, iid2, vreg2, tid2) :-
     Block.get(fid, bid, _),
+    iid2 = iid1,
     Instruction.GetElementPtr.get(iid1, bid, vreg1, addr_op, _),
     Instruction.GetElementPtr.index(iid1, idx_op),
     Operand.int(idx_op, _),
@@ -106,7 +110,7 @@
     type(fid, vreg2, tid2),
     type(fid, vreg1, tid1).
 
-  equel(fid, iid1, vreg1, tid1, vreg2, tid2) :-
+  equel(fid, iid1, vreg1, tid1, iid2, vreg2, tid2) :-
     Block.get(fid, bid, _),
     Instruction.Load.get(iid1, bid, vreg1, addr_op),
     (
@@ -115,62 +119,66 @@
       Operand.global_ref(addr_op, vreg2, tid1)
     ),
     tid2 = tid1,
+    iid2 = iid1,
     type(fid, vreg2, tid2).
 
   // Example:
   // If %0 is i8** type, then
   //    `%1 = load i8*, i8** %0`
   // means that %1 is equel to the vreg which is pointed by %0
-  equel(fid, iid1, vreg1, tid1, vreg2, tid2) :-
+  equel(fid, iid1, vreg1, tid1, iid2, vreg2, tid2) :-
     Block.get(fid, bid, _),
     Instruction.Load.get(iid1, bid, vreg1, addr_op),
     OperandUtil.name(addr_op, tmp, addr_tid),
     Type.Pointer.pointee(addr_tid, tid1),
     type(fid, tmp, tmp_tid),
     tmp_tid = addr_tid,
-    InstructionAnalysis.is_instruction_before(iid1, iid_tmp),
-    point_to(fid, iid_tmp, tmp, tmp_tid, vreg2, tid2).
+    DFG.source_instr(fid, _, iid1, iid_tmp),
+    point_to(fid, iid_tmp, tmp, tmp_tid, iid2, vreg2, tid2).
 
   // if %10 -> %1 and %11 -> %1, then %10 == %11
-  equel(fid, iid1, vreg1, tid1, vreg2, tid2) :-
-    point_to(fid, iid1, vreg1, tid1, tmp, tid_tmp),
-    InstructionAnalysis.is_instruction_before(iid1, iid_tmp),
-    point_to(fid, iid_tmp, vreg2, tid2, tmp, tid_tmp).
+  equel(fid, iid1, vreg1, tid1, iid2, vreg2, tid2) :-
+    point_to(fid, iid1, vreg1, tid1, iid_tmp, tmp, tid_tmp),
+    InstructionAnalysis.is_instruction_before(iid1, iid2),
+    point_to(fid, iid2, vreg2, tid2, iid_tmp, tmp, tid_tmp).
 
-  equel(fid, iid1, vreg1, tid1, vreg2, tid2) :-
+  equel(fid, iid1, vreg1, tid1, iid2, vreg2, tid2) :-
     Block.get(fid, bid, _),
+    iid2 = iid1,
     Instruction.Conversation.operands(iid1, bid, op, tid1, vreg1),
     OperandUtil.name(op, vreg2, tid2).
 
-  equel(fid, iid1, vreg1, tid1, vreg2, tid2) :-
+  equel(fid, iid1, vreg1, tid1, iid2, vreg2, tid2) :-
     Block.get(fid, bid, _),
+    iid2 = iid1,
     Instruction.Conversation.operands(iid1, bid, op, tid1, vreg1),
     OperandUtil.name(op, vreg2, tid2),
     Type.Pointer.ptr_type(tid1, _, lvl),
     Type.Pointer.ptr_type(tid2, _, lvl).
 
-  equel(fid, iid1, vreg1, tid1, vreg2, tid2) :-
-    equel(fid, iid1, vreg1, tid1, tmp, tid_tmp),
-    equel(fid, iid_tmp, tmp, tid_tmp, vreg2, tid2),
-    InstructionAnalysis.is_instruction_before(iid1, iid_tmp),
-    !modified(iid_tmp, iid1, tmp).
+  equel(fid, iid1, vreg1, tid1, iid2, vreg2, tid2) :-
+    equel(fid, iid1, vreg1, tid1, iid1_tmp, tmp, tid_tmp),
+    equel(fid, iid2_tmp, tmp, tid_tmp, iid2, vreg2, tid2),
+    DFG.sources(fid, _, iid1_tmp, iid2_tmp).
 
-  equel(fid, iid1, vreg1, tid1, vreg2, tid2) :-
-    equel(fid, iid1, vreg1, tid1, tmp, tid_tmp),
-    equel(fid, iid_tmp, vreg2, tid2, tmp, tid_tmp),
-    InstructionAnalysis.is_instruction_before(iid1, iid_tmp),
-    !modified(iid_tmp, iid1, tmp).
+  equel(fid, iid1, vreg1, tid1, iid2, vreg2, tid2) :-
+    equel(fid, iid1, vreg1, tid1, iid_tmp1, tmp, tid_tmp),
+    equel(fid, iid2, vreg2, tid2, iid_tmp2, tmp, tid_tmp),
+    DFG.sources(fid, _, iid_tmp1, src_iid),
+    DFG.sources(fid, _, iid_tmp2, src_iid),
+    InstructionAnalysis.is_instruction_before(iid1, iid2).
 
   // Same as `equel` except it ignores types matching.
   .decl point_to(fid: func_t,
               iid1: instr_t,
               vreg1: name_t,
               tid1: type_t,
+              iid2: instr_t,
               vreg2: name_t,
               tid2: type_t)
   VRA_OUTPUT(point_to)
 
-  point_to(fid, iid1, vreg1, tid1, vreg2, tid2) :-
+  point_to(fid, iid1, vreg1, tid1, iid2, vreg2, tid2) :-
     Block.get(fid, bid, _),
     Instruction.Store.get(iid1, bid, addr_op, value_op),
     OperandUtil.name(addr_op, vreg1, tid_addr),
@@ -179,6 +187,7 @@
     type(fid, vreg2, tid2),
     Type.Pointer.pointee(tid_addr, tid1),
     Type.Pointer.pointee(tid_value, tid2),
+    iid2 = iid1,
     tid1 = tid_value.
 
   // case:
@@ -186,7 +195,7 @@
   //   %13 = bitcast %union.Type* %2 to i8**
   //   store i8* %12, i8** %13, align 8
   // result: %13 -> %12
-  point_to(fid, iid1, vreg1, tid1, vreg2, tid2) :-
+  point_to(fid, iid1, vreg1, tid1, iid2, vreg2, tid2) :-
     Block.get(fid, bid, _),
     Instruction.Store.get(iid1, bid, addr_op, value_op),
     OperandUtil.name(addr_op, vreg1, tid1),
@@ -194,20 +203,19 @@
     type(fid, vreg1, tid1),
     type(fid, vreg2, tid2),
     Type.is_pointer(tid2),
+    iid2 = iid1,
     Type.Pointer.pointee(tid1, tid2).
 
-  point_to(fid, iid1, vreg1, tid1, vreg2, tid2) :-
-    point_to(fid, iid1, vreg1, tid1, tmp, tid_tmp),
-    equel(fid, iid_tmp, tmp, tid_tmp, vreg2, tid2),
-    InstructionAnalysis.is_instruction_before(iid1, iid_tmp),
-    !modified(iid_tmp, iid1, tmp).
 
-  point_to(fid, iid1, vreg1, tid1, vreg2, tid2) :-
-    equel(fid, iid1, vreg1, tid1, tmp, tmp_tid),
-    point_to(fid, iid_tmp, tmp, tmp_tid, vreg2, tid2),
-    InstructionAnalysis.is_instruction_before(iid1, iid_tmp),
-    !modified(iid_tmp, iid1, tmp).
+  // TODO: need to add check that relation between iid_tmp1 and iid_tmp2
+  point_to(fid, iid1, vreg1, tid1, iid2, vreg2, tid2) :-
+    point_to(fid, iid1, vreg1, tid1, /* iid_tmp1 */ _, tmp, tid_tmp),
+    equel(fid, /* iid_tmp2 */_, tmp, tid_tmp, iid2, vreg2, tid2).
 
+  // TODO: need to add check that relation between iid_tmp1 and iid_tmp2
+  point_to(fid, iid1, vreg1, tid1, iid2, vreg2, tid2) :-
+    equel(fid, iid1, vreg1, tid1, /* iid_tmp1 */ _, tmp, tmp_tid),
+    point_to(fid, /* iid_tmp2 */ _, tmp, tmp_tid, iid2, vreg2, tid2).
 
   .decl same_external(fid1: func_t,
                        iid1: instr_t,
@@ -238,36 +246,6 @@
     Instruction.Ret.get(iid2, bid2, op),
     OperandUtil.name(op, vreg2, tid2).
 
-  .decl modified(iid_start: instr_t, iid_end: instr_t, vreg: name_t)
-  VRA_OUTPUT(modified)
-
-  modified(iid_start, iid_end, vreg) :-
-    Instruction.Store.get(iid_store, _, addr_op, _),
-    Operand.vreg(addr_op, vreg, _),
-    InstructionAnalysis.is_instruction_before(iid_store, iid_start),
-    InstructionAnalysis.is_instruction_before(iid_end, iid_store).
-
-  modified(iid_start, iid_end, vreg) :-
-    Instruction.Call.get(iid_call, _, vreg, _, _),
-    InstructionAnalysis.is_instruction_before(iid_call, iid_start),
-    InstructionAnalysis.is_instruction_before(iid_end, iid_call).
-
-  .decl modified_at(fid: func_t, iid: instr_t, vreg: name_t, iid_mod: instr_t)
-  VRA_OUTPUT(modified_at)
-
-  modified_at(fid, iid, vreg, iid) :-
-    Block.get(fid, bid, _),
-    Instruction.Store.get(iid, bid, addr_op, _),
-    Operand.vreg(addr_op, vreg, _).
-
-  modified_at(fid, iid, vreg, iid) :-
-    Block.get(fid, bid, _),
-    Instruction.Call.get(iid, bid, vreg, _, _).
-
-  modified_at(fid, iid, vreg, iid_mod) :-
-    equel(fid, iid, vreg, _, vreg_new, _),
-    InstructionAnalysis.is_instruction_before(iid, iid_tmp),
-    modified_at(fid, iid_tmp, vreg_new, iid_mod).
 
   .decl type(fid: func_t, name: name_t, tid: type_t)
   VRA_OUTPUT(type)
