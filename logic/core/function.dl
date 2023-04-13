@@ -36,6 +36,12 @@
   get(fid, name, tid, num_args) :-
     function(fid, name, _, tid, num_args).
 
+  .decl arg(fid: func_t, id: func_arg_t, name: name_t, tid: type_t)
+  FUNC_OUTPUT(arg)
+
+  arg(fid, id, name, tid) :-
+    function_argument(id, fid, name, tid).
+
   .decl ith_arg(fid: func_t, idx: number, name: name_t, tid: type_t)
   FUNC_OUTPUT(ith_arg)
 
