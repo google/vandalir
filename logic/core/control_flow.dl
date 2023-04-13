@@ -105,6 +105,18 @@
     block_succ(_, fid, A, B),
     block_dom(fid, B, A).
 
+
+  .decl block_back_egdes(fid: func_t, A: block_t, B: block_t)
+  CF_OUTPUT(block_back_egdes)
+
+  block_back_egdes(fid, A, B) :-
+    block_back_egde(fid, A, B).
+
+  block_back_egdes(fid, A, B) :-
+    block_back_egde(fid, A, tmp),
+    block_back_egdes(fid, tmp, B).
+
+
   // Natural loop nodes
   .decl block_loop_node(fid: func_t, head: block_t, node: block_t)
   CF_OUTPUT(block_loop_node)
