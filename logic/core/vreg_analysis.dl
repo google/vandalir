@@ -34,40 +34,6 @@
 
 .comp _VRegAnalysis {
 
-  .decl depends_on(fid: func_t, vreg1: name_t, vreg2: name_t)
-  VRA_OUTPUT(depends_on)
-
-  depends_on(fid, vreg1, vreg2) :-
-    Block.get(fid, bid, _),
-    Instruction.Load.get(_, bid, vreg1, addr),
-    Operand.vreg(addr, vreg2, _).
-
-  depends_on(fid, vreg1, vreg2) :-
-    Block.get(fid, bid, _),
-    Instruction.Conversation.get(iid, bid, vreg1),
-    Instruction.Conversation.operands(iid, bid, op, _, _),
-    Operand.vreg(op, vreg2, _).
-
-  depends_on(fid, vreg1, vreg2) :-
-    Block.get(fid, bid, _),
-    (
-      Instruction.Binary.operands(_, bid, op0, _, vreg1),
-      OperandUtil.name(op0, vreg2, _);
-      Instruction.Binary.operands(_, bid, _, op1, vreg1),
-      OperandUtil.name(op1, vreg2, _)
-    ).
-
-  depends_on(fid, vreg1, vreg2) :-
-    Block.get(fid, bid, _),
-    Instruction.Store.get(_, bid, addr_op, value_op),
-    OperandUtil.name(addr_op, vreg1, _),
-    OperandUtil.name(value_op, vreg2, _).
-
-  depends_on(fid, vreg1, vreg2) :-
-    depends_on(fid, vreg1, tmp),
-    depends_on(fid, tmp, vreg2).
-
-
   .decl equel(fid: func_t,
               iid1: instr_t,
               vreg1: name_t,

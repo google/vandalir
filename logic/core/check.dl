@@ -94,15 +94,20 @@ get_upperbound_limited_value(fid, bid, vreg, idx) :-
 CH_OUTPUT(check_boundary)
 
 check_boundary(fid, bid, cmp_iid, pred, vreg, value_op, true_label, false_label) :-
-  CFG.block_forward_egdes(fid, cmp_bid, bid),
+
+  (
+    CFG.block_forward_egdes(fid, cmp_bid, bid);
+    CFG.block_back_egdes(fid, cmp_bid, bid) // "do {} while" case
+  ),
 
   Instruction.ICmp.get(cmp_iid, cmp_bid, cmp_dest),
   Instruction.ICmp.operands(cmp_iid, pred, op0, value_op),
   (
-    VRegAnalysis.depends_on(fid, vreg, op0_vreg);
-    VRegAnalysis.depends_on(fid, op0_vreg, vreg);
-    VRegAnalysis.depends_on(fid, vreg, vreg_tmp),
-    VRegAnalysis.depends_on(fid, op0_vreg, vreg_tmp)
+    DFG.sources_vreg(fid, bid, _, vreg, _, op0_vreg);
+    DFG.sources_vreg(fid, cmp_bid, _, op0_vreg, vreg_iid, vreg),
+    Instruction.get(vreg_iid, bid, _, _);
+    DFG.sources_vreg(fid, bid, _, vreg, _, vreg_tmp),
+    DFG.sources_vreg(fid, cmp_bid, _, op0_vreg, _, vreg_tmp)
   ),
   Operand.vreg(op0, op0_vreg, _),
 
