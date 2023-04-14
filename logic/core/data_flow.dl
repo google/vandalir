@@ -71,6 +71,83 @@
     data_flow_local(_, fid, _, tmp, DFL_STYPE_INSTR, id),
     src = as(id, instr_t),
     sink != src.
+
+
+  .decl sources_vreg(fid: func_t, bid: block_t,
+                    sink_iid: instr_t, sink: name_t,
+                    src_iid: instr_t, src: name_t)
+  DFG_OUTPUT(sources_vreg)
+
+  sources_vreg(fid, bid, sink_iid, sink, src_iid, src) :-
+    source_instr(fid, bid, sink_iid, src_iid),
+    (
+      Instruction.dest(sink_iid, sink);
+      // the sink is addr op for Store instruction
+      Instruction.Store.get(sink_iid, bid, addr_op, _),
+      OperandUtil.name(addr_op, sink, _);
+      // terminator instruction or any other without dest vreg
+      !Instruction.dest(sink_iid, _),
+      !Instruction.Store.get(sink_iid, _, _, _),
+      sink = ""
+    ),
+    (
+      Instruction.dest(src_iid, src);
+      Instruction.Store.get(src_iid, _, src_addr_op, _),
+      OperandUtil.name(src_addr_op, src, _)
+    ).
+
+  // TODO: come up with a better approach.
+  // It is very convinient to return a source's instruction id,
+  // because it can be used to narrow down other relaitions.
+  // Problem is that no an instruction id for a function arg
+  // or global var. Workaround is to return the first function's
+  // instruction id, but it is not perfect.
+  sources_vreg(fid, bid, sink_iid, sink, src_iid, src) :-
+    func_first_bid = min tmp_bid: Block.get(fid, tmp_bid, _),
+    src_iid = min iid: Instruction.get(iid, func_first_bid, _, _),
+
+    source_arg(fid, bid, sink_iid, src),
+    (
+      Instruction.dest(sink_iid, sink);
+      // the sink is addr op for Store instruction
+      Instruction.Store.get(sink_iid, bid, addr_op, _),
+      OperandUtil.name(addr_op, sink, _);
+      // terminator instruction or any other without dest vreg
+      !Instruction.dest(sink_iid, _),
+      !Instruction.Store.get(sink_iid, _, _, _),
+      sink = ""
+    ).
+
+  sources_vreg(fid, bid, sink_iid, sink, src_iid, src) :-
+    func_first_bid = min tmp_bid: Block.get(fid, tmp_bid, _),
+    src_iid = min iid: Instruction.get(iid, func_first_bid, _, _),
+
+    source_global(fid, bid, sink_iid, src),
+    (
+      Instruction.dest(sink_iid, sink);
+      // the sink is addr op for Store instruction
+      Instruction.Store.get(sink_iid, bid, addr_op, _),
+      OperandUtil.name(addr_op, sink, _);
+      // terminator instruction or any other without dest vreg
+      !Instruction.dest(sink_iid, _),
+      !Instruction.Store.get(sink_iid, _, _, _),
+      sink = ""
+    ).
+
+  sources_vreg(fid, bid, sink_iid, sink, src_iid, src) :-
+    source_instr(fid, bid, sink_iid, tmp_iid),
+    sources_vreg(fid, _, tmp_iid, _, src_iid, src),
+    (
+      Instruction.dest(sink_iid, sink);
+      // the sink is addr op for Store instruction
+      Instruction.Store.get(sink_iid, bid, addr_op, _),
+      OperandUtil.name(addr_op, sink, _);
+      // terminator instruction or any other without dest vreg
+      !Instruction.dest(sink_iid, _),
+      !Instruction.Store.get(sink_iid, _, _, _),
+      sink = ""
+    ).
+
 }
 
 .init DFG = _DataFlowGraph
