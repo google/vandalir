@@ -31,6 +31,7 @@ use crate::common::{fact_create, FactContainer, ToStrArray};
 use crate::constants::ConstantParser;
 use crate::impl_tostring;
 use crate::types::TypeParser;
+use crate::DebugLoc;
 
 #[derive(Debug, Clone)]
 pub struct Operand {
@@ -857,6 +858,8 @@ pub struct InstructionParser {
     catchswitch_handlers: FactContainer<NameElement>,
     callbr: FactContainer<CallBrInvokeInstruction>,
     callbr_arg: FactContainer<CallOperand>,
+
+    debugloc: FactContainer<DebugLoc>,
 }
 
 impl InstructionParser {
@@ -910,6 +913,8 @@ impl InstructionParser {
             catchswitch_handlers: FactContainer::new("instruction_catchswitch_handler"),
             callbr: FactContainer::new("instruction_callbr"),
             callbr_arg: FactContainer::new("instruction_callbr_arg"),
+
+            debugloc: FactContainer::new("instruction_debugloc")
         })
     }
 
@@ -1021,82 +1026,82 @@ impl InstructionParser {
             "".to_string()
         };
 
-        let (opcode, instr_id) = match instruction {
+        let (opcode, instr_id, debug) = match instruction {
             LLVMInstruction::Add(instr) => {
                 let inst_id = self.parse_binary(module, type_parser, const_parser, instr)?;
-                ("add", inst_id)
+                ("add", inst_id, &instr.debugloc)
             }
             LLVMInstruction::Sub(instr) => {
                 let inst_id = self.parse_binary(module, type_parser, const_parser, instr)?;
-                ("sub", inst_id)
+                ("sub", inst_id, &instr.debugloc)
             }
             LLVMInstruction::Mul(instr) => {
                 let inst_id = self.parse_binary(module, type_parser, const_parser, instr)?;
-                ("mul", inst_id)
+                ("mul", inst_id, &instr.debugloc)
             }
             LLVMInstruction::UDiv(instr) => {
                 let inst_id = self.parse_binary(module, type_parser, const_parser, instr)?;
-                ("udiv", inst_id)
+                ("udiv", inst_id, &instr.debugloc)
             }
             LLVMInstruction::SDiv(instr) => {
                 let inst_id = self.parse_binary(module, type_parser, const_parser, instr)?;
-                ("sdiv", inst_id)
+                ("sdiv", inst_id, &instr.debugloc)
             }
             LLVMInstruction::URem(instr) => {
                 let inst_id = self.parse_binary(module, type_parser, const_parser, instr)?;
-                ("urem", inst_id)
+                ("urem", inst_id, &instr.debugloc)
             }
             LLVMInstruction::SRem(instr) => {
                 let inst_id = self.parse_binary(module, type_parser, const_parser, instr)?;
-                ("srem", inst_id)
+                ("srem", inst_id, &instr.debugloc)
             }
             LLVMInstruction::And(instr) => {
                 let inst_id = self.parse_binary(module, type_parser, const_parser, instr)?;
-                ("and", inst_id)
+                ("and", inst_id, &instr.debugloc)
             }
             LLVMInstruction::Or(instr) => {
                 let inst_id = self.parse_binary(module, type_parser, const_parser, instr)?;
-                ("or", inst_id)
+                ("or", inst_id, &instr.debugloc)
             }
             LLVMInstruction::Xor(instr) => {
                 let inst_id = self.parse_binary(module, type_parser, const_parser, instr)?;
-                ("xor", inst_id)
+                ("xor", inst_id, &instr.debugloc)
             }
             LLVMInstruction::Shl(instr) => {
                 let inst_id = self.parse_binary(module, type_parser, const_parser, instr)?;
-                ("shl", inst_id)
+                ("shl", inst_id, &instr.debugloc)
             }
             LLVMInstruction::LShr(instr) => {
                 let inst_id = self.parse_binary(module, type_parser, const_parser, instr)?;
-                ("lshr", inst_id)
+                ("lshr", inst_id, &instr.debugloc)
             }
             LLVMInstruction::AShr(instr) => {
                 let inst_id = self.parse_binary(module, type_parser, const_parser, instr)?;
-                ("ashr", inst_id)
+                ("ashr", inst_id, &instr.debugloc)
             }
             LLVMInstruction::FAdd(instr) => {
                 let inst_id = self.parse_binary(module, type_parser, const_parser, instr)?;
-                ("fadd", inst_id)
+                ("fadd", inst_id, &instr.debugloc)
             }
             LLVMInstruction::FSub(instr) => {
                 let inst_id = self.parse_binary(module, type_parser, const_parser, instr)?;
-                ("fsub", inst_id)
+                ("fsub", inst_id, &instr.debugloc)
             }
             LLVMInstruction::FMul(instr) => {
                 let inst_id = self.parse_binary(module, type_parser, const_parser, instr)?;
-                ("fmul", inst_id)
+                ("fmul", inst_id, &instr.debugloc)
             }
             LLVMInstruction::FDiv(instr) => {
                 let inst_id = self.parse_binary(module, type_parser, const_parser, instr)?;
-                ("fdiv", inst_id)
+                ("fdiv", inst_id, &instr.debugloc)
             }
             LLVMInstruction::FRem(instr) => {
                 let inst_id = self.parse_binary(module, type_parser, const_parser, instr)?;
-                ("frem", inst_id)
+                ("frem", inst_id, &instr.debugloc)
             }
             LLVMInstruction::FNeg(instr) => {
                 let inst_id = self.parse_unary(module, type_parser, const_parser, instr)?;
-                ("fneg", inst_id)
+                ("fneg", inst_id, &instr.debugloc)
             }
             LLVMInstruction::ExtractElement(instr) => {
                 let inst_id = self.extractelements.get_id();
@@ -1109,7 +1114,7 @@ impl InstructionParser {
                     idx,
                     dest: instr.dest.to_string(),
                 });
-                ("extractelement", inst_id)
+                ("extractelement", inst_id, &instr.debugloc)
             }
             LLVMInstruction::InsertElement(instr) => {
                 let inst_id = self.insertelements.get_id();
@@ -1124,7 +1129,7 @@ impl InstructionParser {
                     idx,
                     dest: instr.dest.to_string(),
                 });
-                ("insertelement", inst_id)
+                ("insertelement", inst_id, &instr.debugloc)
             }
             LLVMInstruction::ShuffleVector(instr) => {
                 let inst_id = self.shufflevectors.get_id();
@@ -1139,7 +1144,7 @@ impl InstructionParser {
                     dest: instr.dest.to_string(),
                     mask,
                 });
-                ("shufflevector", inst_id)
+                ("shufflevector", inst_id, &instr.debugloc)
             }
             LLVMInstruction::ExtractValue(instr) => {
                 let inst_id = self.extractvalues.get_id();
@@ -1161,7 +1166,7 @@ impl InstructionParser {
                         value: *idx,
                     });
                 }
-                ("extractvalue", inst_id)
+                ("extractvalue", inst_id, &instr.debugloc)
             }
             LLVMInstruction::InsertValue(instr) => {
                 let inst_id = self.insertvalues.get_id();
@@ -1185,7 +1190,7 @@ impl InstructionParser {
                         value: *idx,
                     });
                 }
-                ("insertvalue", inst_id)
+                ("insertvalue", inst_id, &instr.debugloc)
             }
             LLVMInstruction::Alloca(instr) => {
                 let inst_id = self.allocas.get_id();
@@ -1200,7 +1205,7 @@ impl InstructionParser {
                     dest: instr.dest.to_string(),
                     alignment: instr.alignment,
                 });
-                ("alloca", inst_id)
+                ("alloca", inst_id, &instr.debugloc)
             }
             LLVMInstruction::Load(instr) => {
                 let inst_id = self.loads.get_id();
@@ -1213,7 +1218,7 @@ impl InstructionParser {
                     volatile: instr.volatile,
                     alignment: instr.alignment,
                 });
-                ("load", inst_id)
+                ("load", inst_id, &instr.debugloc)
             }
             LLVMInstruction::Store(instr) => {
                 let inst_id = self.stores.get_id();
@@ -1227,9 +1232,9 @@ impl InstructionParser {
                     volatile: instr.volatile,
                     alignment: instr.alignment,
                 });
-                ("store", inst_id)
+                ("store", inst_id, &instr.debugloc)
             }
-            LLVMInstruction::Fence(_instr) => ("fence", -1),
+            LLVMInstruction::Fence(instr) => ("fence", -1, &instr.debugloc),
             LLVMInstruction::CmpXchg(instr) => {
                 let inst_id = self.cmpxchgs.get_id();
 
@@ -1247,7 +1252,7 @@ impl InstructionParser {
                     f_mem_ord: instr.failure_memory_ordering.to_string(),
                     weak: instr.weak,
                 });
-                ("cmpxchg", inst_id)
+                ("cmpxchg", inst_id, &instr.debugloc)
             }
             LLVMInstruction::AtomicRMW(instr) => {
                 let inst_id = self.atomicrmws.get_id();
@@ -1262,7 +1267,7 @@ impl InstructionParser {
                     dest: instr.dest.to_string(),
                     volatile: instr.volatile,
                 });
-                ("atomicrmw", inst_id)
+                ("atomicrmw", inst_id, &instr.debugloc)
             }
             LLVMInstruction::GetElementPtr(instr) => {
                 let inst_id = self.geps.get_id();
@@ -1285,59 +1290,59 @@ impl InstructionParser {
                         oid,
                     });
                 }
-                ("getelementptr", inst_id)
+                ("getelementptr", inst_id, &instr.debugloc)
             }
             LLVMInstruction::Trunc(instr) => {
                 let inst_id = self.parse_unary(module, type_parser, const_parser, instr)?;
-                ("trunc", inst_id)
+                ("trunc", inst_id, &instr.debugloc)
             }
             LLVMInstruction::ZExt(instr) => {
                 let inst_id = self.parse_unary(module, type_parser, const_parser, instr)?;
-                ("zext", inst_id)
+                ("zext", inst_id, &instr.debugloc)
             }
             LLVMInstruction::SExt(instr) => {
                 let inst_id = self.parse_unary(module, type_parser, const_parser, instr)?;
-                ("sext", inst_id)
+                ("sext", inst_id, &instr.debugloc)
             }
             LLVMInstruction::FPTrunc(instr) => {
                 let inst_id = self.parse_unary(module, type_parser, const_parser, instr)?;
-                ("fptrunc", inst_id)
+                ("fptrunc", inst_id, &instr.debugloc)
             }
             LLVMInstruction::FPExt(instr) => {
                 let inst_id = self.parse_unary(module, type_parser, const_parser, instr)?;
-                ("fpext", inst_id)
+                ("fpext", inst_id, &instr.debugloc)
             }
             LLVMInstruction::FPToUI(instr) => {
                 let inst_id = self.parse_unary(module, type_parser, const_parser, instr)?;
-                ("fptoui", inst_id)
+                ("fptoui", inst_id, &instr.debugloc)
             }
             LLVMInstruction::FPToSI(instr) => {
                 let inst_id = self.parse_unary(module, type_parser, const_parser, instr)?;
-                ("fptosi", inst_id)
+                ("fptosi", inst_id, &instr.debugloc)
             }
             LLVMInstruction::UIToFP(instr) => {
                 let inst_id = self.parse_unary(module, type_parser, const_parser, instr)?;
-                ("uitofp", inst_id)
+                ("uitofp", inst_id, &instr.debugloc)
             }
             LLVMInstruction::SIToFP(instr) => {
                 let inst_id = self.parse_unary(module, type_parser, const_parser, instr)?;
-                ("sitofp", inst_id)
+                ("sitofp", inst_id, &instr.debugloc)
             }
             LLVMInstruction::PtrToInt(instr) => {
                 let inst_id = self.parse_unary(module, type_parser, const_parser, instr)?;
-                ("ptrtoint", inst_id)
+                ("ptrtoint", inst_id, &instr.debugloc)
             }
             LLVMInstruction::IntToPtr(instr) => {
                 let inst_id = self.parse_unary(module, type_parser, const_parser, instr)?;
-                ("inttoptr", inst_id)
+                ("inttoptr", inst_id, &instr.debugloc)
             }
             LLVMInstruction::BitCast(instr) => {
                 let inst_id = self.parse_unary(module, type_parser, const_parser, instr)?;
-                ("bitcast", inst_id)
+                ("bitcast", inst_id, &instr.debugloc)
             }
             LLVMInstruction::AddrSpaceCast(instr) => {
                 let inst_id = self.parse_unary(module, type_parser, const_parser, instr)?;
-                ("addrspacecast", inst_id)
+                ("addrspacecast", inst_id, &instr.debugloc)
             }
             LLVMInstruction::ICmp(instr) => {
                 let inst_id = self.cmps.get_id();
@@ -1351,7 +1356,7 @@ impl InstructionParser {
                     op1,
                     dest: instr.dest.to_string(),
                 });
-                ("icmp", inst_id)
+                ("icmp", inst_id, &instr.debugloc)
             }
             LLVMInstruction::FCmp(instr) => {
                 let inst_id = self.cmps.get_id();
@@ -1365,7 +1370,7 @@ impl InstructionParser {
                     op1,
                     dest: instr.dest.to_string(),
                 });
-                ("fcmp", inst_id)
+                ("fcmp", inst_id, &instr.debugloc)
             }
             LLVMInstruction::Phi(instr) => {
                 let inst_id = self.phis.get_id();
@@ -1388,7 +1393,7 @@ impl InstructionParser {
                         dest: nm.to_string(),
                     });
                 }
-                ("phi", inst_id)
+                ("phi", inst_id, &instr.debugloc)
             }
             LLVMInstruction::Select(instr) => {
                 let inst_id = self.selects.get_id();
@@ -1406,11 +1411,11 @@ impl InstructionParser {
                     false_op: false_val,
                     dest: instr.dest.to_string(),
                 });
-                ("select", inst_id)
+                ("select", inst_id, &instr.debugloc)
             }
             LLVMInstruction::Freeze(instr) => {
                 let inst_id = self.parse_unary(module, type_parser, const_parser, instr)?;
-                ("freeze", inst_id)
+                ("freeze", inst_id, &instr.debugloc)
             }
             LLVMInstruction::Call(instr) => {
                 let inst_id = self.calls.get_id();
@@ -1448,7 +1453,7 @@ impl InstructionParser {
                         oid: op,
                     });
                 }
-                ("call", inst_id)
+                ("call", inst_id, &instr.debugloc)
             }
             LLVMInstruction::VAArg(instr) => {
                 let inst_id = self.vaargs.get_id();
@@ -1462,7 +1467,7 @@ impl InstructionParser {
                     tid,
                     dest: instr.dest.to_string(),
                 });
-                ("vaarg", inst_id)
+                ("vaarg", inst_id, &instr.debugloc)
             }
             LLVMInstruction::LandingPad(instr) => {
                 let inst_id = self.landingpads.get_id();
@@ -1474,7 +1479,7 @@ impl InstructionParser {
                     dest: instr.dest.to_string(),
                     cleanup: instr.cleanup,
                 });
-                ("landingpad", inst_id)
+                ("landingpad", inst_id, &instr.debugloc)
             }
             LLVMInstruction::CatchPad(instr) => {
                 let inst_id = self.catchpads.get_id();
@@ -1497,7 +1502,7 @@ impl InstructionParser {
                         oid: op,
                     });
                 }
-                ("catchpad", inst_id)
+                ("catchpad", inst_id, &instr.debugloc)
             }
             LLVMInstruction::CleanupPad(instr) => {
                 let inst_id = self.cleanuppads.get_id();
@@ -1520,9 +1525,26 @@ impl InstructionParser {
                         oid: op,
                     });
                 }
-                ("cleanuppad", inst_id)
+                ("cleanuppad", inst_id, &instr.debugloc)
             }
         };
+
+        if let Some(debugloc) = debug {
+            let d_id = self.debugloc.get_id();
+            let col = debugloc.col.unwrap_or(0);
+            let dirname = debugloc.directory
+                                    .as_ref()
+                                    .map_or_else(|| "".to_string(),
+                                                |d| d.clone());
+            self.debugloc.push(DebugLoc {
+                id: d_id,
+                pid: iid,
+                line: debugloc.line,
+                col: col,
+                filename: debugloc.filename.clone(),
+                directory: dirname,
+            });
+        }
 
         self.instructions.push(Instruction {
             id: iid,
@@ -1548,14 +1570,14 @@ impl InstructionParser {
     ) -> Result<i64, String> {
         let term_id = self.instructions.get_id();
 
-        let (opcode, instr_id) = match term {
+        let (opcode, instr_id, debug) = match term {
             LLVMTerminator::Ret(var) => {
                 let sub_id = if let Some(op) = &var.return_operand {
                     self.parse_operand(module, type_parser, const_parser, op)?
                 } else {
                     -1
                 };
-                ("ret", sub_id)
+                ("ret", sub_id, &var.debugloc)
             }
             LLVMTerminator::CleanupRet(var) => {
                 let sub_id = self.cleanupret.get_id();
@@ -1570,7 +1592,7 @@ impl InstructionParser {
                     op,
                     dest,
                 });
-                ("cleanupret", sub_id)
+                ("cleanupret", sub_id, &var.debugloc)
             }
             LLVMTerminator::CatchRet(var) => {
                 let sub_id = self.catchret.get_id();
@@ -1580,7 +1602,7 @@ impl InstructionParser {
                     op,
                     dest: var.successor.to_string(),
                 });
-                ("catchret", sub_id)
+                ("catchret", sub_id, &var.debugloc)
             }
             LLVMTerminator::Br(var) => {
                 let sub_id = self.br.get_id();
@@ -1588,7 +1610,7 @@ impl InstructionParser {
                     id: sub_id,
                     dest: var.dest.to_string(),
                 });
-                ("br", sub_id)
+                ("br", sub_id, &var.debugloc)
             }
             LLVMTerminator::CondBr(var) => {
                 let sub_id = self.condbr.get_id();
@@ -1599,7 +1621,7 @@ impl InstructionParser {
                     true_dest: var.true_dest.to_string(),
                     false_dest: var.false_dest.to_string(),
                 });
-                ("condbr", sub_id)
+                ("condbr", sub_id, &var.debugloc)
             }
             LLVMTerminator::IndirectBr(var) => {
                 let sub_id = self.indirectbr.get_id();
@@ -1618,7 +1640,7 @@ impl InstructionParser {
                         dest: name.to_string(),
                     });
                 }
-                ("indirectbr", sub_id)
+                ("indirectbr", sub_id, &var.debugloc)
             }
             LLVMTerminator::CallBr(var) => {
                 let sub_id = self.callbr.get_id();
@@ -1652,7 +1674,7 @@ impl InstructionParser {
                         oid: op,
                     });
                 }
-                ("callbr", sub_id)
+                ("callbr", sub_id, &var.debugloc)
             }
             LLVMTerminator::Switch(var) => {
                 let sub_id = self.switch.get_id();
@@ -1674,7 +1696,7 @@ impl InstructionParser {
                         name: name.to_string(),
                     });
                 }
-                ("switch", sub_id)
+                ("switch", sub_id, &var.debugloc)
             }
             LLVMTerminator::CatchSwitch(var) => {
                 let sub_id = self.catchswitch.get_id();
@@ -1701,7 +1723,7 @@ impl InstructionParser {
                         dest: name.to_string(),
                     });
                 }
-                ("catchswitch", sub_id)
+                ("catchswitch", sub_id, &var.debugloc)
             }
             LLVMTerminator::Invoke(var) => {
                 let sub_id = self.invoke.get_id();
@@ -1735,13 +1757,13 @@ impl InstructionParser {
                         oid: op,
                     });
                 }
-                ("invoke", sub_id)
+                ("invoke", sub_id, &var.debugloc)
             }
             LLVMTerminator::Resume(var) => {
                 let sub_id = self.parse_operand(module, type_parser, const_parser, &var.operand)?;
-                ("resume", sub_id)
+                ("resume", sub_id, &var.debugloc)
             }
-            LLVMTerminator::Unreachable(_var) => ("unreachable", -1),
+            LLVMTerminator::Unreachable(var) => ("unreachable", -1, &var.debugloc),
         };
 
         self.instructions.push(Instruction {
@@ -1754,6 +1776,23 @@ impl InstructionParser {
             unary: false,
             family_id: instr_id,
         });
+
+        if let Some(debugloc) = debug {
+            let d_id = self.debugloc.get_id();
+            let col = debugloc.col.unwrap_or(0);
+            let dirname = debugloc.directory
+                                    .as_ref()
+                                    .map_or_else(|| "".to_string(),
+                                                |d| d.clone());
+            self.debugloc.push(DebugLoc {
+                id: d_id,
+                pid: term_id,
+                line: debugloc.line,
+                col: col,
+                filename: debugloc.filename.clone(),
+                directory: dirname,
+            });
+        }
 
         Ok(term_id)
     }
@@ -1871,6 +1910,7 @@ impl InstructionParser {
         )?;
         fact_create(dir, &self.callbr.name, &self.callbr.as_string(";"))?;
         fact_create(dir, &self.callbr_arg.name, &self.callbr_arg.as_string(";"))?;
+        fact_create(dir, &self.debugloc.name, &self.debugloc.as_string(";"))?;
 
         Ok(())
     }

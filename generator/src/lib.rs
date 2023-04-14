@@ -136,6 +136,32 @@ impl ToStrArray for Block {
     }
 }
 
+#[derive(Debug, Clone)]
+pub struct DebugLoc {
+    pub id: i64,
+    pub pid: i64,
+    pub line: u32,
+    pub col: u32,
+    pub filename: String,
+    pub directory: String,
+}
+
+impl_tostring!(DebugLoc);
+
+impl ToStrArray for DebugLoc {
+    fn to_array(&self) -> Vec<String> {
+        vec![
+            self.id.to_string(),
+            self.pid.to_string(),
+            self.line.to_string(),
+            self.col.to_string(),
+            self.filename.clone(),
+            self.directory.to_string(),
+        ]
+    }
+}
+
+
 fn unnamed_addr_to_str(val: UnnamedAddr) -> &'static str {
     match val {
         UnnamedAddr::Local => "Local",
@@ -196,6 +222,7 @@ pub struct FactGenerator {
     functions: FactContainer<Function>,
     arguments: FactContainer<FuncArgument>,
     blocks: FactContainer<Block>,
+    func_debug: FactContainer<DebugLoc>,
 
     type_parser: types::TypeParser,
     const_parser: constants::ConstantParser,
@@ -213,6 +240,7 @@ impl FactGenerator {
             functions: FactContainer::new("function"),
             arguments: FactContainer::new("function_argument"),
             blocks: FactContainer::new("block"),
+            func_debug: FactContainer::new("func_debugloc"),
 
             type_parser: types::TypeParser::new(*ptr_size)?,
             const_parser: constants::ConstantParser::new()?,
@@ -291,6 +319,23 @@ impl FactGenerator {
                 ret_tid,
                 num_params: func.parameters.len() as i64,
             });
+
+            if let Some(debugloc) = &func.debugloc {
+                let d_id = self.func_debug.get_id();
+                let col = debugloc.col.unwrap_or(0);
+                let dirname = debugloc.directory
+                                      .as_ref()
+                                      .map_or_else(|| "".to_string(),
+                                                   |d| d.clone());
+                self.func_debug.push(DebugLoc {
+                    id: d_id,
+                    pid: func_id,
+                    line: debugloc.line,
+                    col: col,
+                    filename: debugloc.filename.clone(),
+                    directory: dirname,
+                });
+            }
 
             let mut args_map = HashMap::new();
             for param in &func.parameters {
@@ -381,6 +426,7 @@ impl FactGenerator {
         fact_create(dir, &self.functions.name, &self.functions.as_string(";"))?;
         fact_create(dir, &self.arguments.name, &self.arguments.as_string(";"))?;
         fact_create(dir, &self.blocks.name, &self.blocks.as_string(";"))?;
+        fact_create(dir, &self.func_debug.name, &self.func_debug.as_string(";"))?;
 
         self.type_parser.write_files(dir)?;
         self.const_parser.write_files(dir)?;
