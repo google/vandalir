@@ -37,11 +37,10 @@
 #endif
 
 
-.decl bo_in_loop(func: symbol, iid: instr_t, level: symbol, msg: symbol)
+.decl bo_in_loop(fid: func_t, iid: instr_t, level: symbol, msg: symbol)
 VBL_OUTPUT(bo_in_loop)
 
-bo_in_loop(func, iid, level, msg) :-
-  Function.get(fid, func, _, _),
+bo_in_loop(fid, iid, level, msg) :-
   Block.get(fid, bid, bname),
 
   Instruction.GetElementPtr.addr_size(iid, bid, name, size),
@@ -60,7 +59,7 @@ bo_in_loop(func, iid, level, msg) :-
   ),
   size <= iter_value,
   level = "Vulnerability",
-  msg = cat("BUFFER OVERFLOW: block '", bname,
+  msg = cat("Possible Buffer Overflow: block '", bname,
             "': Array access within a loop with the loop variable ",
             name, "(", to_string(size), " elements) is out of bounds for i = ",
             to_string(iter_value)).

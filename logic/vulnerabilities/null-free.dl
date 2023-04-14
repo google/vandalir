@@ -35,11 +35,10 @@
 #endif
 
 
-.decl null_free(func: symbol, iid: instr_t, level: symbol, msg: symbol)
+.decl null_free(fid: func_t, iid: instr_t, level: symbol, msg: symbol)
 VNF_OUTPUT(null_free)
 
-null_free(func, iid, level, msg) :-
-  Function.get(fid, func, _, _),
+null_free(fid, iid, level, msg) :-
   Block.get(fid, bid, bname),
   Instruction.Call.global_func(iid, bid, _, fname, _),
   fname = "%free",
@@ -49,8 +48,8 @@ null_free(func, iid, level, msg) :-
   !Check.check_null(fid, bid, vreg),
   VRegValueAnalysis.is_null(fid, iid_null, vreg, _),
   level = "Vulnerability",
-  msg = cat("NULL Free: VREG:", vreg, "(block ", bname,
-            " / iid ", to_string(iid), ") attempt to free NULL pointer!").
+  msg = cat("Possible NULL Free: block ", bname, "; vreg ", vreg,
+            ": attempt to free NULL pointer!").
 
 
 REPORT_RESULTS(null_free).

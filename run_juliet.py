@@ -29,25 +29,25 @@ import numpy as np
 
 CWEs = {
   '121': ("Stack-based Buffer Overflow",
-          ["Possible out of bounds"]),
+          ["Possibly out of bounds"]),
   '129': ("Improper Validation of Array Index",
-          ["possibly insufficient buffer size"]),
+          ["Possible Buffer Overflow"]),
   '131': ("Incorrect Calculation of Buffer Size",
-          ["Possible out of bounds", "Array access within a loop"]),
+          ["Possibly out of bounds", "Array access within a loop"]),
   '193': ("Off-by-one Error",
-          ["Array access within a loop", "Possible out of bounds"]),
+          ["Array access within a loop", "Possibly out of bounds"]),
   '242': ("Use of Inherently Dangerous Function",
           ["Inherently dangerous functions"]),
   '805': ("Buffer Access with Incorrect Length Value",
-          ["Array access within a loop", "Possible out of bounds"]),
+          ["Array access within a loop", "Possibly out of bounds"]),
   '806': ("Buffer Access Using Size of Source Buffer",
-          ["Possible out of bounds", "Array access within a loop"]),
+          ["Possibly out of bounds", "Array access within a loop"]),
   '134': ("Use of Externally-Controlled Format String",
           ["Possibly a non static format string is used"]),
   '415': ("Double Free",
           ["Double Free"]),
   '476': ("NULL_Pointer_Dereference",
-          ["NULL DEREFERENCE"]),
+          ["Possible NULL Dereference"]),
 }
 
 TESTS_DIR = '/tests/juliet'

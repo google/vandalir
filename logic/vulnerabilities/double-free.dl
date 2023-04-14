@@ -35,14 +35,12 @@
 #endif
 
 
-.decl double_free(func: symbol, iid: instr_t, level: symbol, msg: symbol)
+.decl double_free(fid: func_t, iid: instr_t, level: symbol, msg: symbol)
 VDF_OUTPUT(double_free)
 
-double_free(func, iid, level, msg) :-
-  Function.get(fid, func, _, _),
-  Block.get(fid, bid, bname),
+double_free(fid, iid, level, msg) :-
   Block.get(fid, bid_prev, bname_prev),
-  Instruction.Call.global_func(iid, bid, _, name, _),
+  Instruction.Call.global_func(iid, _, _, name, _),
   Instruction.Call.ith_operand(iid, 0, op),
   OperandUtil.name(op, vreg, _),
   name = "%free",
@@ -53,9 +51,15 @@ double_free(func, iid, level, msg) :-
   VRegAnalysis.equel(fid, iid_tmp, vreg, _, _, vreg_prev, _),
   InstructionAnalysis.is_instruction_before(iid, iid_tmp),
   level = "Vulnerability",
-  msg = cat("Double Free: VREG:", vreg, "(block ", bname, " / iid ", to_string(iid),
-            ") has already been freed here: (block ", bname_prev, " / iid ",
-            to_string(iid_prev), ") VREG: ", vreg_prev).
+  (
+    !DebugLoc.instruction(iid_prev, _),
+    prev_iid_str = cat("( block ", bname_prev, " / iid ",
+                       to_string(iid_prev), ") ");
+    DebugLoc.instruction(iid_prev, prev_iid_str)
+  ),
+  msg = cat("Possible Double Free: VREG:", vreg,
+            ") has already been freed here: ", prev_iid_str,
+            " VREG: ", vreg_prev).
 
 
 REPORT_RESULTS(double_free).

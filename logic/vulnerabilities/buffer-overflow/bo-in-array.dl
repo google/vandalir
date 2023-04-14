@@ -36,11 +36,10 @@
 #endif
 
 
-.decl bo_in_array(func: symbol, iid: instr_t, level: symbol, msg: symbol)
+.decl bo_in_array(fid: func_t, iid: instr_t, level: symbol, msg: symbol)
 VBA_OUTPUT(bo_in_array)
 
-bo_in_array(func, iid, level, msg) :-
-  Function.get(fid, func, _, _),
+bo_in_array(fid, iid, level, msg) :-
   Block.get(fid, bid, bname),
 
   Instruction.GetElementPtr.addr_size(iid, bid, name, size),
@@ -52,7 +51,7 @@ bo_in_array(func, iid, level, msg) :-
   ),
   idx >= size,
   level = "Vulnerability",
-  msg = cat("BUFFER OVERFLOW: block '", bname,
-            "': possibly insufficient buffer size of ",
+  msg = cat("Possible Buffer Overflow: block '", bname,
+            "': insufficient buffer size of ",
             name, "(", to_string(size), " elements). ",
             "Detected to big index access ", to_string(idx)).

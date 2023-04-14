@@ -19,13 +19,21 @@
 
 #pragma once
 
-#define REPORT_RESULTS(rule) \
-  RESULTS(func, msg) :- \
-    rule(func, _, level, sub_msg), \
-    msg = cat(level, ": ", sub_msg)
+#include "debugloc.dl"
 
-.decl RESULTS(func: symbol, msg: symbol)
-.output RESULTS
+#define REPORT_RESULTS(rule) \
+  RESULTS(level, func, location,  msg) :- \
+    rule(fid, iid, level, msg), \
+    Function.get(fid, func, _, _), \
+    ( \
+      DebugLoc.instruction(iid, dmsg), \
+      location = dmsg; \
+      !DebugLoc.instruction(iid, _), \
+      location = cat("instruction id ", to_string(iid)) \
+    )
+
+.decl RESULTS(level: symbol, func: symbol, location: symbol, msg: symbol)
+.output RESULTS(delimiter=";")
 #ifndef NO_STDOUT_PRINT
 .output RESULTS(IO=stdout)
 #endif

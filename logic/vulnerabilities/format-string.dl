@@ -60,11 +60,10 @@ get_formatstring_arg(fname, num) :-
    fname="%syslog",
    num=1.
 
-.decl format_string(func: symbol, iid: instr_t, level: symbol, msg: symbol)
+.decl format_string(fid: func_t, iid: instr_t, level: symbol, msg: symbol)
 VFS_OUTPUT(format_string)
 
-format_string(func, iid, level, msg) :-
-  Function.get(fid, func, _, _),
+format_string(fid, iid, level, msg) :-
   Block.get(fid, bid, bname),
   Instruction.Call.global_func(iid, bid, _, fname, _),
   get_formatstring_arg(fname, arg_pos),
@@ -76,13 +75,12 @@ format_string(func, iid, level, msg) :-
   GlobalVar.modified(fid_mod, _, gid),
   Function.get(fid_mod, fname_mod, _, _),
   level = "Warning",
-  msg = cat("Block: ", bname, "; vreg: ", arg_vreg, ": ", fname,
-            ": Possible a non static format string is used.\n",
-            "The format string ", name, " can be modified by ",
+  msg = cat("Possible a non static format string is used: block ",
+            bname, "; vreg ", arg_vreg, "; ", fname, ": ",
+            "the format string ", name, " can be modified by ",
             fname_mod, " function.").
 
-format_string(func, iid, level, msg) :-
-  Function.get(fid, func, _, _),
+format_string(fid, iid, level, msg) :-
   Block.get(fid, bid, bname),
   Instruction.Call.global_func(iid, bid, _, fname, _),
   get_formatstring_arg(fname, arg_pos),
@@ -95,7 +93,7 @@ format_string(func, iid, level, msg) :-
   Instruction.Alloca.get(_, bid_instr, name, tid, _),
   !Type.is_pointer(tid),  // should be a real local buffer, not a pointer
   level = "Warning",
-  msg = cat("Block: ", bname, "; vreg: ", arg_vreg,
-            ": Possibly a non static format string is used in ", fname, ".").
+  msg = cat("Possibly a non static format string is used: block ", bname,
+            "; vreg", arg_vreg,  ";  ", fname).
 
 REPORT_RESULTS(format_string).

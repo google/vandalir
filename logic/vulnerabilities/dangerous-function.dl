@@ -30,11 +30,10 @@
 #endif
 
 
-.decl dangerous_function(func: symbol, iid: instr_t, level: symbol, msg: symbol)
+.decl dangerous_function(fid: func_t, iid: instr_t, level: symbol, msg: symbol)
 VDANF_OUTPUT(dangerous_function)
 
-dangerous_function(func, iid, level, msg) :-
-  Function.get(fid, func, _, _),
+dangerous_function(fid, iid, level, msg) :-
   Block.get(fid, bid, bname),
   Instruction.Call.global_func(iid, bid, _, name, _),
   name = "%gets",
