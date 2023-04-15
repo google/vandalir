@@ -1,15 +1,14 @@
 ## VANDALIR V2
 
-VANDALIR (**V**ulnerability detection & static **AN**alysis using **DA**talog and **L**LVM-**IR**) is a tool for analyzing LLVM-IR with Datalog with the goal of finding vulnerabilities. 
+VANDALIR (**V**ulnerability detection & static **AN**alysis using **DA**talog and **L**LVM-**IR**) is a tool for analyzing LLVM-IR with Datalog with the goal of finding vulnerabilities.
 
 **V2** is a reworked version of the original [tool](https://github.com/vandaltool/vandalir).
 
 Original authors:
 * Joschua Schilling
-* Tilo M{\"u}ller
+* Tilo Müller
 
-NOTE: Currently, the v2 version does not entirely match the fucntionality of the original tool.
-Development is ongoing.
+**Note that the current v2 version does not completely replicate the functionality of the original tool. Development is ongoing, but progress may be slow. This project serves more as my personal experimentation with binary analysis techniques (binary lifting to LLVM IR and static analysis on top of it), as well as my exploration of Rust and Query Languages like Souffle. This is my first endeavor with both Rust and Souffle.**
 
 ## Set up
 
